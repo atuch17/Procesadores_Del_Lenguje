@@ -17,7 +17,7 @@ public class AnalizadorLexicoTiny {
 	private static String NL = System.getProperty("line.separator");
 
 	private static enum Estado {
-		INICIO, ID, NUM_INT, NUM_REAL, SEP_SEC, SEP_INS, OP_ASIG, PAP, PCIERRE, OP_SUMA, OP_RESTA, OP_MULT, OP_DIV,
+		INICIO, ID, NUM_CERO, NUM_INT, NUM_REAL, TRAMPA, SEP_SEC, SEP_INS, OP_ASIG, PAP, PCIERRE, OP_SUMA, OP_RESTA, OP_MULT, OP_DIV,
 		OP_MENOR, OP_MAYOR, OP_MEN_IG, OP_MAY_IG, OP_COMP, OP_DIST, END, OP_EXCLA, OP_AMP, PUNTO_DEC, P_DEC, DEC_INV,
 		P_EXP, P_EXP_NEG, P_EXP_POS
 	}
@@ -72,6 +72,8 @@ public class AnalizadorLexicoTiny {
 					transita(Estado.OP_RESTA);
 				else if (hayDigitoPos())
 					transita(Estado.NUM_INT);
+				else if (hayCero())
+					transita(Estado.NUM_CERO);
 				else
 					error();
 				break;
@@ -79,7 +81,7 @@ public class AnalizadorLexicoTiny {
 				if (hayIgual())
 					transita(Estado.OP_MEN_IG);
 				else
-					return unidadMenor(); //
+					return unidadMenor();
 				break;
 			case OP_MEN_IG:
 				return unidadMenorIgual();
@@ -87,7 +89,7 @@ public class AnalizadorLexicoTiny {
 				if (hayIgual())
 					transita(Estado.OP_MAY_IG);
 				else
-					return unidadMayor(); //
+					return unidadMayor();
 				break;
 			case OP_MAY_IG:
 				return unidadMayorIgual();
@@ -95,7 +97,7 @@ public class AnalizadorLexicoTiny {
 				if (hayIgual())
 					transita(Estado.OP_COMP);
 				else
-					return unidadIgual(); //
+					return unidadIgual();
 				break;
 			case OP_COMP:
 				return unidadComparacion();
@@ -118,7 +120,11 @@ public class AnalizadorLexicoTiny {
 			case OP_SUMA:
 				if (hayDigitoPos())
 					transita(Estado.NUM_INT);
-				return unidadMas();
+				else if (hayCero())
+					transita(Estado.NUM_CERO);
+				else
+					return unidadMas();
+				break;
 			case SEP_INS:
 				return unidadPuntoComa();
 			case PAP:
@@ -140,6 +146,8 @@ public class AnalizadorLexicoTiny {
 			case OP_RESTA:
 				if (hayDigitoPos())
 					transita(Estado.NUM_INT);
+				else if (hayCero())
+					transita(Estado.NUM_CERO);
 				else
 					return unidadMenos();
 				break;
@@ -150,6 +158,16 @@ public class AnalizadorLexicoTiny {
 					transita(Estado.P_EXP);
 				else if (hayDigito())
 					transita(Estado.NUM_INT);
+				else
+					return unidadEnt();
+				break;
+			case NUM_CERO:
+				if (hayPunto())
+					transita(Estado.PUNTO_DEC);
+				else if (hayE())
+					transita(Estado.P_EXP);
+				else if (hayDigito())
+					transita(Estado.TRAMPA);
 				else
 					return unidadEnt();
 				break;
@@ -177,7 +195,7 @@ public class AnalizadorLexicoTiny {
 				else
 					error();
 				break;
-			case P_EXP:
+			case P_EXP: //TODO exponencial con 0 valdria
 				if (hayDigitoPos())
 					transita(Estado.NUM_REAL);
 				else if (hayMenos())
@@ -200,8 +218,12 @@ public class AnalizadorLexicoTiny {
 					error();
 				break;
 			case NUM_REAL:
-				return unidadReal();
-			default:
+				if (hayDigito())
+					transita(Estado.NUM_REAL);
+				else
+					return unidadReal();
+				break;
+			default: //TODO trampa debe consumir caracteres o lanzar directamente error como se hace aqui
 				error();
 				break;
 			}
@@ -326,7 +348,7 @@ public class AnalizadorLexicoTiny {
 		return sigCar == 'e' || sigCar == 'E';
 	}
 
-	private UnidadLexica unidadId() { // TODO minusculas y mayusculas??
+	private UnidadLexica unidadId() {
 		switch (lex.toString()) {
 		case "int":
 			return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.INT);
@@ -421,13 +443,13 @@ public class AnalizadorLexicoTiny {
 		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.END);
 	}
 
-	private void error() {
+	private void error() { //TODO con esto de error vale?
 		System.err.println("(" + filaActual + ',' + columnaActual + "):Caracter inexperado");
 		System.exit(1);
 	}
 
 	public static void main(String arg[]) throws IOException {
-		Reader input = new InputStreamReader(new FileInputStream("input.txt"));
+		Reader input = new InputStreamReader(new FileInputStream("E:/Users/alexc/Documents/GitHub/Procesadores_Del_Lenguje/PL/src/Pr1a/adri.txt"));
 		AnalizadorLexicoTiny al = new AnalizadorLexicoTiny(input);
 		UnidadLexica unidad;
 		do {

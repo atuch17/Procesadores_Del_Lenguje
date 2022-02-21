@@ -1,4 +1,4 @@
-package alex;
+package Pr1b;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

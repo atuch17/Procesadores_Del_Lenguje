@@ -131,7 +131,7 @@ public class AnalizadorLexicoTiny {
 				return unidadPAp();
 			case PCIERRE:
 				return unidadPCierre();
-			case END:	// TODO preguntar si es necesario (mirar funcion de main)
+			case END:	
 				return unidadEof();
 			case OP_MULT:
 				return unidadPor();
@@ -195,7 +195,7 @@ public class AnalizadorLexicoTiny {
 				else
 					error();
 				break;
-			case P_EXP: //TODO exponencial con 0 valdria
+			case P_EXP: 
 				if (hayDigitoPos())
 					transita(Estado.NUM_REAL);
 				else if (hayMenos())
@@ -223,7 +223,7 @@ public class AnalizadorLexicoTiny {
 				else
 					return unidadReal();
 				break;
-			default: //TODO trampa debe consumir caracteres o lanzar directamente error como se hace aqui
+			default: 
 				error();
 				break;
 			}
@@ -443,7 +443,7 @@ public class AnalizadorLexicoTiny {
 		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.END);
 	}
 
-	private void error() { //TODO con esto de error vale?
+	private void error() { 
 		System.err.println("(" + filaActual + ',' + columnaActual + "):Caracter inexperado");
 		System.exit(1);
 	}

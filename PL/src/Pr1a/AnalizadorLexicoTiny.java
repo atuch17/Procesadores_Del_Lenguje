@@ -19,7 +19,7 @@ public class AnalizadorLexicoTiny {
 	private static enum Estado {
 		INICIO, ID, NUM_CERO, NUM_INT, NUM_REAL, TRAMPA, SEP_SEC, SEP_INS, OP_ASIG, PAP, PCIERRE, OP_SUMA, OP_RESTA, OP_MULT, OP_DIV,
 		OP_MENOR, OP_MAYOR, OP_MEN_IG, OP_MAY_IG, OP_COMP, OP_DIST, END, OP_EXCLA, OP_AMP, PUNTO_DEC, P_DEC, DEC_INV,
-		P_EXP, P_EXP_NEG, P_EXP_POS
+		P_EXP, P_EXP_NEG, P_EXP_POS, NUM_REAL_CERO
 	}
 
 	private Estado estado;
@@ -198,6 +198,8 @@ public class AnalizadorLexicoTiny {
 			case P_EXP: 
 				if (hayDigitoPos())
 					transita(Estado.NUM_REAL);
+				else if (hayCero())
+					transita(Estado.NUM_REAL_CERO);
 				else if (hayMenos())
 					transita(Estado.P_EXP_NEG);
 				else if (hayMas())
@@ -208,18 +210,28 @@ public class AnalizadorLexicoTiny {
 			case P_EXP_NEG:
 				if (hayDigitoPos())
 					transita(Estado.NUM_REAL);
+				else if (hayCero())
+					transita(Estado.NUM_REAL_CERO);
 				else
 					error();
 				break;
 			case P_EXP_POS:
 				if (hayDigitoPos())
 					transita(Estado.NUM_REAL);
+				else if (hayCero())
+					transita(Estado.NUM_REAL_CERO);
 				else
 					error();
 				break;
 			case NUM_REAL:
 				if (hayDigito())
 					transita(Estado.NUM_REAL);
+				else
+					return unidadReal();
+				break;
+			case NUM_REAL_CERO:
+				if (hayDigito())
+					transita(Estado.TRAMPA);
 				else
 					return unidadReal();
 				break;

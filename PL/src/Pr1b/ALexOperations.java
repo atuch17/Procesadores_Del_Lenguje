@@ -103,6 +103,10 @@ public class ALexOperations {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.LLAVE_CIERRE);
 	}
 	
+	public UnidadLexica unidadPunto() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.PUNTO);
+	}
+	
 	public UnidadLexica unidadFlecha() {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.OP_FLECHA);
 	}
@@ -227,8 +231,8 @@ public class ALexOperations {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.WRITE);
 	}
 	
-	public UnidadLexica unidadNi() {
-		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.NI);
+	public UnidadLexica unidadNl() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.NL);
 	}
 	
 	public UnidadLexica unidadVar() {

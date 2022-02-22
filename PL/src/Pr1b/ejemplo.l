@@ -32,31 +32,6 @@ pExp = (e|E) {numInt}
 numReal = {numInt}({pDec}{pExp}? |  {pExp})
 sep = [ \t\r\b\n]
 com = #[^\n]* 
-id = {letra}({letra}|{digito}|_)*
-cadena = \"([^\"\r\b\n])*\"
-sepSec = \&\&
-sepIns = \;
-asig = \=
-pAp = \(
-pCierre = \)
-opSuma = \+
-opResta = \-
-opMult = \*
-opDiv = \/
-opMayor = \>
-opMenor = \<
-opMenIg = \<=
-opMayIg = \>=
-opComp = \==
-opDist = \!=
-op100 = \%
-corcheteAp = \[
-corcheteCierre = \]
-llavAp = \{
-llaveCierre = \}
-opFlecha = \->
-coma = \,
-opAmp = \&
 and = and
 or = or
 not = not
@@ -87,12 +62,36 @@ write = write
 nl = nl
 var = var
 type = type
+cadena = \"([^\"\r\b\n])*\"
+id = {letra}({letra}|{digito}|_)*
+sepSec = \&\&
+sepIns = \;
+asig = \=
+pAp = \(
+pCierre = \)
+opSuma = \+
+opResta = \-
+opMult = \*
+opDiv = \/
+opMayor = \>
+opMenor = \<
+opMenIg = \<=
+opMayIg = \>=
+opComp = \==
+opDist = \!=
+op100 = \%
+corcheteAp = \[
+corcheteCierre = \]
+llavAp = \{
+llaveCierre = \}
+punto = \.
+opFlecha = \->
+coma = \,
+opAmp = \&
 
 %%
 {sep}             {}
 {com}             {}
-{id}              {return ops.unidadId();}
-{cadena}          {return ops.unidadCadena();}
 {numInt}          {return ops.unidadNumInt();}
 {numReal}         {return ops.unidadNumReal();}
 {sepSec}          {return ops.unidadSepSec();}
@@ -115,6 +114,7 @@ type = type
 {corcheteCierre}  {return ops.unidadCorcheteCierre();}
 {llavAp}          {return ops.unidadLlaveAp();}
 {llaveCierre}     {return ops.unidadLlaveCierre();}
+{punto}           {return ops.unidadPunto();}
 {opFlecha}        {return ops.unidadFlecha();}
 {coma}            {return ops.unidadComa();}
 {opAmp}           {return ops.unidadAmp();}
@@ -148,4 +148,6 @@ type = type
 {nl}              {return ops.unidadNl();}
 {var}             {return ops.unidadVar();}
 {type}            {return ops.unidadType();}
+{cadena}          {return ops.unidadCadena();}
+{id}              {return ops.unidadId();}
 [^]               {ops.error();}

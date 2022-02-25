@@ -461,7 +461,7 @@ public class AnalizadorLexicoTiny {
 	}
 
 	public static void main(String arg[]) throws IOException {
-		Reader input = new InputStreamReader(new FileInputStream("Tiny0_prueba1.txt"));
+		Reader input = new InputStreamReader(new FileInputStream("Tiny0_prueba2.txt"));
 		AnalizadorLexicoTiny al = new AnalizadorLexicoTiny(input);
 		UnidadLexica unidad;
 		do {

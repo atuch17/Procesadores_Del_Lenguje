@@ -1,0 +1,18 @@
+int peso;
+int altura;
+real area;
+bool gordo
+&&
+peso = +50;
+altura = +100;
+area = base*altura/2.0
+
+if (area > 2000 or peso >= altura)
+	gordo = true
+else 
+	gordo = false
+	
+if (not gordo)
+	print (SANO)
+	
+aux = 0 0.0 0.1 0.01

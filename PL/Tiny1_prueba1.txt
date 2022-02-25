@@ -1,16 +1,16 @@
-type pointer tNodo tArbol;
+type pointer tNodo tArbol; 
 type record {
- string nombre;
- tArbol izq;
- tArbol der
+	 string nombre;
+	 tArbol izq;
+	 tArbol der
  } tNodo;
 type record {
- array [50] of string nombres;
- int cont
+	 array [50] of string nombres;
+	 int cont
 } tListaNombres;
 var tListaNombres nombres; # Aquí se guardarán los nombres leídos (max. 50)
 var tArbol arbol; # Aquí se construirá un árbol de búsqueda que contendrá
- # los nombres leídos, sin duplicados
+ # los nombres leídos, sin duplicados 
  # Lee los nombres a ordenar (max. 50 nombres)
 proc lee_nombres(tListaNombres & nombres) {
  var int i
@@ -28,7 +28,7 @@ proc lee_nombres(tListaNombres & nombres) {
  i = i + 1
  endwhile
 }; # Fin del procedimiento lee_nombres
-
+ 
  # Construye un árbol de búsqueda sin duplicados con los nombres leídos
  # Hace un uso global de las variables 'nombres’ y 'arbol' declaradas en
  # el programa principal
@@ -42,11 +42,11 @@ proc construye_arbol() {
 new arbol;
  arbol->nombre = nombres.nombres[i];
  arbol->izq = null;
- arbol->der = null
+ arbol->der = null 
  else {
  var tArbol padre; # apuntará al nodo padre del nuevo nodo a insertar
  var tArbol act; # para recorrer la rama al final de la cuál debe realizarse
- # la inserción.
+ # la inserción. 
  var bool fin # para controlar el final del recorrido de la rama
  &&
  fin = false;
@@ -56,21 +56,21 @@ while not fin do
  padre = act;
  if act->nombre < nombres.nombres[i] then #insertar en el hijo derecho
  act = act->der
- else
+ else 
  if act->nombre > nombres.nombres[i] then #insertar en el hijo izquierdo
  act = act->izq
  endif
  endif;
  if act == null then # se ha alcanzado el punto de inserción
  fin = true
- else
+ else 
  if act->nombre == nombres.nombres[i] then # el nombre está duplicado
  fin = true
  endif
  endif
  endwhile;
  if act == null then # se ha alcanzado un punto de inserción
- # hay que insertar un nuevo nodo
+ # hay que insertar un nuevo nodo 
  if padre->nombre < nombres.nombres[i] then # insertar como hijo izquierdo
  new padre->der;
  padre->der->nombre = nombres.nombres[i];
@@ -82,10 +82,10 @@ padre->izq->nombre = nombres.nombres[i];
  padre->izq->izq= null;
  padre->izq->der = null
  endif
- endif
+ endif 
  }
- endif
- } # Fin del procedimiento anidado inserta_nombre
+ endif 
+ } # Fin del procedimiento anidado inserta_nombre 
  &&
  arbol = null;
  i=0;
@@ -94,7 +94,7 @@ padre->izq->nombre = nombres.nombres[i];
  i = i + 1
  endwhile
  }; # Fin del procedimiento construye_arbol
-
+ 
  # Escribe los nombres almacenados en el árbol de búsqueda, recorriendo
  # dicho árbol en inorden.
  # Por tanto, los nombres se listan ordenados alfabéticamente,
@@ -107,10 +107,10 @@ padre->izq->nombre = nombres.nombres[i];
  endif
  } # Fin de procedimiento escribe_nombres
  &&
-
+ 
  # Programa principal
  call lee_nombres(nombres);
  call construye_arbol();
  write "Listado de nombres ordenado"; nl;
  write "---------------------------"; nl;
- call escribe_nombres(arbol) 
+ call escribe_nombres(arbol)

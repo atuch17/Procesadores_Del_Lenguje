@@ -12,7 +12,7 @@ if (area > 2000 or peso >= altura)
 else 
 	gordo = false
 	
-if (not gordo)
+if (not gordo and peso != altura)
 	print (SANO)
 	
-aux = 0 0.0 0.1 0.01
+aux = 0 +0 +0.0 +0e-0 +0.0e0

@@ -3,11 +3,6 @@ package Pr2a;
 import java.io.FileInputStream;
 import java.io.Reader;
 
-import Pr1a.ClaseLexica;
-import Pr1a.UnidadLexica;
-import Pr1a.UnidadLexicaMultivaluada;
-import Pr1a.UnidadLexicaUnivaluada;
-
 import java.io.InputStreamReader;
 import java.io.IOException;
 

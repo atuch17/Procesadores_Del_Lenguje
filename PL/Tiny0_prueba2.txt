@@ -5,7 +5,7 @@ bool gordo
 &&
 peso = +50;
 altura = +100;
-area = base*altura/2.0
+area = (base*altura)/2.0
 
 if (area > 2000 or peso >= altura)
 	gordo = true

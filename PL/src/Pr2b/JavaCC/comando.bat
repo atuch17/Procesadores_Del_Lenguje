@@ -1,0 +1,1 @@
+java -cp E:\Users\alexc\Documents\GitHub\Procesadores_Del_Lenguje\PL\src\Pr2b\JavaCC\javacc.jar javacc Tiny.jj

@@ -1,0 +1,1 @@
+java -cp cup.jar java_cup.Main -parser AnalizadorSintacticoTiny -symbols ClaseLexica -dump_states -nopositions Tiny.cup 2> automata.txt

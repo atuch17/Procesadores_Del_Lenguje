@@ -169,7 +169,7 @@ public class AnalizadorSintacticoTiny {
 			break;
 		case OP_RESTA:
 			empareja(ClaseLexica.OP_RESTA);
-			E0();
+			E1();
 			break;
 		case PCIERRE:
 		case SEP_INS:

@@ -1,0 +1,82 @@
+package Pr2b.CUP;
+
+import java_cup.runtime.*;
+
+scan with {: return getScanner().next_token(); :};
+parser code {: 
+   private GestionErroresTiny errores;
+   public void syntax_error(Symbol unidadLexica) {
+     errores.errorSintactico((UnidadLexica)unidadLexica);
+   }
+:};
+init with {: 
+   errores = new GestionErroresTiny();
+   AnalizadorLexicoTiny alex = (AnalizadorLexicoTiny)getScanner();
+   alex.fijaGestionErrores(errores);
+:};
+
+
+terminal      NUM_INT, NUM_REAL, AND, OR, NOT, STRING, NULL, PROC, IF, THEN, ELSE, SEP_SEC,
+              SEP_INS, OP_ASIG, PAP, PCIERRE, OP_SUMA, OP_RESTA, OP_MULT, OP_DIV, OP_MENOR,
+              OP_MAYOR, OP_MEN_IG, OP_MAY_IG, OP_COMP, OP_DIST, OP_100, CORCHETE_AP, 
+              CORCHETE_CIERRE, LLAVE_AP, LLAVE_CIERRE, PUNTO, OP_FLECHA, COMA, OP_AMP, INT,
+              REAL, BOOL, TRUE, FALSE, ENDIF, WHILE, DO, ENDWHILE, CALL, RECORD, ARRAY, 
+              OF, POINTER, NEW, DELETE, READ, WRITE, NL, VAR, TYPE, ID, CADENA;
+
+non terminal  Programa, Declaraciones, Declaracion, DeclaracionVar, DeclaracionTipo, 
+              DeclaracionProc, ParametrosFormales, Parametros, Parametro, Bloque, Tipo, 
+              TipoBasico, TipoArray, TipoRegistro, Campos, Campo, TipoPuntero, Instrucciones,
+              Instruccion, InstrAsig, BloqueOpcional, InstrIfThen, InstrIfThenElse, InstrWhile,
+              InstrLectura, InstrEscritura, InstrNewLine, InstrReservMem, InstrLibMem,
+              InstrInvocProc, ParametrosReales, Expresiones, EBasica, E0, E1, E2, E3, E4, 
+              E5, E6, E7, op1, op2, op3;
+
+
+Programa ::= Declaraciones SEP_SEC Instrucciones | Instrucciones;
+Declaraciones ::= Declaraciones SEP_INS Declaracion | Declaracion;
+Declaracion ::= DeclaracionVar | DeclaracionTipo | DeclaracionProc;
+DeclaracionVar ::= VAR Tipo ID;
+DeclaracionTipo ::= TYPE Tipo ID;
+DeclaracionProc ::= PROC ID ParametrosFormales Bloque;
+ParametrosFormales ::= PAP PCIERRE | PAP Parametros PCIERRE;
+Parametros ::= Parametros COMA Parametro | Parametro;
+Parametro ::=  Tipo ID | Tipo OP_AMP ID;
+Bloque ::=  LLAVE_AP Programa LLAVE_CIERRE;
+Tipo ::= TipoBasico | ID | TipoArray | TipoRegistro | TipoPuntero;
+TipoBasico ::= INT | REAL | BOOL | STRING;
+TipoArray ::= ARRAY CORCHETE_AP NUM_INT CORCHETE_CIERRE OF Tipo;
+TipoRegistro ::= RECORD LLAVE_AP Campos LLAVE_CIERRE;
+Campos ::= Campos SEP_INS Campo | Campo;
+Campo ::= Tipo ID;
+TipoPuntero ::= POINTER Tipo;
+
+Instrucciones ::= Instrucciones SEP_INS Instruccion | Instruccion;
+Instruccion ::= InstrAsig | InstrIfThen | InstrIfThenElse | InstrWhile | InstrLectura | InstrEscritura
+                | InstrNewLine | InstrReservMem | InstrLibMem | InstrInvocProc | Bloque;
+InstrAsig ::= E0 OP_ASIG E0;
+BloqueOpcional ::= Instrucciones | ;
+InstrIfThen ::= IF E0 THEN BloqueOpcional ENDIF;
+InstrIfThenElse  ::= IF E0 THEN BloqueOpcional ELSE BloqueOpcional ENDIF;
+InstrWhile  ::= WHILE E0 DO BloqueOpcional ENDWHILE;
+InstrLectura  ::= READ E0;
+InstrEscritura  ::= WRITE E0;
+InstrNewLine ::= NL;
+InstrReservMem ::= NEW E0;
+InstrLibMem ::= DELETE E0;
+InstrInvocProc ::= CALL ID ParametrosReales;
+ParametrosReales ::= PAP PCIERRE | PAP Expresiones PCIERRE;
+Expresiones ::= Expresiones COMA E0| E0;
+
+EBasica ::= NUM_INT | NUM_REAL | TRUE | FALSE | CADENA | ID | NULL;
+E0 ::= E1 OP_SUMA E0 | E1 OP_RESTA E1 | E1;
+E1 ::= E1 op1 E2 | E2;
+E2 ::= E2 op2 E3 | E3;
+E3 ::= E4 op3 E4 | E4;
+E4 ::= OP_RESTA E5 | NOT E4 | E5;
+E5 ::= E5 CORCHETE_AP E0 CORCHETE_CIERRE | E5 PUNTO ID | E5 OP_FLECHA ID | E6;
+E6 ::= OP_MULT E6 | E7;
+E7 ::= PAP E0 PCIERRE | EBasica;
+
+op1 ::=  AND | OR;
+op2 ::=  OP_MENOR | OP_MAYOR | OP_MEN_IG | OP_MAY_IG | OP_COMP | OP_DIST;
+op3 ::= OP_MULT | OP_DIV | OP_100;

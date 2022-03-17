@@ -1,0 +1,114 @@
+options  {
+  STATIC=false;
+}  
+PARSER_BEGIN(AnalizadorSintacticoTiny)
+package Pr2b.JavaCC;
+
+public class AnalizadorSintacticoTiny {}
+PARSER_END(AnalizadorSintacticoTiny)
+  TOKEN: {<#letra:["a"-"z","A"-"Z"]>}
+  TOKEN: {<#dPos:["1"-"9"]>}
+  TOKEN: {<#digito:<dPos>|"0">} 
+  TOKEN: {<NumInt: (["+", "-"])? (<dPos> (<digito>)*) | "0">}
+  TOKEN: {<#pExp: ["e", "E"] <NumInt>>} 
+  TOKEN: {<#pDec: "." <digito> ((<digito>)* <dPos>)?>}
+  TOKEN: {<NumReal: <NumInt> (<pDec> (<pExp>)? | <pExp>)>}
+  SKIP:  {<["\t"," ","\r","\b","\n"]>}  
+  SKIP:  {<"#"(~["\n"])*>} 
+  TOKEN: {<and:"and">}
+  TOKEN: {<or: "or">}
+  TOKEN: {<not: "not">}
+  TOKEN: {<string: "string">}
+  TOKEN: {<Null: "null">}
+  TOKEN: {<proc: "proc">}
+  TOKEN: {<If: "if">}
+  TOKEN: {<then: "then">}
+  TOKEN: {<Else: "else">}
+  TOKEN: {<True: "true">}
+  TOKEN: {<endif: "endif">}
+  TOKEN: {<While: "while">}
+  TOKEN: {<Do: "do">}
+  TOKEN: {<endwhile: "endwhile">}
+  TOKEN: {<call: "call">}
+  TOKEN: {<record: "record">}
+  TOKEN: {<Int: "int">}
+  TOKEN: {<real: "real">}
+  TOKEN: {<bool: "bool">}
+  TOKEN: {<False: "false">}
+  TOKEN: {<array: "array">}
+  TOKEN: {<of: "of">}
+  TOKEN: {<pointer: "pointer">}
+  TOKEN: {<New: "new">}
+  TOKEN: {<delete: "delete">}
+  TOKEN: {<read: "read">}
+  TOKEN: {<write: "write">}
+  TOKEN: {<nl: "nl">}
+  TOKEN: {<var: "var">}
+  TOKEN: {<type: "type">}
+  TOKEN: {<Id: <letra>(<letra>|<digito>|"_")*>}
+  TOKEN: {<cadena: "\""(~["\"","\r","\b","\n"])*"\"">}
+  
+  void ProgramaP() : {} {Programa() <EOF>}
+  void Programa() : {} {Declaraciones() "&&" Instrucciones() | Instrucciones()}
+  void Declaraciones() : {} {Declaracion() RD()}
+  void RD() : {} {";" Declaracion() RD() | {}}
+  void Declaracion() : {} {DeclaracionVar() | DeclaracionTipo() | DeclaracionProc()}
+  void DeclaracionVar() : {} {<var> Tipo() <Id>}
+  void DeclaracionTipo() : {} {<type> Tipo() <Id>}
+  void DeclaracionProc() : {} {<proc> <Id> ParametrosFormales() Bloque()}
+  void ParametrosFormales() : {} {"(" RPF()}
+  void RPF() : {} {Parametros() ")" | ")"}
+  void Parametros() : {} {Parametro() RPs()}
+  void RPs() : {} {"," Parametro() RPs() | {}} 
+  void Parametro() : {} {Tipo() RP()}
+  void RP() : {} {"&" <Id> | <Id>}
+  void Bloque() : {} {"{" Programa() "}"}
+  void Tipo() : {} {TipoBasico() | <Id> | TipoArray() | TipoRegistro() | TipoPuntero()}
+  void TipoBasico() : {} {<Int> | <real> | <bool> | <string>}
+  void TipoArray() : {} {<array> "[" <NumInt> "]" <of> Tipo()}
+  void TipoRegistro() : {} {<record> "{" Campos() "}"}
+  void Campos() : {} {Campo() RC()}
+  void RC() : {} {";" Campo() RC() | {}} 
+  void Campo() : {} {Tipo() <Id>}
+  void TipoPuntero() : {} {<pointer> Tipo()}
+
+  void Instrucciones() : {} {Instruccion() RI()}
+  void RI() : {} {";" Instruccion() RI() | {}}
+  void Instruccion() : {} {InstrAsig() | InstrIfThen() | InstrWhile() | InstrLectura() | 
+  		InstrEscritura() | InstrNewLine() | InstrReservMem() | InstrLibMem() | InstrInvocProc() | Bloque()}
+  void InstrAsig() : {} {E0() "=" E0()}
+  void BloqueOpcional() : {} {Instrucciones() | {}}
+  void InstrIfThen() : {} {InitIfThen() RIT()}
+  void RIT() : {} {<Else> BloqueOpcional() <endif> | <endif>}
+  void InitIfThen() : {} {<If> E0() <then> BloqueOpcional()}
+  void InstrWhile () : {} {<While> E0() <Do> BloqueOpcional() <endwhile>}
+  void InstrLectura () : {} {<read> E0()}
+  void InstrEscritura () : {} {<write> E0()}
+  void InstrNewLine() : {} {<nl>}
+  void InstrReservMem() : {} {<New> E0()}
+  void InstrLibMem() : {} {<delete> E0()}
+  void InstrInvocProc() : {} {<call> <Id> ParametrosReales()}
+  void ParametrosReales() : {} {"(" RPR()}
+  void RPR() : {} {Expresiones() ")" | ")"}
+  void Expresiones() : {} {E0() RE()}
+  void RE() : {} {"," E0() RE() | {}}
+  void InstrCompuesta() : {} {Bloque()}
+
+  void EBasica() : {} {<NumInt> | <NumReal> | <True> | <False> | <cadena> | <Id> | <Null>}
+  void E0() : {} {E1() RE0()}
+  void RE0() : {} {"+" E0() | "-" E1() | {}}
+  void E1() : {} {E2() RE1()}
+  void RE1() : {} {op1() E2() RE1() | {}}
+  void E2() : {} {E3() RE2()}
+  void RE2() : {} {op2() E3() RE2() | {}}
+  void E3() : {} {E4() RE3()}
+  void RE3() : {} {op3() E4() | {}}
+  void E4() : {} {"-" E5() | <not> E4() | E5()}
+  void E5() : {} {E6() RE5()}
+  void RE5() : {} {"[" E0() "]" RE5() | "." <Id> RE5() | "->" <Id> RE5() | {}}
+  void E6() : {} {"*" E6() | E7()}
+  void E7() : {} {"(" E0() ")" | EBasica()}
+  
+  void op1() : {} { <and> | <or>}
+  void op2() : {} {"<" | ">" | "<=" | ">=" | "==" | "!="}
+  void op3() : {} {"*" | "/" | "%"}

@@ -24,10 +24,10 @@ terminal      NUM_INT, NUM_REAL, AND, OR, NOT, STRING, NULL, PROC, IF, THEN, ELS
               OF, POINTER, NEW, DELETE, READ, WRITE, NL, VAR, TYPE, ID, CADENA;
 
 non terminal  Programa, Declaraciones, Declaracion, DeclaracionVar, DeclaracionTipo, 
-              DeclaracionProc, ParametrosFormales, Parametros, Parametro, Bloque, Tipo, 
-              TipoBasico, TipoArray, TipoRegistro, Campos, Campo, TipoPuntero, Instrucciones,
-              Instruccion, InstrAsig, BloqueOpcional, InstrIfThen, InstrIfThenElse, InstrWhile,
-              InstrLectura, InstrEscritura, InstrNewLine, InstrReservMem, InstrLibMem,
+              DeclaracionProc, ParametrosFormales, Parametros, Parametro, Bloque, ProgramaAux,
+              Tipo, TipoBasico, TipoArray, TipoRegistro, Campos, Campo, TipoPuntero,
+              Instrucciones, Instruccion, InstrAsig, BloqueOpcional, InstrIfThen, InstrIfThenElse, 
+              InstrWhile, InstrLectura, InstrEscritura, InstrNewLine, InstrReservMem, InstrLibMem,
               InstrInvocProc, ParametrosReales, Expresiones, EBasica, E0, E1, E2, E3, E4, 
               E5, E6, E7, op1, op2, op3;
 
@@ -41,7 +41,8 @@ DeclaracionProc ::= PROC ID ParametrosFormales Bloque;
 ParametrosFormales ::= PAP PCIERRE | PAP Parametros PCIERRE;
 Parametros ::= Parametros COMA Parametro | Parametro;
 Parametro ::=  Tipo ID | Tipo OP_AMP ID;
-Bloque ::=  LLAVE_AP Programa LLAVE_CIERRE;
+Bloque ::=  LLAVE_AP ProgramaAux LLAVE_CIERRE;
+ProgramaAux ::= Programa | ;
 Tipo ::= TipoBasico | ID | TipoArray | TipoRegistro | TipoPuntero;
 TipoBasico ::= INT | REAL | BOOL | STRING;
 TipoArray ::= ARRAY CORCHETE_AP NUM_INT CORCHETE_CIERRE OF Tipo;

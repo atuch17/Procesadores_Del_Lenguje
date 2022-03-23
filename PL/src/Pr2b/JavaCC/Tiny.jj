@@ -62,7 +62,8 @@ PARSER_END(AnalizadorSintacticoTiny)
   void RPs() : {} {"," Parametro() RPs() | {}} 
   void Parametro() : {} {Tipo() RP()}
   void RP() : {} {"&" <Id> | <Id>}
-  void Bloque() : {} {"{" Programa() "}"}
+  void Bloque() : {} {"{" ProgramaAux() "}"}
+  void ProgramaAux() : {} {Programa() | {}}
   void Tipo() : {} {TipoBasico() | <Id> | TipoArray() | TipoRegistro() | TipoPuntero()}
   void TipoBasico() : {} {<Int> | <real> | <bool> | <string>}
   void TipoArray() : {} {<array> "[" <NumInt> "]" <of> Tipo()}

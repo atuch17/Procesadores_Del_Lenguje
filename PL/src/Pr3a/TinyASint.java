@@ -512,107 +512,107 @@ public class TinyASint {
 	}
 
 	// Constructoras
-	public Prog prog(Decs decs, Insts insts) {
+	public Prog cprog(Decs decs, Insts insts) {
 		return new Prog(decs, insts);
 	}
 
-	public Exp suma(Exp arg0, Exp arg1) {
+	public Exp csuma(Exp arg0, Exp arg1) {
 		return new Suma(arg0, arg1);
 	}
 
-	public Exp resta(Exp arg0, Exp arg1) {
+	public Exp cresta(Exp arg0, Exp arg1) {
 		return new Resta(arg0, arg1);
 	}
 
-	public Exp mul(Exp arg0, Exp arg1) {
+	public Exp cmul(Exp arg0, Exp arg1) {
 		return new Mul(arg0, arg1);
 	}
 	
-	public Exp div(Exp arg0, Exp arg1) {
+	public Exp cdiv(Exp arg0, Exp arg1) {
 		return new Div(arg0, arg1);
 	}
 
-	public Exp mayor(Exp arg0, Exp arg1) {
+	public Exp cmayor(Exp arg0, Exp arg1) {
 		return new Mayor(arg0, arg1);
 	}
 	
-	public Exp menor(Exp arg0, Exp arg1) {
+	public Exp cmenor(Exp arg0, Exp arg1) {
 		return new Menor(arg0, arg1);
 	}
 	
-	public Exp mayor_eq(Exp arg0, Exp arg1) {
+	public Exp cmayor_eq(Exp arg0, Exp arg1) {
 		return new Mayor_eq(arg0, arg1);
 	}
 	
-	public Exp menor_eq(Exp arg0, Exp arg1) {
+	public Exp cmenor_eq(Exp arg0, Exp arg1) {
 		return new Mayor_eq(arg0, arg1);
 	}
 	
-	public Exp comp(Exp arg0, Exp arg1) {
+	public Exp ccomp(Exp arg0, Exp arg1) {
 		return new Comp(arg0, arg1);
 	}
 	
-	public Exp dist(Exp arg0, Exp arg1) {
+	public Exp cdist(Exp arg0, Exp arg1) {
 		return new Dist(arg0, arg1);
 	}
 	
-	public Exp and(Exp arg0, Exp arg1) {
+	public Exp cand(Exp arg0, Exp arg1) {
 		return new And(arg0, arg1);
 	}
 	
-	public Exp or(Exp arg0, Exp arg1) {
+	public Exp cor(Exp arg0, Exp arg1) {
 		return new Or(arg0, arg1);
 	}
 	
-	public Exp not(Exp arg) {
+	public Exp cnot(Exp arg) {
 		return new Not(arg);
 	}
 	
-	public Exp menos(Exp arg) {
+	public Exp cmenos(Exp arg) {
 		return new Menos(arg);
 	}
 	
-	public Exp num(StringLocalizado num) {
+	public Exp cnum(StringLocalizado num) {
 		return new Num(num);
 	}
 
-	public Exp id(StringLocalizado num) {
+	public Exp cid(StringLocalizado num) {
 		return new Id(num);
 	}
 	
-	public Exp true_bool() {
+	public Exp ctrue_bool() {
 		return new True();
 	}
 	
-	public Exp false_bool() {
+	public Exp cfalse_bool() {
 		return new False();
 	}
 	
-	public Tipo tipo(StringLocalizado tipo) {
+	public Tipo ctipo(StringLocalizado tipo) {  // TODO Tipos?
 		return new Tipo(tipo);
 	}
 
-	public Dec dec(StringLocalizado tipo, StringLocalizado id) {
+	public Dec cdec(StringLocalizado tipo, StringLocalizado id) {
 		return new Dec(tipo, id);
 	}
 
-	public Decs decs_una(Dec dec) {
+	public Decs cdecs_una(Dec dec) {
 		return new Decs_una(dec);
 	}
 
-	public Decs decs_muchas(Decs decs, Dec dec) {
+	public Decs cdecs_muchas(Decs decs, Dec dec) {
 		return new Decs_muchas(decs, dec);
 	}
 	
-	public Inst inst(StringLocalizado id, Exp exp) {
+	public Inst cinst(StringLocalizado id, Exp exp) {
 		return new Inst(id, exp);
 	}
 	
-	public Insts insts_una(Inst inst) {
+	public Insts cinsts_una(Inst inst) {
 		return new Insts_una(inst);
 	}
 	
-	public Insts insts_muchas(Insts insts, Inst inst) {
+	public Insts cinsts_muchas(Insts insts, Inst inst) {
 		return new Insts_muchas(insts, inst);
 	}
 

@@ -19,8 +19,33 @@ public class SemOps extends TinyASint {
        }
        throw new UnsupportedOperationException("exp "+op);
    }
-   
+     
    public Prog prog(Decs decs, Insts insts) {
-       return prog(decs, insts);
-   }     
+       return cprog(decs, insts);
+   } 
+   
+   public Dec dec(StringLocalizado tipo, StringLocalizado id) { // TODO Revisar??
+	   return cdec(tipo, id);
+   } 
+   
+   public Decs decs_muchas(Decs decs, Dec dec) {
+	   return cdecs_muchas(decs, dec);
+   } 
+   
+   public Decs decs_una(Dec dec) {
+	   return cdecs_una(dec);
+   } 
+   
+   public Inst inst(StringLocalizado id, Exp exp) {
+	   return cinst(id, exp);
+   } 
+   
+   public Insts insts_muchas(Insts insts, Inst inst) {
+	   return cinsts_muchas(insts, inst);
+   } 
+   
+   public Insts insts_una(Inst inst) {
+	   return cinsts_una(inst);
+   } 
+   
 }

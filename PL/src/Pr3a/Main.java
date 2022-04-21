@@ -1,16 +1,17 @@
 package Pr3a;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import Pr3a.TinyASint.Prog;
+
 public class Main {
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+	public static void main(String[] args) throws Exception {
 		Reader input = new InputStreamReader(new FileInputStream(args[0]));
-		AnalizadorSintacticoTiny asint = new AnalizadorSintacticoTiny(input);
-		asint.ProgramaPrima();
-		System.out.println("OK");
+		ConstructorAST constructorast = new ConstructorAST(input);
+		Prog prog = constructorast.Init();
+		prog.procesa(new Impresion());
+		//prog.procesa(new Evaluacion());
 	}
 }

@@ -1,7 +1,8 @@
 real peso;
 bool pesado;
-bool eustaquio
+bool eustaquio;
+int hola
 &&
-peso = (45.0 * 12e-56) / -2.05 - 0.001;
-pesado = (peso > 10.0) or (peso / 2 <= +0.0);
+peso = (45.0 * 12e-56) / - -2.05 - 0.001;
+pesado = (peso > 10.0 or peso / 2) <= +0.0;
 eustaquio = pesado and not true

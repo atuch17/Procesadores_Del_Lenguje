@@ -1,9 +1,10 @@
-package Pr3a;
+/* package Pr4;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import Pr3a.ProcesamientoPorDefecto;
 import Pr3a.TinyASint.Dec;
 import Pr3a.TinyASint.Decs_muchas;
 import Pr3a.TinyASint.Decs_una;
@@ -138,3 +139,4 @@ public class Evaluacion extends ProcesamientoPorDefecto {
 		resul = Double.valueOf(exp.num().toString()).doubleValue();
 	}
 }
+ */

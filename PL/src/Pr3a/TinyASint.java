@@ -545,7 +545,7 @@ public class TinyASint {
 	}
 	
 	public Exp cmenor_eq(Exp arg0, Exp arg1) {
-		return new Mayor_eq(arg0, arg1);
+		return new Menor_eq(arg0, arg1);
 	}
 	
 	public Exp ccomp(Exp arg0, Exp arg1) {

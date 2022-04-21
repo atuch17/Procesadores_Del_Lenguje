@@ -3,12 +3,7 @@ package Pr3a;
 import java.io.IOException;
 import java.io.Reader;
 
-import Pr2a.ClaseLexica;
-import Pr3a.TinyASint.Dec;
-import Pr3a.TinyASint.Decs;
-import Pr3a.TinyASint.Exp;
-import Pr3a.TinyASint.Insts;
-import Pr3a.TinyASint.Prog;
+import Pr3a.TinyASint.*;
 
 public class ConstructorAST {
 	private UnidadLexica anticipo;
@@ -18,7 +13,8 @@ public class ConstructorAST {
 
 	public ConstructorAST(Reader input) throws IOException {
 		errores = new GestionErroresTiny();
-		alex = new AnalizadorLexicoTiny(input, errores);
+		alex = new AnalizadorLexicoTiny(input);
+		alex.fijaGestionErrores(errores);
 		sigToken();
 		sem = new SemOps();
 	}
@@ -29,7 +25,7 @@ public class ConstructorAST {
 		return prog;
 	}
 
-	public Prog Programa() {
+	private Prog Programa() {
 		switch (anticipo.clase()) {
 		case INT:
 		case REAL:
@@ -41,108 +37,114 @@ public class ConstructorAST {
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.INT,
 					ClaseLexica.REAL, ClaseLexica.BOOL);
+			return null;
 		}
 	}
 
-	public Decs Declaraciones() {
+	private Decs Declaraciones() {
 		switch (anticipo.clase()) {
 		case INT:
 		case REAL:
 		case BOOL:
 			Dec dec = Declaracion();
-			Decs decs = RD();
-			return sem.decs_una(dec, decs);
+			return RD(sem.decs_una(dec));
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.INT,
 					ClaseLexica.REAL, ClaseLexica.BOOL);
+			return null;
 		}
 	}
 
-	public Decs RD() {
+	private Decs RD(Decs decsh) {
 		switch (anticipo.clase()) {
 		case SEP_INS:
 			empareja(ClaseLexica.SEP_INS);
-			Declaracion();
-			RD();
-			break;
+			Dec dec = Declaracion();
+			return RD(sem.decs_muchas(decsh, dec));
 		case SEP_SEC:
-			break;
+			return decsh;
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.SEP_INS,
 					ClaseLexica.SEP_SEC);
+			return null;
 		}
 	}
 
-	public Dec Declaracion() {
+	private Dec Declaracion() {
 		switch (anticipo.clase()) {
 		case INT:
 		case REAL:
 		case BOOL:
-			Tipo();
+			StringLocalizado tipo = Tipo();
+			UnidadLexica id = anticipo;
 			empareja(ClaseLexica.ID);
-			break;
+			return sem.dec(tipo, sem.str(id.lexema(), id.fila(), id.columna()));
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.INT,
 					ClaseLexica.REAL, ClaseLexica.BOOL);
+			return null;
 		}
 	}
 
-	public void Tipo() {
+	private StringLocalizado Tipo() {
 		switch (anticipo.clase()) {
 		case INT:
 			empareja(ClaseLexica.INT);
-			break;
+			return sem.str("int", anticipo.fila(), anticipo.columna());
 		case REAL:
 			empareja(ClaseLexica.REAL);
-			break;
+			return sem.str("real", anticipo.fila(), anticipo.columna());
 		case BOOL:
 			empareja(ClaseLexica.BOOL);
-			break;
+			return sem.str("bool", anticipo.fila(), anticipo.columna());
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.INT,
 					ClaseLexica.REAL, ClaseLexica.BOOL);
+			return null;
 		}
 	}
 
-	public Insts Instrucciones() {
+	private Insts Instrucciones() {
 		switch (anticipo.clase()) {
 		case ID:
-			Instruccion();
-			RI();
-			break;
+			Inst inst = Instruccion();
+			return RI(sem.insts_una(inst));
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.ID);
+			return null;
 		}
 	}
 
-	public void RI() {
+	private Insts RI(Insts instsh) {
 		switch (anticipo.clase()) {
 		case SEP_INS:
 			empareja(ClaseLexica.SEP_INS);
-			Instruccion();
-			RI();
-			break;
+			Inst inst = Instruccion();
+			return RI(sem.insts_muchas(instsh, inst));
 		case END:
-			break;
+			return instsh;
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.SEP_INS,
 					ClaseLexica.END);
+			return null;
 		}
 	}
 
-	public void Instruccion() {
+	private Inst Instruccion() {
 		switch (anticipo.clase()) {
 		case ID:
+			UnidadLexica id = anticipo;
 			empareja(ClaseLexica.ID);
 			empareja(ClaseLexica.OP_ASIG);
-			E0();
-			break;
+			Exp exp = E0();
+			return sem.inst(sem.str(id.lexema(), id.fila(), id.columna()), exp);
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.ID);
+			return null;
 		}
 	}
 
-	public void E0() {
+	private Exp E0() {
 		switch (anticipo.clase()) {
 		case PAP:
 		case OP_RESTA:
@@ -152,37 +154,39 @@ public class ConstructorAST {
 		case TRUE:
 		case FALSE:
 		case NOT:
-			E1();
-			RE0();
-			break;
+			Exp exp = E1();
+			return RE0(exp);
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.PAP,
-					ClaseLexica.OP_RESTA, ClaseLexica.ID, ClaseLexica.NUM_INT, ClaseLexica.NUM_REAL, ClaseLexica.TRUE,
-					ClaseLexica.FALSE, ClaseLexica.NOT);
+					ClaseLexica.OP_RESTA, ClaseLexica.ID, ClaseLexica.NUM_INT, ClaseLexica.NUM_REAL,
+					ClaseLexica.TRUE, ClaseLexica.FALSE, ClaseLexica.NOT);
+			return null;
 		}
 	}
-
-	public void RE0() {
+			
+	//TODO comprobar clases lexicas de error
+	private Exp RE0(Exp exph) {
 		switch (anticipo.clase()) {
 		case OP_SUMA:
 			empareja(ClaseLexica.OP_SUMA);
-			E0();
-			break;
+			Exp exp1 = E1();
+			return RE0(sem.exp("+", exph, exp1));
 		case OP_RESTA:
 			empareja(ClaseLexica.OP_RESTA);
-			E1();
-			break;
+			Exp exp2 = E1();
+			return RE0(sem.exp("-", exph, exp2));
 		case PCIERRE:
 		case SEP_INS:
 		case END:
-			break;
+			return exph;
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.OP_SUMA,
 					ClaseLexica.OP_RESTA);
+			return null;
 		}
 	}
-
-	public void E1() {
+	
+	public Exp E1() {
 		switch (anticipo.clase()) {
 		case PAP:
 		case OP_RESTA:
@@ -192,37 +196,37 @@ public class ConstructorAST {
 		case TRUE:
 		case FALSE:
 		case NOT:
-			E2();
-			RE1();
-			break;
+			Exp exp = E2();
+			return RE1(exp);
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.PAP,
 					ClaseLexica.OP_RESTA, ClaseLexica.ID, ClaseLexica.NUM_INT, ClaseLexica.NUM_REAL, ClaseLexica.TRUE,
 					ClaseLexica.FALSE, ClaseLexica.NOT);
+			return null;
 		}
 	}
 
-	public void RE1() {
+	public Exp RE1(Exp exph) {
 		switch (anticipo.clase()) {
 		case AND:
 		case OR:
-			op1();
-			E2();
-			RE1();
-			break;
+			String op = op1();
+			Exp exp = E2();
+			return RE1(sem.exp(op, exph, exp));
 		case PCIERRE:
 		case OP_SUMA:
 		case OP_RESTA:
 		case SEP_INS:
 		case END:
-			break;
+			return exph;
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.AND,
 					ClaseLexica.OR, ClaseLexica.OP_SUMA, ClaseLexica.OP_RESTA);
+			return null;
 		}
 	}
 
-	public void E2() {
+	public Exp E2() {
 		switch (anticipo.clase()) {
 		case PAP:
 		case OP_RESTA:
@@ -232,17 +236,17 @@ public class ConstructorAST {
 		case TRUE:
 		case FALSE:
 		case NOT:
-			E3();
-			RE2();
-			break;
+			Exp exp = E3();
+			return RE2(exp);
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.PAP,
 					ClaseLexica.OP_RESTA, ClaseLexica.ID, ClaseLexica.NUM_INT, ClaseLexica.NUM_REAL, ClaseLexica.TRUE,
 					ClaseLexica.FALSE, ClaseLexica.NOT);
+			return null;
 		}
 	}
 
-	public void RE2() {
+	public Exp RE2(Exp exph) {
 		switch (anticipo.clase()) {
 		case OP_MENOR:
 		case OP_MAYOR:
@@ -250,10 +254,9 @@ public class ConstructorAST {
 		case OP_MAY_IG:
 		case OP_COMP:
 		case OP_DIST:
-			op2();
-			E3();
-			RE2();
-			break;
+			String op = op2();
+			Exp exp = E3();
+			return RE2(sem.exp(op, exph, exp));
 		case PCIERRE:
 		case OP_SUMA:
 		case OP_RESTA:
@@ -261,15 +264,16 @@ public class ConstructorAST {
 		case AND:
 		case OR:
 		case END:
-			break;
+			return exph;
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.OP_MENOR,
 					ClaseLexica.OP_MAYOR, ClaseLexica.OP_MEN_IG, ClaseLexica.OP_MAY_IG, ClaseLexica.OP_COMP,
 					ClaseLexica.OP_DIST, ClaseLexica.OP_SUMA, ClaseLexica.OP_RESTA, ClaseLexica.AND, ClaseLexica.OR);
+			return null;
 		}
 	}
 
-	public void E3() {
+	public Exp E3() {
 		switch (anticipo.clase()) {
 		case PAP:
 		case OP_RESTA:
@@ -279,23 +283,23 @@ public class ConstructorAST {
 		case TRUE:
 		case FALSE:
 		case NOT:
-			E4();
-			RE3();
-			break;
+			Exp exp = E4();
+			return RE3(exp);
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.PAP,
 					ClaseLexica.OP_RESTA, ClaseLexica.ID, ClaseLexica.NUM_INT, ClaseLexica.NUM_REAL, ClaseLexica.TRUE,
 					ClaseLexica.FALSE, ClaseLexica.NOT);
+			return null;
 		}
 	}
 
-	public void RE3() {
+	public Exp RE3(Exp exph) {
 		switch (anticipo.clase()) {
 		case OP_MULT:
 		case OP_DIV:
-			op3();
-			E4();
-			break;
+			String op = op3();
+			Exp exp = E4();
+			return sem.exp(op, exph, exp);
 		case PCIERRE:
 		case OP_SUMA:
 		case OP_RESTA:
@@ -309,121 +313,128 @@ public class ConstructorAST {
 		case AND:
 		case OR:
 		case END:
-			break;
+			return exph;
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.OP_MENOR,
 					ClaseLexica.OP_MAYOR, ClaseLexica.OP_MEN_IG, ClaseLexica.OP_MAY_IG, ClaseLexica.OP_COMP,
 					ClaseLexica.OP_DIST, ClaseLexica.OP_SUMA, ClaseLexica.OP_RESTA, ClaseLexica.AND, ClaseLexica.OR,
 					ClaseLexica.OP_MULT, ClaseLexica.OP_DIV);
+			return null;
 		}
 	}
 
-	public void E4() {
+	public Exp E4() {
 		switch (anticipo.clase()) {
 		case OP_RESTA:
 			empareja(ClaseLexica.OP_RESTA);
-			E5();
-			break;
+			Exp exp1 = E5();
+			return sem.exp("-", exp1);
 		case NOT:
 			empareja(ClaseLexica.NOT);
-			E4();
-			break;
+			Exp exp2 = E4();
+			return sem.exp("not", exp2);
 		case PAP:
 		case ID:
 		case NUM_INT:
 		case NUM_REAL:
 		case TRUE:
 		case FALSE:
-			E5();
-			break;
+			return E5();
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.PAP,
 					ClaseLexica.OP_RESTA, ClaseLexica.ID, ClaseLexica.NUM_INT, ClaseLexica.NUM_REAL, ClaseLexica.TRUE,
 					ClaseLexica.FALSE, ClaseLexica.NOT);
+			return null;
 		}
 	}
 
-	public void E5() {
+	public Exp E5() {
 		switch (anticipo.clase()) {
 		case NUM_INT:
+			UnidadLexica num_int = anticipo;
 			empareja(ClaseLexica.NUM_INT);
-			break;
+			return sem.cnum(sem.str(num_int.lexema(), num_int.fila(), num_int.columna()));
 		case NUM_REAL:
+			UnidadLexica num_real = anticipo;
 			empareja(ClaseLexica.NUM_REAL);
-			break;
+			return sem.cnum(sem.str(num_real.lexema(), num_real.fila(), num_real.columna()));
 		case ID:
+			UnidadLexica id = anticipo;
 			empareja(ClaseLexica.ID);
-			break;
+			return sem.cid(sem.str(id.lexema(), id.fila(), id.columna()));
 		case PAP:
 			empareja(ClaseLexica.PAP);
-			E0();
+			Exp exp = E0();
 			empareja(ClaseLexica.PCIERRE);
-			break;
+			return exp;
 		case TRUE:
 			empareja(ClaseLexica.TRUE);
-			break;
+			return sem.ctrue_bool();
 		case FALSE:
 			empareja(ClaseLexica.FALSE);
-			break;
+			return sem.cfalse_bool();
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.PAP,
 					ClaseLexica.ID, ClaseLexica.NUM_INT, ClaseLexica.NUM_REAL, ClaseLexica.TRUE, ClaseLexica.FALSE);
+			return null;
 		}
 	}
 
-	public void op1() {
+	public String op1() {
 		switch (anticipo.clase()) {
 		case AND:
 			empareja(ClaseLexica.AND);
-			break;
+			return "and";
 		case OR:
 			empareja(ClaseLexica.OR);
-			break;
+			return "or";
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.AND,
 					ClaseLexica.OR);
+			return null;
 		}
 	}
 
-	public void op2() {
+	public String op2() {
 		switch (anticipo.clase()) {
 		case OP_MENOR:
 			empareja(ClaseLexica.OP_MENOR);
-			break;
+			return "<";
 		case OP_MAYOR:
 			empareja(ClaseLexica.OP_MAYOR);
-			break;
+			return ">";
 		case OP_MEN_IG:
 			empareja(ClaseLexica.OP_MEN_IG);
-			break;
+			return "<=";
 		case OP_MAY_IG:
 			empareja(ClaseLexica.OP_MAY_IG);
-			break;
+			return ">=";
 		case OP_COMP:
 			empareja(ClaseLexica.OP_COMP);
-			break;
+			return "==";
 		case OP_DIST:
 			empareja(ClaseLexica.OP_DIST);
-			break;
+			return "!=";
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.OP_MENOR,
 					ClaseLexica.OP_MAYOR, ClaseLexica.OP_MEN_IG, ClaseLexica.OP_MAY_IG, ClaseLexica.OP_COMP,
 					ClaseLexica.OP_DIST);
-
+			return null;
 		}
 	}
 
-	public void op3() {
+	public String op3() {
 		switch (anticipo.clase()) {
 		case OP_MULT:
 			empareja(ClaseLexica.OP_MULT);
-			break;
+			return "*";
 		case OP_DIV:
 			empareja(ClaseLexica.OP_DIV);
-			break;
+			return "/";
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.OP_MULT,
 					ClaseLexica.OP_DIV);
+			return null;
 		}
 	}
 

@@ -2,34 +2,223 @@ options  {
   STATIC=false;
 }  
 PARSER_BEGIN(ConstructorAST)
-package c_ast_descendente;
-
-import asint.TinyASint.Exp;
-import asint.TinyASint.Dec;
-import asint.TinyASint.Decs;
-import asint.TinyASint.Prog;
-import semops.SemOps;
-
+package Pr3b.JavaCC;
 
 public class ConstructorAST {
    private SemOps sem = new SemOps();
 }
-PARSER_END(ConstructorAST)
-  TOKEN:{<#letra:["a"-"z","A"-"Z"]>}
-  TOKEN:{<#digitoPositivo:["1"-"9"]>}
-  TOKEN:{<#digito:<digitoPositivo>|"0">} 
-  TOKEN:{<#parteEntera:<digitoPositivo> (<digito>)* |"0">} 
-  TOKEN:{<#parteDecimal: (<digito>)* <digitoPositivo>>}
-  SKIP:{<["\t"," ","\r","\b","\n"]>}  
-  SKIP:{<"#"(~["\n"])*>}  
-  TOKEN: {<donde:"donde">}
-  TOKEN: {<evalua:"evalua">}
-  TOKEN:{<id:<letra>(<letra>|<digito>)*>}
-  TOKEN:{<num: (["+","-"])? <parteEntera> ("." <parteDecimal>)? >  }
+PARSER_END(AnalizadorSintacticoTiny)
+  TOKEN: {<#letra:["a"-"z","A"-"Z"]>}
+  TOKEN: {<#dPos:["1"-"9"]>}
+  TOKEN: {<#digito:<dPos>|"0">} 
+  TOKEN: {<NumInt: (["+", "-"])? (<dPos> (<digito>)*) | "0">}
+  TOKEN: {<#pExp: ["e", "E"] <NumInt>>} 
+  TOKEN: {<#pDec: "." <digito> ((<digito>)* <dPos>)?>}
+  TOKEN: {<NumReal: <NumInt> (<pDec> (<pExp>)? | <pExp>)>}
+  SKIP:  {<["\t"," ","\r","\b","\n"]>}  
+  SKIP:  {<"#"(~["\n"])*>} 
+  TOKEN: {<and:"and">}
+  TOKEN: {<or: "or">}
+  TOKEN: {<not: "not">}
+  TOKEN: {<string: "string">}
+  TOKEN: {<Null: "null">}
+  TOKEN: {<proc: "proc">}
+  TOKEN: {<If: "if">}
+  TOKEN: {<then: "then">}
+  TOKEN: {<Else: "else">}
+  TOKEN: {<True: "true">}
+  TOKEN: {<endif: "endif">}
+  TOKEN: {<While: "while">}
+  TOKEN: {<Do: "do">}
+  TOKEN: {<endwhile: "endwhile">}
+  TOKEN: {<call: "call">}
+  TOKEN: {<record: "record">}
+  TOKEN: {<Int: "int">}
+  TOKEN: {<real: "real">}
+  TOKEN: {<bool: "bool">}
+  TOKEN: {<False: "false">}
+  TOKEN: {<array: "array">}
+  TOKEN: {<of: "of">}
+  TOKEN: {<pointer: "pointer">}
+  TOKEN: {<New: "new">}
+  TOKEN: {<delete: "delete">}
+  TOKEN: {<read: "read">}
+  TOKEN: {<write: "write">}
+  TOKEN: {<nl: "nl">}
+  TOKEN: {<var: "var">}
+  TOKEN: {<type: "type">}
+  TOKEN: {<Id: <letra>(<letra>|<digito>|"_")*>}
+  TOKEN: {<cadena: "\""(~["\"","\r","\b","\n"])*"\"">}
   
-  Prog Init()    : {Prog prog;} {prog=Prog() <EOF> {return prog;}}
+  Prog ProgP() : {Prog prog;} {prog=Prog() <EOF> {return prog;}}
+  Prog Prog() : {Decs decs; Insts insts;} 
+  				{decs=Declaraciones() <&&> insts=Instruciones() {return sem.prog_con_decs(decs, insts);}} |
+  				{insts=Instruciones() {return sem.prog_sin_decs(insts);}}
+  Decs Declaraciones(): {Dec dec; Decs decs}
+  				{<;> dec=Declaracion() dec=RD() {return xx}}
+  Decs Declaracion(): {Dec dec; Decs decs;}
+  				{dec=Declaracion() decs=Declaracion() {return xx} |
+  				 {return null;}}
+  Dec Declaracion(): {Dec dec;}
+  				{dec=DeclaracionVar()  {return xx}|
+  				 dec=DeclaracionTipo() {return xx}|
+  				 dec=DeclaracionProc() {return xx}}
+  Dec DeclaracionVar(): {}
+  				{ {return xx}}
+  Dec DeclaracionTipo(): {}
+  				{ {return xx}}
+  Dec DeclaracionProc(): {}
+  				{ {return xx}}
+  Xxxx ParametrosFormales(): {}
+  				{ {return xx}}
+  Xxxx RPF(): {}
+  				{ {return xx} |
+  				 {return xx}}
+  Xxxx Parametros(): {}
+  				{ {return xx}}
+  Xxxx RPs(): {}
+  				{ {return xx} |
+  				 {return null;}}
+  Xxxx Parametro(): {}
+  				{ {return xx}}
+  Xxxx Bloque(): {}
+  				{ {return xx}}
+  Xxxx ProgramaAux(): {}
+  				{ {return xx} |
+  				 {return null;}}
+  Xxxx Tipo(): {}
+  				{ {return xx}}
+  Xxxx TipoBasico(): {}
+  				{ {return xx}}
+  Xxxx TipoArray(): {}
+  				{ {return xx}}
+  Xxxx TipoRegistro(): {}
+  				{ {return xx}}
+  Xxxx Campos(): {}
+  				{ {return xx}}
+  Xxxx RC(): {}
+  				{ {return xx} |
+  				 {return null;}}
+  Xxxx Campo(): {}
+  				{ {return xx}}
+  Xxxx TipoPuntero(): {}
+  				{ {return xx}}
+  Insts Instrucciones(): {Inst Instrucción;  } // RI????
+  				{ {return xx}}
+  Inst Instruccion(): {Inst inst;}
+  				{ inst=InstrAsig() {return xx} |
+  				 inst=InstrIfThen() {return xx} |
+  				 inst=InstrWhile() {return xx} |
+  				 inst=InstrLectura() {return xx} |
+  				 inst=InstrEscritura() {return xx} |
+  				 inst=InstrNewLine() {return xx} |
+  				 inst=InstrReservMem() {return xx} |
+  				 inst=InstrLibMem() {return xx} |
+  				 inst=InstrInvocProc() {return xx} |
+  				 inst=Bloque() {return xx}}
+  Inst InstrAsig(): {Inst inst;}
+  				{ {return xx}}
+  Xxxx BloqueOpcional(Inst inst;): {}
+  				{ {return xx} |
+  				 {return null;}}
+  Inst InstrIfThen(): {Inst inst;}
+  				{ {return xx}}
+  Xxxx RIT(): {Inst inst;}
+  				{ {return xx} |
+  				 {return xx}}
+  Inst InitIfThen(): {Inst inst;}
+  				{ {return xx}}
+  Inst InstrWhile(): {Inst inst;}
+  				{ {return xx}}
+  Inst InstrLectura(): {Inst inst;}
+  				{ {return xx}}
+  Inst InstrEscritura(): {Inst inst;}
+  				{ {return xx}}
+  Inst InstrNewLine(): {Inst inst;}
+  				{ {return xx}}
+  Inst InstrReservMem(): {Inst inst;}
+  				{ {return xx}}
+  Inst InstrLibMem(): {Inst inst;}
+  				{ {return xx}}
+  Inst InstrInvocProc(): {Inst inst;}
+  				{ {return xx}}
+  Xxxx ParametrosReales(): {}
+  				{ {return xx}}
+  Xxxx RPR(): {}
+  				{ {return xx} |
+  				 {return xx}}
+  Xxxx Expresiones(): {}
+  				{ {return xx}}
+  Xxxx RE(): {}
+  				{ {return xx} |
+  				 {return xx}}
+  Xxxx InstrCompuesta(): {}
+  				{ {return xx}}
+  Exp EBasica(): {Token numInt, numReal, true, false, string, id, null}
+  				{numInt=<numInt> {return xx} |
+  				 numReal=<numReal> {return xx} |
+  				 true=<true> {return xx} |
+  				 false=<false> {return xx} |
+  				 string=<string> {return xx} |
+  				 id=<id> {return xx} |
+  				 null=<null> {return xx}}
+  Exp E0(): {Exp exp1, resul;}
+  				{exp1=E1() resul=RE0(exp1) {return resul;}}
+  Exp RE0(Exp exph): {Exp exp1;}
+  				{"+" exp1=E0() {return xx} |
+  				{"-" exp1=E1() {return xx} |
+  				 {return exph}}
+  Exp E1(): {Exp exp2, resul;}
+  				{exp2=E2() resul=RE1(exp2) {return resul;}}
+  Exp RE1(Exp exph): {String op; Exp exp2; Exp exp;} 
+                {op=OP1() exp2=E2() exp=RE1(sem.exp(op,exph,exp2)) {return exp;} |
+                {return exph;}}
+  Exp E2(): {Exp exp3, resul;}
+  				{exp3=E3() resul=RE2(exp3) {return resul;}}
+  Exp RE2(Exp exph): {String op; Exp exp3; Exp exp;} 
+                {op=OP2() exp3=E3() exp=RE2(sem.exp(op,exph,exp3)) {return exp;} |
+                {return exph;}}
+  Exp E3(): {Exp exp4, resul;}
+  				{exp4=E4() resul=RE3(exp4) {return resul;}}
+  Exp RE3(Exp exph): {}
+  				{ {return xx} |
+  				 {return exph}}
+  Exp E4(): {Exp exp}
+  				{"-" exp=E5() {return exp} |
+  				 "not" exp=E4() {return exp} |
+  				 exp=E5() {return exp}}
+  Exp E5(): {}
+  				{ {return xx}}
+  Exp RE5(Exp exph): {Token iden; Exp exp}
+  				{exp=corch() {return xx} |
+  				 exp=punto() {return xx} |
+  				 exp=flecha() {return xx} |
+  				 {return exph}}
+  Exp E6(): {Exp exp;}
+  				{"*" exp=E6() {return exp} |
+  				 exp=E7() {return exp}}
+  Exp E7(): {Exp exp;}
+  				{"(" exp=E0() ")" {return exp} |
+  				 exp=EBasica() {return exp}}
+  String OP1(): {}
+  				{"and" {return 'and'} |
+  				 "or" {return 'or'}}
+  String OP2(): {}
+  				{"<" {return '<'} |
+  				 ">" {return '>'} |
+  				 "<=" {return '<='} |
+  				 ">=" {return '>='} |
+  				 "==" {return '=='} |
+  				 "!=" {return '!='}}
+  String OP3(): {}
+  				{"*" {return '*'} |
+  				 "/" {return '/'} |
+  				 "%" {return '%'}}
+  				
+  					
+  ------------------------------------------------------------  
   Prog Prog()    : {Exp exp; Decs decs;} 
-                    {<evalua> exp=E0() decs=PDonde() {return sem.prog(exp,decs);}}
+                    {<evalua> decs=Declaraciones() exp=E0() {return sem.prog(exp,decs);}}
   Decs PDonde()  : {Decs decs;} 
                        {<donde> decs=Decs() {return decs;} | 
                        {return null;}}
@@ -45,10 +234,7 @@ PARSER_END(ConstructorAST)
                         {t=<num> {return sem.num(sem.str(t.image,t.beginLine,t.beginColumn));} |
                          t=<id>  {return sem.id(sem.str(t.image,t.beginLine,t.beginColumn));} |
 						"(" exp=E0() ")" {return exp;}}
-  char OP0() : {} {"+" {return '+';} |
-                   "-" {return '-';}}						
-  char OP1() : {} {"*" {return '*';} |
-                   "/" {return '/';}}
+
   Decs Decs() : {Dec dec; Decs decs;} {dec=Dec() decs=RDecs(sem.decs_una(dec)) {return decs;}}
   Decs RDecs(Decs decsh) : {Dec dec; Decs decs;} 
                              {"," dec=Dec() decs=RDecs(sem.decs_muchas(decsh,dec)) {return decs;} |

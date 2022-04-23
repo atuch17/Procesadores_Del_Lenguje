@@ -164,7 +164,6 @@ public class ConstructorAST {
 		}
 	}
 			
-	//TODO comprobar clases lexicas de error
 	private Exp RE0(Exp exph) {
 		switch (anticipo.clase()) {
 		case OP_SUMA:

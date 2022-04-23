@@ -588,7 +588,7 @@ public class TinyASint {
 		return new False();
 	}
 	
-	public Tipo ctipo(StringLocalizado tipo) {  // TODO Tipos?
+	public Tipo ctipo(StringLocalizado tipo) {
 		return new Tipo(tipo);
 	}
 

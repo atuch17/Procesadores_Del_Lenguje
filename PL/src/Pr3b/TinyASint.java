@@ -396,102 +396,54 @@ public class TinyASint {
 		}
 	}
 
-	/* ------ */
-	public static class Num extends Exp {
-		private StringLocalizado num;
+	/* ---CLASES--- */
+	public static abstract class Prog {
+		public Prog() {
+		}
 
-		public Num(StringLocalizado num) {
+		public abstract void procesa(Procesamiento p);
+	}
+
+	public static class Prog_con_decs extends Prog {
+		private Decs decs;
+		private Insts insts;
+
+		public Prog_con_decs(Decs decs, Insts insts) {
 			super();
-			this.num = num;
+			this.decs = decs;
+			this.insts = insts;
 		}
 
-		public StringLocalizado num() {
-			return num;
+		public Decs decs() {
+			return decs;
+		}
+
+		public Insts insts() {
+			return insts;
 		}
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
-
-		public final int prioridad() {
-			return 5;
-		}
 	}
 
-	public static class Id extends Exp {
-		private StringLocalizado id;
+	public static class Prog_sin_decs extends Prog {
+		private Insts insts;
 
-		public Id(StringLocalizado id) {
+		public Prog_sin_decs(Insts insts) {
 			super();
-			this.id = id;
+			this.insts = insts;
 		}
 
-		public StringLocalizado id() {
-			return id;
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-
-		public final int prioridad() {
-			return 5;
-		}
-	}
-
-	public static class True extends Exp {
-		public True() {
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-
-		@Override
-		public int prioridad() {
-			return 5;
-		}
-	}
-
-	public static class False extends Exp {
-		public False() {
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-
-		@Override
-		public int prioridad() {
-			return 5;
-		}
-	}
-
-	/* ------ */
-	public static class Tipo {
-		private StringLocalizado tipo;
-
-		public Tipo(StringLocalizado tipo) {
-			this.tipo = tipo;
-		}
-
-		public StringLocalizado tipo() {
-			return tipo;
+		public Insts insts() {
+			return insts;
 		}
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 	}
-
-	public static class Dec {
-		public Dec() {
-		}
-
-		public void procesa(Procesamiento p) {
-		}
-	}
-
+	
 	public static abstract class Decs {
 		public Decs() {
 		}
@@ -536,6 +488,14 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+	}
+
+	public static class Dec {
+		public Dec() {
+		}
+
+		public void procesa(Procesamiento p) {
 		}
 	}
 
@@ -611,8 +571,7 @@ public class TinyASint {
 		}
 	}
 
-	/* ------------- */
-	/*public static abstract class ParamsF { 
+	public static abstract class ParamsF { 
 
 		public ParamsF() {
 		}
@@ -709,45 +668,6 @@ public class TinyASint {
 		}
 	}
 	
-	public static abstractclass Bloque { // TODO Revisar
-//		private xx1 xx2;
-		
-		public Bloque() {
-		}
-		
-//		public xx1 xx2() {
-//			return xx2;
-//		}
-		
-//		public void procesa(Procesamiento p) {
-//			p.procesa(this);
-//		}
-	}
-	
-	*//* ------------- */
-	
-	public static class Inst {
-		private StringLocalizado id;
-		private Exp exp;
-
-		public Inst(StringLocalizado id, Exp exp) {
-			this.id = id;
-			this.exp = exp;
-		}
-
-		public StringLocalizado id() {
-			return id;
-		}
-
-		public Exp exp() {
-			return exp;
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-	}
-
 	public static abstract class Insts {
 		public Insts() {
 		}
@@ -795,29 +715,107 @@ public class TinyASint {
 		}
 	}
 
-	public static abstract class Prog {
-		public Prog() {
+	public static abstract class Inst {
+		public Inst() {
 		}
 
 		public abstract void procesa(Procesamiento p);
 	}
+	
+	public static abstract class Bloque { // TODO Revisar
+//		private xx1 xx2;
+		
+		public Bloque() {
+		}
+		
+//		public xx1 xx2() {
+//			return xx2;
+//		}
+		
+//		public void procesa(Procesamiento p) {
+//			p.procesa(this);
+//		}
+	}
+	
+	public static class Num extends Exp {
+		private StringLocalizado num;
 
-	public static class Prog_con_decs extends Prog {
-		private Decs decs;
-		private Insts insts;
-
-		public Prog_con_decs(Decs decs, Insts insts) {
+		public Num(StringLocalizado num) {
 			super();
-			this.decs = decs;
-			this.insts = insts;
+			this.num = num;
 		}
 
-		public Decs decs() {
-			return decs;
+		public StringLocalizado num() {
+			return num;
 		}
 
-		public Insts insts() {
-			return insts;
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		public final int prioridad() {
+			return 5;
+		}
+	}
+
+	public static class Id extends Exp {
+		private StringLocalizado id;
+
+		public Id(StringLocalizado id) {
+			super();
+			this.id = id;
+		}
+
+		public StringLocalizado id() {
+			return id;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		public final int prioridad() {
+			return 5;
+		}
+	}
+
+	public static class True extends Exp {
+		public True() {
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		@Override
+		public int prioridad() {
+			return 5;
+		}
+	}
+
+	public static class False extends Exp {
+		public False() {
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		@Override
+		public int prioridad() {
+			return 5;
+		}
+	}
+	
+	public static class Tipo {
+		private StringLocalizado tipo;
+
+		public Tipo(StringLocalizado tipo) {
+			this.tipo = tipo;
+		}
+
+		public StringLocalizado tipo() {
+			return tipo;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -825,16 +823,23 @@ public class TinyASint {
 		}
 	}
 
-	public static class Prog_sin_decs extends Prog {
-		private Insts insts;
+	
+	
+	public static class Inst {
+		private StringLocalizado id;
+		private Exp exp;
 
-		public Prog_sin_decs(Insts insts) {
-			super();
-			this.insts = insts;
+		public Inst(StringLocalizado id, Exp exp) {
+			this.id = id;
+			this.exp = exp;
 		}
 
-		public Insts insts() {
-			return insts;
+		public StringLocalizado id() {
+			return id;
+		}
+
+		public Exp exp() {
+			return exp;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -842,7 +847,9 @@ public class TinyASint {
 		}
 	}
 
-	// Constructoras
+	
+	
+	/* ---Constructoras---*/
 	public Prog cprog_con_decs(Decs decs, Insts insts) {
 		return new Prog_con_decs(decs, insts);
 	}

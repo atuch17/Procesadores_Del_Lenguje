@@ -36,31 +36,31 @@ non terminal DecProc DeclaracionProc;
 non terminal ParamsF ParametrosFormales;
 non terminal Params Parametros;
 non terminal Param Parametro;
-non terminal Bloq Bloque;
-non terminal ProgAux ProgramaAux;
-non terminal Tip Tipo;
-non terminal TipBas TipoBasico;
-non terminal TipArr TipoArray;
-non terminal TipReg TipoRegistro;
-non terminal Camps Campos;
-non terminal Camp Campo;
-non terminal TipPun TipoPuntero;
+non terminal Bloque Bloque;
+non terminal ProgramaAux ProgramaAux;
+non terminal Tipo Tipo;
+non terminal TipoBasico TipoBasico;
+non terminal TipoArray TipoArray;
+non terminal TipoRegistro TipoRegistro;
+non terminal Campos Campos;
+non terminal Campo Campo;
+non terminal TipoPuntero TipoPuntero;
 non terminal Instrs Instrucciones;
 non terminal Inst Instruccion;
-non terminal InstrAsig InstruccionAsignacion;
-non terminal BloqOpc BloqueOpcional;
-non terminal InstrIfThen InstruccionIfThen;
-non terminal InstrIfThenElse InstruccionIfThenElse;
-non terminal InstrWhile InstruccionWhile;
-non terminal InstrLectura InstruccionLectura;
-non terminal InstrEscritura InstruccionEscritura;
-non terminal InstrNewLine InstruccionNewLine;
-non terminal InstrReservMem InstruccionReservMemoria;
-non terminal InstrLibMem InstruccionLiberarMemoria;
-non terminal InstrInvocProc InstruccionInvocarProc;
-non terminal ParamsR ParametrosReales;
-non terminal Exprs Expresiones;
-non terminal Expr EBasica;
+non terminal InstrAsig InstrAsig;
+non terminal BloqOpc BloqOpc;
+non terminal InstrIfThen InstrIfThen;
+non terminal InstrIfThenElse InstrIfThenElse;
+non terminal InstrWhile InstrWhile;
+non terminal InstrLectura InstrLectura;
+non terminal InstrEscritura InstrEscritura;
+non terminal InstrNewLine InstrNewLine;
+non terminal InstrReservMem InstrReservMem;
+non terminal InstrLibMem InstrLibMem;
+non terminal InstrInvocProc InstrInvocProc;
+non terminal ParamsR ParamsR;
+non terminal Exprs Exprs;
+non terminal EBasica EBasica;
 non terminal Exp E0, E1, E2, E3, E4, E5, E6, E7;
 non terminal String OP1, OP2, OP3;
 
@@ -99,7 +99,7 @@ Parametro ::= Tipo: tipo OP_AMP ID: id
     {: RESULT = sem.param_f_con_amp(tipo, id); :};
 Bloque ::= LLAVE_AP ProgramaAux: prog LLAVE_CIERRE
     {: RESULT = prog; :};
-ProgramaAux ::= Programa prog
+ProgramaAux ::= Programa: prog
     {: RESULT = sem.bloque_lleno(prog); :};
 ProgramaAux ::= 
     {: RESULT = sem.bloque_vacio(); :};
@@ -160,17 +160,17 @@ Instruccion ::= InstrInvocProc: invoc_proc
     {: RESULT = invoc_proc; :};
 Instruccion ::= Bloque: bloque 
     {: RESULT = bloque; :};
-InstrAsig ::= E0: arg0 OP_ASIG E0: arg1 
+InstrAsig ::= E0: arg0 ASIG E0: arg1 
     {: RESULT = sem.inst_asig(arg0, arg1); :};
-BloqueOpcional ::= Instrucciones: insts
+BloqOpc ::= Instrucciones: insts
     {: RESULT = insts_opc_con_insts(insts); :};
-BloqueOpcional ::= 
+BloqOpc ::= 
     {: RESULT = insts_opc_sin_insts(); :};
-InstrIfThen ::= IF E0: arg0 THEN BloqueOpcional: bloque_opc ENDIF
+InstrIfThen ::= IF E0: arg0 THEN BloqOpc: bloque_opc ENDIF
     {: RESULT = sem.inst_ifthen(arg0, bloque_opc); :};
-InstrIfThenElse ::= IF E0: arg0 THEN BloqueOpcional: bloque_opc_0 ELSE BloqueOpcional: bloque_opc_1 ENDIF
+InstrIfThenElse ::= IF E0: arg0 THEN BloqOpc: bloque_opc_0 ELSE BloqOpc: bloque_opc_1 ENDIF
     {: RESULT = sem.inst_ifthenelse(arg0, bloque_opc_0, bloque_opc_1); :};
-InstrWhile ::= WHILE E0: arg0 DO BloqueOpcional: bloque_opc ENDWHILE
+InstrWhile ::= WHILE E0: arg0 DO BloqOpc: bloque_opc ENDWHILE
     {: RESULT = sem.inst_while(arg0, bloque_opc); :};
 InstrLectura ::= READ E0: arg0 
     {: RESULT = sem.inst_lectura(arg0); :};
@@ -182,15 +182,15 @@ InstrReservMem ::= NEW E0: arg0
     {: RESULT = sem.inst_reserv_mem(arg0); :};
 InstrLibMem ::= DELETE E0: arg0
     {: RESULT = sem.inst_lib_mem(arg0); :};
-InstrInvocProc ::= CALL ID: id ParametrosReales: params_r
+InstrInvocProc ::= CALL ID: id ParamsR: params_r
     {: RESULT = sem.inst_invoc_proc(id, params_r); :};
-ParametrosReales ::= P_AP P_CIERRE
+ParamsR ::= P_AP P_CIERRE
     {: RESULT = sem.params_vacio(); :};
-ParametrosReales ::= P_AP Expresiones: exprs P_CIERRE
+ParamsR ::= P_AP Exprs: exprs P_CIERRE
     {: RESULT = sem.params_lleno(exprs); :};
-Expresiones ::= Expresiones: exprs COMA E0: arg0 
+Exprs ::= Exprs: exprs COMA E0: arg0 
     {: RESULT = sem.exprs_muchas(exprs, arg0); :};
-Expresiones ::= E0: arg0 
+Exprs ::= E0: arg0 
     {: RESULT = sem.exprs_una(arg0); :};
 
 EBasica ::= NUM_INT: num_int 
@@ -214,16 +214,16 @@ E0 ::= E1: arg0 OP_RESTA E1: arg1
     {: RESULT = sem.exp("-", arg0, arg1); :};
 E0 ::= E1: arg0
     {: RESULT = arg0; :};
-E1 ::= E1: arg0 op1 E2: arg1 
-    {: RESULT = sem.exp(op1.lexema(), arg0, arg1); :};
+E1 ::= E1: arg0 OP1 E2: arg1 
+    {: RESULT = sem.exp(OP1.lexema(), arg0, arg1); :};
 E1 ::= E2: arg0
     {: RESULT = arg0; :};
-E2 ::= E2: arg0 op2 E3: arg1 
-    {: RESULT = sem.exp(op2.lexema(), arg0, arg1); :};
+E2 ::= E2: arg0 OP2 E3: arg1 
+    {: RESULT = sem.exp(OP2.lexema(), arg0, arg1); :};
 E2 ::= E3: arg0
     {: RESULT = arg0; :};
-E3 ::= E3: arg0 op3 E4: arg1 
-    {: RESULT = sem.exp(op3.lexema(), arg0, arg1); :};
+E3 ::= E3: arg0 OP3 E4: arg1 
+    {: RESULT = sem.exp(OP3.lexema(), arg0, arg1); :};
 E3 ::= E4: arg0
     {: RESULT = arg0; :};
 E4 ::= OP_RESTA E5: arg0
@@ -240,8 +240,8 @@ E5 ::= E5: arg0 OP_FLECHA ID: id
     {: RESULT = sem.exp("->", arg0, id.lexema()); :};
 E5 ::= E6: arg0
     {: RESULT = arg0; :};
-E6 ::= OP_MULT E6: arg0
-    {: RESULT = sem.exp("*", arg0); :};
+E6 ::= OP_MULT E6: arg
+    {: RESULT = sem.exp(arg); :};
 E6 ::= E7: arg0
     {: RESULT = arg0; :};
 E7 ::= P_AP E0: arg0 P_CIERRE
@@ -249,25 +249,25 @@ E7 ::= P_AP E0: arg0 P_CIERRE
 E7 ::= EBasica: arg0
     {: RESULT = arg0; :};
 
-op1 ::= AND
+OP1 ::= AND
     {: RESULT = "and"; :};
-op1 ::= OR
+OP1 ::= OR
     {: RESULT = "or"; :};
-op2 ::= OP_MENOR
+OP2 ::= OP_MENOR
     {: RESULT = "<"; :};
-op2 ::= OP_MENOR_IGUAL
+OP2 ::= OP_MEN_IG
     {: RESULT = "<="; :};
-op2 ::= OP_MAYOR
+OP2 ::= OP_MAYOR
     {: RESULT = ">"; :};
-op2 ::= OP_MAYOR_IGUAL
+OP2 ::= OP_MAY_IG
     {: RESULT = ">="; :};
-op2 ::= OP_COMP
+OP2 ::= OP_COMP
     {: RESULT = "=="; :};
-op2 ::= OP_DIST
+OP2 ::= OP_DIST
     {: RESULT = "!="; :};
-op3 ::= OP_MULT
+OP3 ::= OP_MULT
     {: RESULT = "*"; :};
-op3 ::= OP_DIV
+OP3 ::= OP_DIV
     {: RESULT = "/"; :};
-op3 ::= OP_100
+OP3 ::= OP_100
     {: RESULT = "%"; :};

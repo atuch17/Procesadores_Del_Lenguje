@@ -1,4 +1,4 @@
-package Pr3b.CUP;
+package Pr3b.JavaCC;
 
 import Pr3b.TinyASint;
 

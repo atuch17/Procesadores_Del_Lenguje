@@ -1,4 +1,6 @@
-package Pr3b.CUP;
+package Pr3b;
+
+import Pr3b.CUP.Procesamiento;
 
 public class TinyASint {
 
@@ -69,6 +71,10 @@ public class TinyASint {
 		
 		public Exp arg0() {
 			return arg0;
+		}
+
+		public Exp arg1() {
+			return arg1;
 		}
 		
 		public StringLocalizado id() {

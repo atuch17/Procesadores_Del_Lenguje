@@ -7,7 +7,7 @@ package Pr3b.JavaCC;
 public class ConstructorAST {
    private SemOps sem = new SemOps();
 }
-PARSER_END(AnalizadorSintacticoTiny)
+PARSER_END(ConstructorAST)
   TOKEN: {<#letra:["a"-"z","A"-"Z"]>}
   TOKEN: {<#dPos:["1"-"9"]>}
   TOKEN: {<#digito:<dPos>|"0">} 
@@ -49,196 +49,182 @@ PARSER_END(AnalizadorSintacticoTiny)
   TOKEN: {<type: "type">}
   TOKEN: {<Id: <letra>(<letra>|<digito>|"_")*>}
   TOKEN: {<cadena: "\""(~["\"","\r","\b","\n"])*"\"">}
-  
-  Prog ProgP() : {Prog prog;} {prog=Prog() <EOF> {return prog;}}
-  Prog Prog() : {Decs decs; Insts insts;} 
-  				{decs=Declaraciones() <&&> insts=Instruciones() {return sem.prog_con_decs(decs, insts);}} |
-  				{insts=Instruciones() {return sem.prog_sin_decs(insts);}}
-  Decs Declaraciones(): {Dec dec; Decs decs}
-  				{<;> dec=Declaracion() dec=RD() {return xx}}
-  Decs Declaracion(): {Dec dec; Decs decs;}
-  				{dec=Declaracion() decs=Declaracion() {return xx} |
-  				 {return null;}}
-  Dec Declaracion(): {Dec dec;}
-  				{dec=DeclaracionVar()  {return xx}|
-  				 dec=DeclaracionTipo() {return xx}|
-  				 dec=DeclaracionProc() {return xx}}
-  Dec DeclaracionVar(): {}
-  				{ {return xx}}
-  Dec DeclaracionTipo(): {}
-  				{ {return xx}}
-  Dec DeclaracionProc(): {}
-  				{ {return xx}}
-  Xxxx ParametrosFormales(): {}
-  				{ {return xx}}
-  Xxxx RPF(): {}
-  				{ {return xx} |
-  				 {return xx}}
-  Xxxx Parametros(): {}
-  				{ {return xx}}
-  Xxxx RPs(): {}
-  				{ {return xx} |
-  				 {return null;}}
-  Xxxx Parametro(): {}
-  				{ {return xx}}
-  Xxxx Bloque(): {}
-  				{ {return xx}}
-  Xxxx ProgramaAux(): {}
-  				{ {return xx} |
-  				 {return null;}}
-  Xxxx Tipo(): {}
-  				{ {return xx}}
-  Xxxx TipoBasico(): {}
-  				{ {return xx}}
-  Xxxx TipoArray(): {}
-  				{ {return xx}}
-  Xxxx TipoRegistro(): {}
-  				{ {return xx}}
-  Xxxx Campos(): {}
-  				{ {return xx}}
-  Xxxx RC(): {}
-  				{ {return xx} |
-  				 {return null;}}
-  Xxxx Campo(): {}
-  				{ {return xx}}
-  Xxxx TipoPuntero(): {}
-  				{ {return xx}}
-  Insts Instrucciones(): {Inst Instrucción;  } // RI????
-  				{ {return xx}}
-  Inst Instruccion(): {Inst inst;}
-  				{ inst=InstrAsig() {return xx} |
-  				 inst=InstrIfThen() {return xx} |
-  				 inst=InstrWhile() {return xx} |
-  				 inst=InstrLectura() {return xx} |
-  				 inst=InstrEscritura() {return xx} |
-  				 inst=InstrNewLine() {return xx} |
-  				 inst=InstrReservMem() {return xx} |
-  				 inst=InstrLibMem() {return xx} |
-  				 inst=InstrInvocProc() {return xx} |
-  				 inst=Bloque() {return xx}}
-  Inst InstrAsig(): {Inst inst;}
-  				{ {return xx}}
-  Xxxx BloqueOpcional(Inst inst;): {}
-  				{ {return xx} |
-  				 {return null;}}
-  Inst InstrIfThen(): {Inst inst;}
-  				{ {return xx}}
-  Xxxx RIT(): {Inst inst;}
-  				{ {return xx} |
-  				 {return xx}}
-  Inst InitIfThen(): {Inst inst;}
-  				{ {return xx}}
-  Inst InstrWhile(): {Inst inst;}
-  				{ {return xx}}
-  Inst InstrLectura(): {Inst inst;}
-  				{ {return xx}}
-  Inst InstrEscritura(): {Inst inst;}
-  				{ {return xx}}
-  Inst InstrNewLine(): {Inst inst;}
-  				{ {return xx}}
-  Inst InstrReservMem(): {Inst inst;}
-  				{ {return xx}}
-  Inst InstrLibMem(): {Inst inst;}
-  				{ {return xx}}
-  Inst InstrInvocProc(): {Inst inst;}
-  				{ {return xx}}
-  Xxxx ParametrosReales(): {}
-  				{ {return xx}}
-  Xxxx RPR(): {}
-  				{ {return xx} |
-  				 {return xx}}
-  Xxxx Expresiones(): {}
-  				{ {return xx}}
-  Xxxx RE(): {}
-  				{ {return xx} |
-  				 {return xx}}
-  Xxxx InstrCompuesta(): {}
-  				{ {return xx}}
-  Exp EBasica(): {Token numInt, numReal, true, false, string, id, null}
-  				{numInt=<numInt> {return xx} |
-  				 numReal=<numReal> {return xx} |
-  				 true=<true> {return xx} |
-  				 false=<false> {return xx} |
-  				 string=<string> {return xx} |
-  				 id=<id> {return xx} |
-  				 null=<null> {return xx}}
-  Exp E0(): {Exp exp1, resul;}
-  				{exp1=E1() resul=RE0(exp1) {return resul;}}
-  Exp RE0(Exp exph): {Exp exp1;}
-  				{"+" exp1=E0() {return xx} |
-  				{"-" exp1=E1() {return xx} |
-  				 {return exph}}
-  Exp E1(): {Exp exp2, resul;}
-  				{exp2=E2() resul=RE1(exp2) {return resul;}}
-  Exp RE1(Exp exph): {String op; Exp exp2; Exp exp;} 
-                {op=OP1() exp2=E2() exp=RE1(sem.exp(op,exph,exp2)) {return exp;} |
-                {return exph;}}
-  Exp E2(): {Exp exp3, resul;}
-  				{exp3=E3() resul=RE2(exp3) {return resul;}}
-  Exp RE2(Exp exph): {String op; Exp exp3; Exp exp;} 
-                {op=OP2() exp3=E3() exp=RE2(sem.exp(op,exph,exp3)) {return exp;} |
-                {return exph;}}
-  Exp E3(): {Exp exp4, resul;}
-  				{exp4=E4() resul=RE3(exp4) {return resul;}}
-  Exp RE3(Exp exph): {}
-  				{ {return xx} |
-  				 {return exph}}
-  Exp E4(): {Exp exp}
-  				{"-" exp=E5() {return exp} |
-  				 "not" exp=E4() {return exp} |
-  				 exp=E5() {return exp}}
-  Exp E5(): {}
-  				{ {return xx}}
-  Exp RE5(Exp exph): {Token iden; Exp exp}
-  				{exp=corch() {return xx} |
-  				 exp=punto() {return xx} |
-  				 exp=flecha() {return xx} |
-  				 {return exph}}
-  Exp E6(): {Exp exp;}
-  				{"*" exp=E6() {return exp} |
-  				 exp=E7() {return exp}}
-  Exp E7(): {Exp exp;}
-  				{"(" exp=E0() ")" {return exp} |
-  				 exp=EBasica() {return exp}}
-  String OP1(): {}
-  				{"and" {return 'and'} |
-  				 "or" {return 'or'}}
-  String OP2(): {}
-  				{"<" {return '<'} |
-  				 ">" {return '>'} |
-  				 "<=" {return '<='} |
-  				 ">=" {return '>='} |
-  				 "==" {return '=='} |
-  				 "!=" {return '!='}}
-  String OP3(): {}
-  				{"*" {return '*'} |
-  				 "/" {return '/'} |
-  				 "%" {return '%'}}
-  				
-  					
-  ------------------------------------------------------------  
-  Prog Prog()    : {Exp exp; Decs decs;} 
-                    {<evalua> decs=Declaraciones() exp=E0() {return sem.prog(exp,decs);}}
-  Decs PDonde()  : {Decs decs;} 
-                       {<donde> decs=Decs() {return decs;} | 
-                       {return null;}}
-  Exp E0()       : {Exp exp1, resul;} {exp1=E1() resul=RE0(exp1) {return resul;}}
-  Exp RE0(Exp exph) : {char op; Exp exp1; Exp exp;} 
-                       {op=OP0() exp1=E2() exp=RE0(sem.exp(op,exph,exp1)) {return exp;} |
-                       {return exph;}}
-  Exp E1()       : {Exp exp2, resul;} {exp2=E2() resul=RE1(exp2) {return resul;}}
-  Exp RE1(Exp exph) : {char op; Exp exp2; Exp exp;} 
-                       {op=OP1() exp2=E2() exp=RE1(sem.exp(op,exph,exp2)) {return exp;} |
-                       {return exph;}}
-  Exp E2()         : {Exp exp; Token t;}  
-                        {t=<num> {return sem.num(sem.str(t.image,t.beginLine,t.beginColumn));} |
-                         t=<id>  {return sem.id(sem.str(t.image,t.beginLine,t.beginColumn));} |
-						"(" exp=E0() ")" {return exp;}}
 
-  Decs Decs() : {Dec dec; Decs decs;} {dec=Dec() decs=RDecs(sem.decs_una(dec)) {return decs;}}
-  Decs RDecs(Decs decsh) : {Dec dec; Decs decs;} 
-                             {"," dec=Dec() decs=RDecs(sem.decs_muchas(decsh,dec)) {return decs;} |
-                             {return decsh;}}
-  Dec Dec() : {Token iden,numb;} {iden=<id> "=" numb=<num> 
-                                    {return sem.dec(sem.str(iden.image,iden.beginLine,iden.beginColumn),
-                                                    sem.str(numb.image,numb.endLine,numb.endColumn));}}					 
+  Prog ProgramaP() : {Prog prog;} {prog=Programa() <EOF> {return prog;}}
+  Prog Programa() : {Decs decs; Insts insts;} 
+  				{decs=Declaraciones() "&&" insts=Instrucciones() {return sem.prog_con_decs(decs, insts);} |
+  				insts=Instrucciones() {return sem.prog_sin_decs(insts);}}
+  Decs Declaraciones(): {Dec dec; Decs decs;}
+  				{";" dec=Declaracion() decs=RD(sem.decs_una(dec)) {return decs;}}
+  Decs RD(Decs decsh) : {Dec dec; Decs decs;}
+    {";" dec=Declaracion() decs=RD(sem.decs_muchas(decsh, dec)) {return decs;} |
+    {return decsh;}}
+  Dec Declaracion(): {Dec dec;}
+    {dec=DeclaracionVar()  {return dec;} |
+    dec=DeclaracionTipo() {return dec;} |
+    dec=DeclaracionProc() {return dec;}}
+  Dec DeclaracionVar() : {Tipo tipo; Token id;}
+    {<var> tipo=Tipo() id=<Id> {return sem.dec_var(tipo, id);}}
+  Dec DeclaracionTipo(): {Tipo tipo; Token id;}
+  	{<type> tipo=Tipo() id=<Id> {return sem.dec_tipo(tipo, id);}}
+  Dec DeclaracionProc(): {Token id; ParamsF params; Bloque bloque;}
+  	{<proc> id=<Id> params=ParametrosFormales() bloque=Bloque() {return sem.dec_proc(id, params, bloque);}}
+  ParamsF ParametrosFormales(): {ParamsF params;}
+  	{"(" params=RPF() {return params;}}
+  ParamsF RPF() : {ParamsF params;}
+  	{params=Parametros() ")" {return params;} |
+    ")" {return null;}}
+  ParamsF Parametros(): {ParamF param; ParamsF params;}
+  	{param=Parametro() params=RPs(sem.params_uno_f(param)) {return params;}}
+  ParamsF RPs(ParamsF paramsh) : {ParamF param; ParamsF params;}
+  	{";" param=Parametro() params=RPs(sem.params_muchos_f(paramsh, param)) {return params;} |
+    {return paramsh;}}
+  ParamF Parametro(): {Tipo tipo;}
+    {tipo=Tipo() {return RP(tipo);}}
+  ParamF RP(Tipo tipo) : {Token id;}
+    {"&" id=<Id> {return sem.param_f_con_amp(tipo, id);} |
+    id=<Id> {return sem.param_f_sin_amp(tipo, id);}}
+  Bloque Bloque(): {ProgAux prog;}
+    {"{" prog=ProgramaAux() "}" {return prog;}}
+  ProgAux ProgramaAux(): {Prog prog;}
+    {prog=Programa() {return sem.bloque_lleno(prog);} |
+    {return sem.bloque_vacio();}}
+  Tipo Tipo(): {Tipo tipo; Token id;}
+    {tipo=TipoBasico() {return tipo;} |
+    id=<Id> {return sem.tipo_id(id);} |
+    tipo=TipoArray() {return tipo;} |
+    tipo=TipoRegistro() {return tipo;} |
+    tipo=TipoPuntero() {return tipo;}}
+  Tipo TipoBasico(): {Token entero, real, booleano, str;}
+    {entero=<Int> {return sem.tipo_basico(entero.image);} |
+    real=<real>  {return sem.tipo_basico(real.image);} |
+    booleano=<bool>  {return sem.tipo_basico(booleano.image);} |
+    str=<string>  {return sem.tipo_basico(str.image);}}
+  Tipo TipoArray(): {Token num; Tipo tipo;}
+    {<array> "[" num=<NumInt> "]" <of> tipo=Tipo() {return sem.tipo_array(num.image, tipo);}}
+  Tipo TipoRegistro(): {Campos campos;}
+    {<record> "{" campos=Campos() "}" {return sem.tipo_registro(campos);}}
+  Campos Campos(): {Campo campo; Campos campos;}
+    {campo=Campo() campos=RC(sem.campos_uno(campo)) {return campos;}}
+  Campos RC(Campos camposh) : {Campo campo; Campos campos;}
+    {";" campo=Campo() campos=RC(sem.campos_muchos(camposh, campo)) {return campos;} |
+    {return camposh;}} 
+  Campo Campo() : {Tipo tipo; Token id;}
+    {tipo=Tipo() id=<Id> {return sem.campo(tipo, id);}}
+  void TipoPuntero() : {Tipo tipo;}
+    {<pointer> tipo=Tipo() {return sem.tipo_puntero(tipo);}}
+
+  Insts Instrucciones() : {Inst inst; Insts insts;}
+    {inst=Instruccion() insts=RI(sem.insts_una(inst)) {return insts;}}
+  Insts RI(Insts instsh) : {Inst inst; Insts insts;}
+    {";" inst=Instruccion() insts=RI(sem.insts_muchas(instsh, inst)) {return insts;} |
+    {return instsh;}}
+  Inst Instruccion(): {Inst inst; Bloque bloque;}
+    {inst=InstrAsig() {return inst;} |
+    inst=InstrIfThen() {return inst;} |
+    inst=InstrWhile() {return inst;} |
+    inst=InstrLectura() {return inst;} |
+    inst=InstrEscritura() {return inst;} |
+    inst=InstrNewLine() {return inst;} |
+    inst=InstrReservMem() {return inst;} |
+    inst=InstrLibMem() {return inst;} |
+    inst=InstrInvocProc() {return inst;} |
+    bloque=Bloque() {return sem.inst_comp(bloque);}}
+  Inst InstrAsig(): {Exp arg0; Exp arg1;}
+  	{arg0=E0() "=" arg1=E0() {return sem.inst_asig(arg0, arg1);}}
+  InstsOpc BloqueOpcional(): {Insts insts;}
+    {insts=Instrucciones() {return sem.insts_opc_con_insts(insts);} |
+    {return sem.insts_opc_sin_insts();}}
+  Inst InstrIfThen(): {Inst inst; Exp exp; InstsOpc instsOpc; Insts insts;}
+    {inst=InitIfThen() insts=RIT(inst) {return insts;}}
+  Insts RIT(Inst insth) : {Insts insts;}
+    {<Else> insts=BloqueOpcional() <endif> {return insts;} |
+    <endif> {return instsh;}}
+  Inst InitIfThen(): {Exp exp; InstsOpc insts; Inst inst;}
+    {<If> exp=E0() <then> insts=BloqueOpcional() {return sem.inst_ifthen(exp, insts);}}
+  Inst InstrWhile(): {Exp exp; InstsOpc insts;}
+    {<While> exp=E0() <Do> insts=BloqueOpcional() <endwhile> {return sem.inst_while(exp, insts);}}
+  Inst InstrLectura(): {Exp exp;}
+    {<read> exp=E0() {return sem.inst_lectura(exp);}}
+  Inst InstrEscritura(): {Exp exp;}
+    {<write> exp=E0() {return sem.inst_escritura(exp);}}
+  Inst InstrNewLine(): {Exp exp;}
+    {<nl> {return sem.inst_new_line();}}
+  Inst InstrReservMem(): {Exp exp;}
+    {<New> exp=E0() {return sem.inst_reserv_mem(exp);}}
+  Inst InstrLibMem(): {Exp exp;}
+    {<delete> exp=E0() {return sem.inst_lib_mem(exp);}}
+  Inst InstrInvocProc(): {Token id; ParamsR params;}
+    {<call> id=<Id> params=ParametrosReales() {return sem.inst_invoc_proc(id, params);}}
+  ParamsR ParametrosReales(): {ParamsR params;}
+    {"(" params=RPR(sem.params_vacio()) {return params;}}
+  ParamsR RPR(ParamsR paramsh): {Expresiones exps;}
+    {exps=Expresiones() ")" {return sem.params_lleno(exps);} |
+    ")" {return paramsh;}}
+  Expresiones Expresiones(): {Expresiones exps; Exp exp;}
+    {exp=E0() exps=RE(sem.exprs_una(exp)) {return exps;}}
+  Expresiones RE(Expresiones expsh) : {Exp exp; Expresiones exps;}
+    {"," exp=E0() exps=RE(sem.exprs_muchas(expsh, exp)) {return exps;} |
+    {return expsh;}}
+  
+  Exp EBasica(): {Token entero, real, verdad, falso, string, id, none;}
+    {entero=<NumInt> {return sem.num_int(sem.str(entero.image, entero.beginLine, entero.beginColumn).lexema());} |
+    real=<NumReal> {return sem.num_real(sem.str(real.image, real.beginLine, real.beginColumn).lexema());} |
+    verdad=<True> {return sem.verdad();} |
+    falso=<False> {return sem.falso();} |
+    string=<string> {return sem.string(sem.str(string.image, string.beginLine, string.beginColumn).lexema());} |
+    id=<Id> {return sem.id(sem.str(id.image, id.beginLine, id.beginColumn).lexema());} |
+    none=<Null> {return sem.none();}}
+  Exp E0(): {Exp arg0, resul;}
+    {arg0=E1() resul=RE0(arg0) {return resul;}}
+  Exp RE0(Exp argh): {Exp arg1;}
+    {"+" arg1=E0() {return sem.exp("+", argh, arg1);} |
+    "-" arg1=E1() {return sem.exp("-", argh, arg1);} |
+    {return exph;}}
+  Exp E1(): {Exp arg0, resul;}
+    {arg0=E2() resul=RE1(arg0) {return resul;}}
+  Exp RE1(Exp exph): {String op; Exp arg1; Exp exp;} 
+    {op=OP1() arg1=E2() exp=RE1(sem.exp(op, exph, arg1)) {return exp;} |
+    {return exph;}}
+  Exp E2(): {Exp arg0, resul;}
+    {arg0=E3() resul=RE2(arg0) {return resul;}}
+  Exp RE2(Exp exph): {String op; Exp arg1; Exp exp;} 
+    {op=OP2() arg1=E3() exp=RE2(sem.exp(op, exph, arg1)) {return exp;} |
+    {return exph;}}
+  Exp E3(): {Exp arg0, resul;}
+    {arg0=E4() resul=RE3(arg0) {return resul;}}
+  Exp RE3(Exp argh) : {String op; Exp arg1;} 
+    {op=OP3() arg1=E4() {return sem.exp(op, argh, arg1);} |
+    {return argh;}}
+  Exp E4(): {Exp exp;}
+    {"-" exp=E5() {return sem.exp("-", exp);} |
+    <not> exp=E4() {return sem.exp("not", exp);} |
+    exp=E5() {return exp;}}
+  Exp E5(): {Exp arg0, resul;}
+    {arg0=E6() resul=RE5(arg0) {return resul;}}
+  Exp RE5(Exp argh): {Exp arg1, resul; Token id;}
+    {"[" arg1=E0() "]" resul=RE5(sem.exp("[]", argh, arg1)){return resul;} |
+    "." id=<Id> resul=RE5(sem.exp(".", argh, id.image)) {return resul;} |
+    "->" id=<Id> resul=RE5(sem.exp("->", argh, id.image)) {return resul;} |
+    {return argh;}}
+  Exp E6(): {Exp exp;}
+  	{"*" exp=E6() {return sem.exp(exp);} |
+  	exp=E7() {return exp;}}
+  Exp E7(): {Exp exp;}
+  	{"(" exp=E0() ")" {return exp;} |
+  	exp=EBasica() {return exp;}}
+  
+  String OP1(): {}
+    {<and> {return "and";} |
+    <or> {return "or";}}
+  String OP2(): {}
+    {"<" {return "<";} |
+    ">" {return ">";} |
+    "<=" {return "<=";} |
+    ">=" {return ">=";} |
+    "==" {return "==";} |
+    "!=" {return "!=";}}
+  String OP3(): {}
+    {"*" {return "*";} |
+    "/" {return "/";} |
+    "%" {return "%";}}

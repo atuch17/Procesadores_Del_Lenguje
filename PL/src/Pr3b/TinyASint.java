@@ -443,7 +443,7 @@ public class TinyASint {
 			p.procesa(this);
 		}
 	}
-	
+
 	public static abstract class Decs {
 		public Decs() {
 		}
@@ -499,7 +499,7 @@ public class TinyASint {
 		}
 	}
 
-	public static class Dec_var extends Dec { 
+	public static class Dec_var extends Dec {
 		private Tipo tipo;
 		private StringLocalizado id;
 
@@ -521,7 +521,7 @@ public class TinyASint {
 		}
 	}
 
-	public static class Dec_tipo extends Dec { 
+	public static class Dec_tipo extends Dec {
 		private Tipo tipo;
 		private StringLocalizado id;
 
@@ -543,7 +543,7 @@ public class TinyASint {
 		}
 	}
 
-	public static class Dec_proc extends Dec { 
+	public static class Dec_proc extends Dec {
 		private StringLocalizado id;
 		private ParamsF params;
 		private Insts insts;
@@ -571,7 +571,7 @@ public class TinyASint {
 		}
 	}
 
-	public static abstract class ParamsF { 
+	public static abstract class ParamsF {
 
 		public ParamsF() {
 		}
@@ -579,53 +579,46 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 		}
 	}
-	
-	public static class Params_uno_f extends ParamsF { // TODO revisar
-		private Tipo tipo;
-		private StringLocalizado id;
 
-		public Params_uno_f(Tipo tipo, StringLocalizado id) {
-			this.tipo = tipo;
-			this.id = id;
+	public static class Params_uno_f extends ParamsF {
+		private ParamF param;
+
+		public Params_uno_f(ParamF param) {
+			this.param = param;
 		}
 
-		public Tipo tipo() {
-			return tipo;
-		}
-
-		public StringLocalizado id() {
-			return id;
+		public ParamF param() {
+			return param;
 		}
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 	}
-	
-	public static class Params_muchos_f extends ParamsF { // TODO revisar
-		private Tipo tipo;
-		private StringLocalizado id;
-		
-		public Params_muchos_f(Tipo tipo, StringLocalizado id) {
-			this.tipo = tipo;
-			this.id = id;
+
+	public static class Params_muchos_f extends ParamsF {
+		private ParamsF ps;
+		private ParamF s;
+
+		public Params_muchos_f(ParamsF ps, ParamF s) {
+			this.ps = ps;
+			this.s = s;
 		}
-		
-		public Tipo tipo() {
-			return tipo;
+
+		public ParamsF ps() {
+			return ps;
 		}
-		
-		public StringLocalizado id() {
-			return id;
+
+		public ParamF s() {
+			return s;
 		}
-		
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 	}
-	
-	//ParamF abstract class
-	public static abstract class ParamF { 
+
+	public static abstract class ParamF {
 		public ParamF() {
 		}
 
@@ -633,50 +626,50 @@ public class TinyASint {
 		}
 	}
 
-	public static class Param_f_sin_amp extends ParamF { // TODO revisar
+	public static class Param_f_sin_amp extends ParamF {
 		private Tipo tipo;
 		private StringLocalizado id;
-		
+
 		public Param_f_sin_amp(Tipo tipo, StringLocalizado id) {
 			this.tipo = tipo;
 			this.id = id;
 		}
-		
+
 		public Tipo tipo() {
 			return tipo;
 		}
-		
+
 		public StringLocalizado id() {
 			return id;
 		}
-		
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 	}
-	
-	public static class Param_f_con_amp extends ParamF { // TODO revisar
+
+	public static class Param_f_con_amp extends ParamF {
 		private Tipo tipo;
 		private StringLocalizado id;
-		
+
 		public Param_f_con_amp(Tipo tipo, StringLocalizado id) {
 			this.tipo = tipo;
 			this.id = id;
 		}
-		
+
 		public Tipo tipo() {
 			return tipo;
 		}
-		
+
 		public StringLocalizado id() {
 			return id;
 		}
-		
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 	}
-	
+
 	public static abstract class Insts {
 		public Insts() {
 		}
@@ -730,131 +723,252 @@ public class TinyASint {
 
 		public abstract void procesa(Procesamiento p);
 	}
-	
-	public static class Num extends Exp {
-		private StringLocalizado num;
 
-		public Num(StringLocalizado num) {
+	public static class Inst_asig extends Inst {
+		private Exp exp1;
+		private Exp exp2;
+
+		public Inst_asig(Exp exp1, Exp exp2) {
 			super();
-			this.num = num;
+			this.exp1 = exp1;
+			this.exp2 = exp2;
 		}
 
-		public StringLocalizado num() {
-			return num;
+		public Exp exp1() {
+			return exp1;
+		}
+
+		public Exp exp2() {
+			return exp2;
 		}
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+	}
 
-		public final int prioridad() {
-			return 7;
+	public static abstract class InstsOpc {
+		public InstsOpc() {
+		}
+
+		public abstract void procesa(Procesamiento p);
+	}
+
+	public static class Insts_opc_sin_insts extends InstsOpc {
+
+		public Insts_opc_sin_insts() {
+			super();
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
 		}
 	}
 
-	public static class Id extends Exp {
-		private StringLocalizado id;
+	public static class Insts_opc_con_insts extends InstsOpc {
+		private Insts insts;
 
-		public Id(StringLocalizado id) {
+		public Insts_opc_con_insts(Insts insts) {
 			super();
-			this.id = id;
+			this.insts = insts;
 		}
 
-		public StringLocalizado id() {
+		public Insts insts() {
+			return insts;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Inst_ifthen extends Inst {
+		private InstsOpc inst;
+		private Exp exp1;
+
+		public Inst_ifthen(Exp exp, InstsOpc insts) {
+			super();
+			this.exp1 = exp;
+			this.inst = insts;
+		}
+
+		public InstsOpc inst() {
+			return inst;
+		}
+
+		public Exp exp1() {
+			return exp1;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Inst_ifthenelse extends Inst {
+		private InstsOpc inst;
+		private InstsOpc inst2;
+		private Exp exp1;
+
+		public Inst_ifthenelse(Exp exp, InstsOpc insts, InstsOpc insts2) {
+			super();
+			this.exp1 = exp;
+			this.inst = insts;
+			this.inst2 = insts2;
+		}
+
+		public InstsOpc inst() {
+			return inst;
+		}
+
+		public InstsOpc inst2() {
+			return inst;
+		}
+
+		public Exp exp1() {
+			return exp1;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Inst_while extends Inst {
+		private InstsOpc inst;
+		private Exp exp1;
+
+		public Inst_while(Exp exp, InstsOpc insts) {
+			super();
+			this.exp1 = exp;
+			this.inst = insts;
+		}
+
+		public InstsOpc inst() {
+			return inst;
+		}
+
+		public Exp exp1() {
+			return exp1;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Inst_lectura extends Inst {
+		private Exp exp1;
+
+		public Inst_lectura(Exp exp1) {
+			super();
+			this.exp1 = exp1;
+		}
+
+		public Exp exp1() {
+			return exp1;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Inst_escritura extends Inst {
+		private Exp exp1;
+
+		public Inst_escritura(Exp exp1) {
+			super();
+			this.exp1 = exp1;
+		}
+
+		public Exp exp1() {
+			return exp1;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Inst_new_line extends Inst { // TODO revisar
+
+		public Inst_new_line() {
+			super();
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Inst_reserv_mem extends Inst {
+		private Exp exp1;
+
+		public Inst_reserv_mem(Exp exp1) {
+			super();
+			this.exp1 = exp1;
+		}
+
+		public Exp exp1() {
+			return exp1;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Inst_lib_mem extends Inst {
+		private Exp exp1;
+
+		public Inst_lib_mem(Exp exp1) {
+			super();
+			this.exp1 = exp1;
+		}
+
+		public Exp exp1() {
+			return exp1;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Inst_invoc_proc extends Inst {
+		private Id id;
+		private ParamsR params;
+
+		public Inst_invoc_proc(Id id, ParamsR params) {
+			super();
+			this.id = id;
+			this.params = params;
+		}
+
+		public Id id() {
 			return id;
 		}
 
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-
-		public final int prioridad() {
-			return 7;
-		}
-	}
-
-	public static class True extends Exp {
-		public True() {
+		public ParamsR params() {
+			return params;
 		}
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
-
-		@Override
-		public int prioridad() {
-			return 7;
-		}
 	}
 
-	public static class False extends Exp {
-		public False() {
-		}
+	public static class Inst_comp extends Inst {
+		private Bloque b;
 
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-
-		@Override
-		public int prioridad() {
-			return 7;
-		}
-	}
-
-	// Sstring extends Exp
-	public static class Sstring extends Exp {
-		private StringLocalizado string;
-
-		public Sstring(StringLocalizado string) {
+		public Inst_comp(Bloque b) {
 			super();
-			this.string = string;
+			this.b = b;
 		}
 
-		public StringLocalizado string() {
-			return string;
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-
-		public int prioridad() {
-			return 7;
-		}
-	}
-
-	// None extends Exp
-	public static class None extends Exp {
-		public None() {
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-
-		@Override
-		public int prioridad() {
-			return 7;
-		}
-	}
-
-
-	
-	public static class Inst {
-		private StringLocalizado id;
-		private Exp exp;
-
-		public Inst(StringLocalizado id, Exp exp) {
-			this.id = id;
-			this.exp = exp;
-		}
-
-		public StringLocalizado id() {
-			return id;
-		}
-
-		public Exp exp() {
-			return exp;
+		public Bloque b() {
+			return b;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -862,7 +976,6 @@ public class TinyASint {
 		}
 	}
 
-	
 	public static abstract class ParamsR {
 		public ParamsR() {
 		}
@@ -943,7 +1056,7 @@ public class TinyASint {
 			p.procesa(this);
 		}
 	}
-	
+
 	public static abstract class Tipo {
 		public Tipo() {
 		}
@@ -951,7 +1064,6 @@ public class TinyASint {
 		public void procesa(Procesamiento p);
 	}
 
-	//Tipo_basico extends Tipo
 	public static class Tipo_basico extends Tipo {
 		private StringLocalizado tipo;
 
@@ -969,7 +1081,6 @@ public class TinyASint {
 		}
 	}
 
-	//Tipo_id extends Tipo
 	public static class Tipo_id extends Tipo {
 		private Id id;
 
@@ -987,7 +1098,6 @@ public class TinyASint {
 		}
 	}
 
-	//Tipo_array extends Tipo
 	public static class Tipo_array extends Tipo {
 		private StringLocalizado valor;
 		private Tipo tipo;
@@ -1011,7 +1121,6 @@ public class TinyASint {
 		}
 	}
 
-	//Tipo_registro extends Tipo
 	public static class Tipo_registro extends Tipo {
 		private Campos campos;
 
@@ -1029,7 +1138,6 @@ public class TinyASint {
 		}
 	}
 
-	//Tipo_puntero extends Tipo
 	public static class Tipo_puntero extends Tipo {
 		private Tipo tipo;
 
@@ -1047,7 +1155,6 @@ public class TinyASint {
 		}
 	}
 
-
 	public static abstract class Campos {
 		public Campos() {
 		}
@@ -1055,7 +1162,6 @@ public class TinyASint {
 		public abstract void procesa(Procesamiento p);
 	}
 
-	//Campos_uno extends Campos
 	public static class Campos_uno extends Campos {
 		private Campo campo;
 
@@ -1073,7 +1179,6 @@ public class TinyASint {
 		}
 	}
 
-	//Campos_muchos extends Campos
 	public static class Campos_muchos extends Campos {
 		private Campo campo;
 		private Campos campos;
@@ -1097,7 +1202,6 @@ public class TinyASint {
 		}
 	}
 
-	//Campo
 	public static class Campo {
 		private Tipo tipo;
 		private Id id;
@@ -1121,7 +1225,6 @@ public class TinyASint {
 		}
 	}
 
-	//Bloque abstract class
 	public static abstract class Bloque {
 		public Bloque() {
 		}
@@ -1129,7 +1232,6 @@ public class TinyASint {
 		public abstract void procesa(Procesamiento p);
 	}
 
-	//Bloque_vacio extends Bloque
 	public static class Bloque_vacio extends Bloque {
 		public Bloque_vacio() {
 			super();
@@ -1140,7 +1242,6 @@ public class TinyASint {
 		}
 	}
 
-	//Bloque_lleno extends Bloque
 	public static class Bloque_lleno extends Bloque {
 		private Prog prog;
 
@@ -1158,8 +1259,157 @@ public class TinyASint {
 		}
 	}
 
+	static class Num extends Exp {
+		private StringLocalizado num;
 
-	/* ---Constructoras---*/
+		public Num(StringLocalizado num) {
+			super();
+			this.num = num;
+		}
+
+		public StringLocalizado num() {
+			return num;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		public final int prioridad() {
+			return 7;
+		}
+	}
+
+	public static class Id extends Exp {
+		private StringLocalizado id;
+
+		public Id(StringLocalizado id) {
+			super();
+			this.id = id;
+		}
+
+		public StringLocalizado id() {
+			return id;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		public final int prioridad() {
+			return 7;
+		}
+	}
+
+	public static class True extends Exp {
+		public True() {
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		@Override
+		public int prioridad() {
+			return 7;
+		}
+	}
+
+	public static class False extends Exp {
+		public False() {
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		@Override
+		public int prioridad() {
+			return 7;
+		}
+	}
+
+	public static class Sstring extends Exp {
+		private StringLocalizado string;
+
+		public Sstring(StringLocalizado string) {
+			super();
+			this.string = string;
+		}
+
+		public StringLocalizado string() {
+			return string;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		public int prioridad() {
+			return 7;
+		}
+	}
+
+	public static class None extends Exp {
+		public None() {
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+
+		@Override
+		public int prioridad() {
+			return 7;
+		}
+	}
+
+	public static class Num_int extends Exp {
+		private StringLocalizado s;
+
+		public Num_int(StringLocalizado s) {
+			super();
+			this.s = s;
+		}
+
+		public StringLocalizado s() {
+			return s;
+		}
+
+		@Override
+		public int prioridad() {
+			// TODO Auto-generated method stub
+			return 7;
+		}
+
+		@Override
+		public void procesa(Procesamiento procesamiento) {
+		}
+	}
+
+	public static class Num_real extends Exp {
+		private StringLocalizado s;
+
+		public Num_real(StringLocalizado s) {
+			super();
+			this.s = s;
+		}
+
+		public StringLocalizado s() {
+			return s;
+		}
+
+		@Override
+		public int prioridad() {
+			return 7;
+		}
+
+		@Override
+		public void procesa(Procesamiento procesamiento) {
+		}
+	}
+	
+	/* ---CONSTRUCTORAS--- */
 	public Prog cprog_con_decs(Decs decs, Insts insts) {
 		return new Prog_con_decs(decs, insts);
 	}
@@ -1248,7 +1498,7 @@ public class TinyASint {
 		return new Num(num);
 	}
 
-	public Exp cid(StringLocalizado num) {
+	public Id cid(StringLocalizado num) {
 		return new Id(num);
 	}
 
@@ -1260,9 +1510,9 @@ public class TinyASint {
 		return new False();
 	}
 
-	public Tipo ctipo(StringLocalizado tipo) {
+	/*public Tipo ctipo(StringLocalizado tipo) {
 		return new Tipo(tipo);
-	}
+	}*/
 
 	public Decs cdecs_una(Dec dec) {
 		return new Decs_una(dec);
@@ -1284,10 +1534,6 @@ public class TinyASint {
 		return new Dec_proc(id, params, insts);
 	}
 
-	public Inst cinst(StringLocalizado id, Exp exp) {
-		return new Inst(id, exp);
-	}
-
 	public Insts cinsts_una(Inst inst) {
 		return new Insts_una(inst);
 	}
@@ -1299,149 +1545,146 @@ public class TinyASint {
 	public ParamsF cparams_uno_f(ParamF param) {
 		return new Params_uno_f(param);
 	}
-	
+
 	public ParamsF cparams_muchos_f(ParamsF params, ParamF param) {
 		return new Params_muchos_f(params, param);
 	}
-	
-	public ParamF cparam_f_sin_amp(Tipo tipo, Exp exp) {
-		return new Param_f_sin_amp(tipo, exp);
+
+	public ParamF cparam_f_sin_amp(Tipo tipo, StringLocalizado id) {
+		return new Param_f_sin_amp(tipo, id);
 	}
-	
-	public ParamF cparam_f_con_amp(Tipo tipo, Exp exp) {
-		return new Param_f_con_amp(tipo, exp);
-	}	
-	
+
+	public ParamF cparam_f_con_amp(Tipo tipo, StringLocalizado id) {
+		return new Param_f_con_amp(tipo, id);
+	}
+
 	public StringLocalizado str(String s, int fila, int col) {
 		return new StringLocalizado(s, fila, col);
 	}
-	
-	/* TERMIANL*/
+
+	/* TERMINAL */
 	public Inst cinst_asig(Exp exp1, Exp exp2) {
         return new Inst_asig(exp1, exp2);
     }
-    
-    public InstsOpc cinsts_opc_sin_insts() {
-    	return new Insts_opc_sin_insts();
-    }
-    
-    public InstsOpc cinsts_opc_con_insts(Insts insts) {
-    	return new Insts_opc_con_insts(insts);
-    }
-    
-    public Inst cinst_ifthen(Exp exp, InstsOpc  insts) {
-    	return new Inst_ifthen(exp, insts);
-    }
-    
-    public Inst cinst_ifthenelse (Exp exp, InstsOpc  insts, InstsOpc  insts2) {
-    	return new Inst_ifthenelse(insts, insts, insts2);
-    }
-    
-    public Inst cinst_while(Exp exp, InstsOpc  insts) {
-    	return new Inst_while(exp, insts);
-    }
-    
-    public Inst cinst_lectura(Exp exp) {
-    	return new Inst_lectura(exp);
-    }
-    
-    public Inst cinst_escritura(Exp exp) {
-    	return new Inst_escritura(exp);
-    }
-    
-    public Inst cinst_new_line() {
-    	return new Inst_new_line();
-    }
-    
-    public Inst cinst_reserv_mem(Exp exp) {
-    	return new Inst_reserv_mem(exp);
-    }
-    
-    public Inst cinst_lib_mem(Exp exp) {
-    	return new Inst_lib_mem(exp);
-    }
-    
-    public Inst cinst_invoc_proc(Id id, ParamsR params) {
-    	return new Inst_invoc_proc(id, params);
-    }
-    
-    public Insts cinst_comp(Bloque b) {
-    	return new Inst_comp(b);
-    }
-    
-    public ParamsR cparams_vacio() {
-    	return new Params_vacio();
-    }
-    
-    public ParamsR cparams_lleno(Expresiones e) {
-    	return new Params_lleno(e);
-    }
-    
-    public Expresiones cexprs_una(Exp exp) {
-    	return new Exprs_una(exp);
-    }
-    
-    public Expresiones cexprs_muchas(Expresiones e, Exp exp) {
-    	return new Exprs_muchas(e, exp);
-    }
-    
-    public Id cid(StringLocalizado id) {
-    	return new Id(id);
-    }
-    
-    public Tipo ctipo_basico(StringLocalizado tipo) {
-    	return new Tipo_basico(tipo);
-    }
-    
-    public Tipo ctipo_id(Id id) {
-    	return new Tipo_id(id);
-    }
-    
-    public Exp cstring(StringLocalizado s) {
-    	return new Sstring(s);
-    }
-    
-    public Exp cnone() { // Null
-    	return new None();
-    }
-    
-    public Tipo ctipo_array(StringLocalizado s, Tipo t) { 
-    	return new Tipo_array(s, t);
-    }
-    
-    public Tipo ctipo_registro(Campos c) { 
-    	return new Tipo_registro(c);
-    }
-    
-    public Campos ccampos_uno(Campo c) { 
-    	return new Campos_uno(c);
-    }
-    
-    public Campos ccampos_muchos(Campos cs, Campo c) { 
-    	return new Campos_muchos(cs, c);
-    }
-    
-    public Campo ccampo(Tipo t, Id id) { 
-    	return new Campo(t, id);
-    }
-    
-    public Tipo ctipo_puntero(Tipo t) { 
-    	return new Tipo_puntero(t);
-    }
-    
-    public Bloque cbloque_vacio() { 
-    	return new Bloque_vacio();
-    }
-    
-    public Bloque cbloque_lleno(Prog p) { 
-    	return new Bloque_lleno(p);
-    }
-    
-    public Exp cnum_int(StringLocalizado s) { 
-    	return new Num_int(s);
-    }
-    
-    public Exp cnum_real(StringLocalizado s) {
-    	return new Num_real(s);
-    }
+
+	public InstsOpc cinsts_opc_sin_insts() {
+		return new Insts_opc_sin_insts();
+	}
+
+	public InstsOpc cinsts_opc_con_insts(Insts insts) {
+		return new Insts_opc_con_insts(insts);
+	}
+
+	public Inst cinst_ifthen(Exp exp, InstsOpc insts) {
+		return new Inst_ifthen(exp, insts);
+	}
+
+	public Inst cinst_ifthenelse(Exp exp, InstsOpc insts, InstsOpc insts2) {
+		return new Inst_ifthenelse(exp, insts, insts2);
+	}
+
+	public Inst cinst_while(Exp exp, InstsOpc insts) {
+		return new Inst_while(exp, insts);
+	}
+
+	public Inst cinst_lectura(Exp exp) {
+		return new Inst_lectura(exp);
+	}
+
+	public Inst cinst_escritura(Exp exp) {
+		return new Inst_escritura(exp);
+	}
+
+	public Inst cinst_new_line() {
+		return new Inst_new_line();
+	}
+
+	public Inst cinst_reserv_mem(Exp exp) {
+		return new Inst_reserv_mem(exp);
+	}
+
+	public Inst cinst_lib_mem(Exp exp) {
+		return new Inst_lib_mem(exp);
+	}
+
+	public Inst cinst_invoc_proc(Id id, ParamsR params) {
+		return new Inst_invoc_proc(id, params);
+	}
+
+	public Inst cinst_comp(Bloque b) {
+		return new Inst_comp(b);
+	}
+
+	public ParamsR cparams_vacio() {
+		return new Params_vacio();
+	}
+
+	public ParamsR cparams_lleno(Expresiones e) {
+		return new Params_lleno(e);
+	}
+
+	public Expresiones cexprs_una(Exp exp) {
+		return new Exprs_una(exp);
+	}
+
+	public Expresiones cexprs_muchas(Expresiones e, Exp exp) {
+		return new Exprs_muchas(e, exp);
+	}
+
+	public Tipo ctipo_basico(StringLocalizado tipo) {
+		return new Tipo_basico(tipo);
+	}
+
+	public Tipo ctipo_id(Id id) {
+		return new Tipo_id(id);
+	}
+
+	public Exp cstring(StringLocalizado s) {
+		return new Sstring(s);
+	}
+
+	public Exp cnone() { // Null
+		return new None();
+	}
+
+	public Tipo ctipo_array(StringLocalizado s, Tipo t) {
+		return new Tipo_array(s, t);
+	}
+
+	public Tipo ctipo_registro(Campos c) {
+		return new Tipo_registro(c);
+	}
+
+	public Campos ccampos_uno(Campo c) {
+		return new Campos_uno(c);
+	}
+
+	public Campos ccampos_muchos(Campos cs, Campo c) {
+		return new Campos_muchos(cs, c);
+	}
+
+	public Campo ccampo(Tipo t, Id id) {
+		return new Campo(t, id);
+	}
+
+	public Tipo ctipo_puntero(Tipo t) {
+		return new Tipo_puntero(t);
+	}
+
+	public Bloque cbloque_vacio() {
+		return new Bloque_vacio();
+	}
+
+	public Bloque cbloque_lleno(Prog p) {
+		return new Bloque_lleno(p);
+	}
+
+	public Exp cnum_int(StringLocalizado s) {
+		return new Num_int(s);
+	}	
+	
+	public Exp cnum_real(StringLocalizado s) {
+		return new Num_real(s);
+	}
+
 }

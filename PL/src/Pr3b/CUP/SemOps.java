@@ -95,17 +95,13 @@ public class SemOps extends TinyASint {
     public ParamsF params_muchos_f(ParamsF params, ParamF param) {
     	return cparams_muchos_f(params, param);
     }
-    public ParamF param_f_sin_amp(Tipo tipo, Exp exp) {
-    	return cparam_f_sin_amp(tipo, exp);
+    public ParamF param_f_sin_amp(Tipo tipo, StringLocalizado id) {
+    	return cparam_f_sin_amp(tipo, id);
     }
-    public ParamF param_f_con_amp(Tipo tipo, Exp exp) {
-    	return cparam_f_con_amp(tipo, exp);
+    public ParamF param_f_con_amp(Tipo tipo, StringLocalizado id) {
+    	return cparam_f_con_amp(tipo, id);
     }
     
-    public Inst inst(StringLocalizado id, Exp exp) {
-        return cinst(id, exp);
-    }
-
     public Insts insts_muchas(Insts insts, Inst inst) {
         return cinsts_muchas(insts, inst);
     }
@@ -132,7 +128,7 @@ public class SemOps extends TinyASint {
     }
     
     public Inst inst_ifthenelse (Exp exp, InstsOpc  insts, InstsOpc  insts2) {
-    	return cinst_ifthenelse(insts, insts, insts2);
+    	return cinst_ifthenelse(exp, insts, insts2);
     }
     
     public Inst inst_while(Exp exp, InstsOpc  insts) {
@@ -163,7 +159,7 @@ public class SemOps extends TinyASint {
     	return cinst_invoc_proc(id, params);
     }
     
-    public Insts inst_comp(Bloque b) {
+    public Inst inst_comp(Bloque b) {
     	return cinst_comp(b);
     }
     

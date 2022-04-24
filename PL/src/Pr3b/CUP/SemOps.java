@@ -45,7 +45,7 @@ public class SemOps extends TinyASint {
         throw new UnsupportedOperationException("exp " + op);
     }
 
-    public Exp exp(String op, Exp arg, Id id) {
+    public Exp exp(String op, Exp arg, StringLocalizado id) {
         switch (op) {
             case ".":
                 return cpunto(arg, id);
@@ -59,12 +59,12 @@ public class SemOps extends TinyASint {
         return casterix(arg);
     }
 
-    public Prog prog_con_decs(Decs decs, Insts insts) {
-        return cprog(decs, insts);
+    public Prog_con_decs prog_con_decs(Decs decs, Insts insts) {
+        return cprog_con_decs(decs, insts);
     }
 
-    public Prog prog_sin_decs(Insts insts) {
-        return cprog(insts);
+    public Prog_sin_decs prog_sin_decs(Insts insts) {
+        return cprog_sin_decs(insts);
     }
 
     public Decs decs_muchas(Decs decs, Dec dec) {
@@ -75,15 +75,15 @@ public class SemOps extends TinyASint {
         return cdecs_una(dec);
     }
 
-    public Dec dec_var(StringLocalizado tipo, StringLocalizado id) {
+    public Dec_var dec_var(StringLocalizado tipo, StringLocalizado id) {
         return cdec_var(tipo, id);
     }
 
-    public Dec dec_tipo(StringLocalizado tipo, StringLocalizado id) {
+    public Dec_tipo dec_tipo(StringLocalizado tipo, StringLocalizado id) {
         return cdec_tipo(tipo, id);
     }
 
-    public Dec dec_proc(StringLocalizado id, ParamsF params, Insts insts) {
+    public Dec_proc dec_proc(StringLocalizado id, ParamsF params, Insts insts) {
         return cdec_proc(id, params, insts);
     }
 

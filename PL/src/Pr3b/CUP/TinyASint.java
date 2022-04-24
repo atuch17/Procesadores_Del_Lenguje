@@ -61,8 +61,34 @@ public class TinyASint {
 			this.arg1 = arg1;
 		}
 	}
-
 	
+	private static abstract class ExpBin2 extends Exp { // TODO revisar
+		private Exp arg0;
+		private Exp arg1;
+		private StringLocalizado id;
+		
+		public Exp arg0() {
+			return arg0;
+		}
+		
+		public StringLocalizado id() {
+			return id;
+		}
+		
+		public ExpBin2(Exp arg0, StringLocalizado id) {
+			super();
+			this.arg0 = arg0;
+			this.id = id;
+		}
+		
+		public ExpBin2(Exp arg0, Exp arg1) {
+			super();
+			this.arg0 = arg0;
+			this.arg1 = arg1;
+		}
+	}
+	
+	/* ---0--- */
 	private static abstract class ExpAditiva extends ExpBin {
 		public ExpAditiva(Exp arg0, Exp arg1) {
 			super(arg0, arg1);
@@ -92,40 +118,8 @@ public class TinyASint {
 			p.procesa(this);
 		}
 	}
-
 	
-	private static abstract class ExpMultiplicativa extends ExpBin {
-		public ExpMultiplicativa(Exp arg0, Exp arg1) {
-			super(arg0, arg1);
-		}
-
-		public final int prioridad() {
-			return 3;
-		}
-	}
-
-	public static class Mul extends ExpMultiplicativa {
-
-		public Mul(Exp arg0, Exp arg1) {
-			super(arg0, arg1);
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-	}
-
-	public static class Div extends ExpMultiplicativa {
-		public Div(Exp arg0, Exp arg1) {
-			super(arg0, arg1);
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-	}
-
-	
+	/* ---1--- */
 	private static abstract class ExpLogica extends ExpBin {
 		public ExpLogica(Exp arg0, Exp arg1) {
 			super(arg0, arg1);
@@ -135,7 +129,7 @@ public class TinyASint {
 			return 1;
 		}
 	}
-
+	
 	public static class And extends ExpLogica {
 
 		public And(Exp arg0, Exp arg1) {
@@ -157,7 +151,7 @@ public class TinyASint {
 		}
 	}
 	
-	
+	/* ---2--- */
 	private static abstract class ExpRelacional extends ExpBin {
 		public ExpRelacional(Exp arg0, Exp arg1) {
 			super(arg0, arg1);
@@ -187,7 +181,7 @@ public class TinyASint {
 			p.procesa(this);
 		}
 	}
-
+	
 	public static class Mayor_eq extends ExpRelacional {
 		public Mayor_eq(Exp arg0, Exp arg1) {
 			super(arg0, arg1);
@@ -228,7 +222,49 @@ public class TinyASint {
 		}
 	}
 
+	/* ---3--- */
+	private static abstract class ExpMultiplicativa extends ExpBin {
+		public ExpMultiplicativa(Exp arg0, Exp arg1) {
+			super(arg0, arg1);
+		}
+
+		public final int prioridad() {
+			return 3;
+		}
+	}
+
+	public static class Mul extends ExpMultiplicativa {
+
+		public Mul(Exp arg0, Exp arg1) {
+			super(arg0, arg1);
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Div extends ExpMultiplicativa {
+		public Div(Exp arg0, Exp arg1) {
+			super(arg0, arg1);
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
 	
+	public static class Mod extends ExpMultiplicativa {
+		public Mod(Exp arg0, Exp arg1) {
+			super(arg0, arg1);
+		}
+		
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+	
+	/* ---4--- */
 	private static abstract class ExpUnaria extends Exp {
 		private Exp arg;
 
@@ -265,7 +301,81 @@ public class TinyASint {
 			p.procesa(this);
 		}
 	}
+
+	/* ---5--- */
+	private static abstract class ExpOperadores extends ExpBin2 {
+		public ExpOperadores(Exp arg0, StringLocalizado id) {
+			super(arg0, id);
+		}
+		
+		public ExpOperadores(Exp arg0, Exp arg1) {
+			super(arg0, arg1);
+		}
+
+		public final int prioridad() {
+			return 5;
+		}
+	}
 	
+	public static class Corch extends ExpOperadores { 
+		public Corch(Exp arg0, Exp arg1) {
+			super(arg0, arg1);
+		}
+		
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+	
+	public static class Punto extends ExpOperadores { 		
+		public Punto(Exp arg0, StringLocalizado id) {
+			super(arg0, id);
+		}
+		
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+	
+	public static class Flecha extends ExpOperadores { 
+		public Flecha(Exp arg0, StringLocalizado id) {
+			super(arg0, id);
+		}
+		
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+	
+	/* ---6--- */
+	private static abstract class ExpAsterix extends Exp {
+		private Exp arg;
+
+		public ExpAsterix(Exp arg) {
+			super();
+			this.arg = arg;
+		}
+		
+		public Exp arg() {
+			return arg;
+		}
+		
+		public final int prioridad() {
+			return 6;
+		}
+	}
+	
+	public static class Asterix extends ExpAsterix { 
+		public Asterix(Exp arg0) {
+			super(arg0);
+		}
+		
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+	
+	/* ------ */
 	public static class Num extends Exp {
 		private StringLocalizado num;
 
@@ -334,6 +444,8 @@ public class TinyASint {
 		}
 	}
 	
+	
+	/* ------ */
 	public static class Tipo {
 		private StringLocalizado tipo;
 		
@@ -419,6 +531,94 @@ public class TinyASint {
 		}
 	}
 	
+	public static class Dec_var extends Decs { // TODO revisar
+		private StringLocalizado tipo;
+		private StringLocalizado id;
+		
+		public Dec_var(StringLocalizado tipo, StringLocalizado id) {
+			this.tipo = tipo;
+			this.id = id;
+		}
+		
+		public StringLocalizado tipo() {
+			return tipo;
+		}
+
+		public StringLocalizado id() {
+			return id;
+		}
+		
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+	
+	public static class Dec_tipo extends Decs { // TODO revisar
+		private StringLocalizado tipo;
+		private StringLocalizado id;
+		
+		public Dec_tipo(StringLocalizado tipo, StringLocalizado id) {
+			this.tipo = tipo;
+			this.id = id;
+		}
+		
+		public StringLocalizado tipo() {
+			return tipo;
+		}
+
+		public StringLocalizado id() {
+			return id;
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+	
+	public static class Dec_proc extends Decs { // TODO revisar		
+		private StringLocalizado id;
+		private ParamsF params;
+		private Insts insts;
+		
+		public Dec_proc(StringLocalizado id, ParamsF params, Insts insts) {
+			super();
+			this.id = id;
+			this.params = params;
+			this.insts = insts;
+		}
+		
+		public StringLocalizado id() {
+			return id;
+		}
+		
+		public ParamsF params() {
+			return params;
+		}
+
+		public Insts insts() {
+			return insts;
+		}
+		
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+	
+	public static class ParamsF { // TODO Revisar
+//		private xx1 xx2;
+		
+		public ParamsF() {
+		}
+		
+//		public xx1 xx2() {
+//			return xx2;
+//		}
+		
+//		public void procesa(Procesamiento p) {
+//			p.procesa(this);
+//		}
+	}
+	
 	public static class Inst {
 		private StringLocalizado id;
 		private Exp exp;
@@ -488,11 +688,11 @@ public class TinyASint {
 		}
 	}
 
-	public static class Prog {
+	public static class Prog_con_decs {
 		private Decs decs;
 		private Insts insts;
 
-		public Prog(Decs decs, Insts insts) {
+		public Prog_con_decs(Decs decs, Insts insts) {
 			super();
 			this.decs = decs;
 			this.insts = insts;
@@ -510,10 +710,31 @@ public class TinyASint {
 			p.procesa(this);
 		}
 	}
+	
+	public static class Prog_sin_decs {
+		private Insts insts;
+		
+		public Prog_sin_decs(Insts insts) {
+			super();
+			this.insts = insts;
+		}
+		
+		public Insts insts() {
+			return insts;
+		}
+		
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
 
 	// Constructoras
-	public Prog cprog(Decs decs, Insts insts) {
-		return new Prog(decs, insts);
+	public Prog_con_decs cprog_con_decs(Decs decs, Insts insts) {
+		return new Prog_con_decs(decs, insts);
+	}
+	
+	public Prog_sin_decs cprog_sin_decs(Insts insts) {
+		return new Prog_sin_decs(insts);
 	}
 
 	public Exp csuma(Exp arg0, Exp arg1) {
@@ -530,6 +751,10 @@ public class TinyASint {
 	
 	public Exp cdiv(Exp arg0, Exp arg1) {
 		return new Div(arg0, arg1);
+	}
+	
+	public Exp cmod(Exp arg0, Exp arg1) {
+		return new Mod(arg0, arg1);
 	}
 
 	public Exp cmayor(Exp arg0, Exp arg1) {
@@ -564,12 +789,28 @@ public class TinyASint {
 		return new Or(arg0, arg1);
 	}
 	
+	public Exp ccorch(Exp arg0, Exp arg1) {
+		return new Corch(arg0, arg1);
+	}
+	
 	public Exp cnot(Exp arg) {
 		return new Not(arg);
 	}
 	
 	public Exp cmenos(Exp arg) {
 		return new Menos(arg);
+	}
+	
+	public Exp cpunto(Exp arg, StringLocalizado id) {
+		return new Punto(arg, id);
+	}
+	
+	public Exp cflecha(Exp arg, StringLocalizado id) {
+		return new Flecha(arg, id);
+	}
+	
+	public Exp casterix(Exp arg) {
+		return new Asterix(arg);
 	}
 	
 	public Exp cnum(StringLocalizado num) {
@@ -602,6 +843,18 @@ public class TinyASint {
 
 	public Decs cdecs_muchas(Decs decs, Dec dec) {
 		return new Decs_muchas(decs, dec);
+	}
+	
+	public Dec_var cdec_var(StringLocalizado tipo, StringLocalizado id) {
+		return new Dec_var(tipo, id);
+	}
+	
+	public Dec_tipo cdec_tipo(StringLocalizado tipo, StringLocalizado id) {
+		return new Dec_tipo(tipo, id);
+	}
+	
+	public Dec_proc cdec_proc(StringLocalizado id, ParamsF params, Insts insts) {
+		return new Dec_proc(id, params, insts);
 	}
 	
 	public Inst cinst(StringLocalizado id, Exp exp) {

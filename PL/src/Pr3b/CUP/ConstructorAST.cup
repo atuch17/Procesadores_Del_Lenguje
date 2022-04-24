@@ -1,8 +1,8 @@
 package Pr3b.CUP;
 
 import java_cup.runtime.*;
-import Pr3a.SemOps;
-import Pr3a.TinyASint.*;
+import Pr3b.CUP.SemOps;
+import Pr3b.TinyASint.*;
 
 scan with {: return getScanner().next_token(); :};
 action code {:
@@ -30,9 +30,9 @@ terminal StringLocalizado NUM_INT, NUM_REAL, CADENA, ID;
 non terminal Prog Programa;
 non terminal Decs Declaraciones;
 non terminal Dec Declaracion;
-non terminal DecVar DeclaracionVar;
-non terminal DecTipo DeclaracionTipo;
-non terminal DecProc DeclaracionProc;
+non terminal Dec_var DeclaracionVar;
+non terminal Dec_tipo DeclaracionTipo;
+non terminal Dec_proc DeclaracionProc;
 non terminal ParamsF ParametrosFormales;
 non terminal Params Parametros;
 non terminal Param Parametro;
@@ -45,7 +45,7 @@ non terminal TipoRegistro TipoRegistro;
 non terminal Campos Campos;
 non terminal Campo Campo;
 non terminal TipoPuntero TipoPuntero;
-non terminal Instrs Instrucciones;
+non terminal Insts Instrucciones;
 non terminal Inst Instruccion;
 non terminal InstrAsig InstrAsig;
 non terminal BloqOpc BloqOpc;

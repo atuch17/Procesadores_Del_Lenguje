@@ -61,11 +61,11 @@ public class SemOps extends TinyASint {
         return casterix(arg);
     }
 
-    public Prog_con_decs prog_con_decs(Decs decs, Insts insts) {
+    public Prog prog_con_decs(Decs decs, Insts insts) {
         return cprog_con_decs(decs, insts);
     }
 
-    public Prog_sin_decs prog_sin_decs(Insts insts) {
+    public Prog prog_sin_decs(Insts insts) {
         return cprog_sin_decs(insts);
     }
 
@@ -77,11 +77,11 @@ public class SemOps extends TinyASint {
         return cdecs_una(dec);
     }
 
-    public Dec_var dec_var(StringLocalizado tipo, StringLocalizado id) {
+    public Dec_var dec_var(Tipo tipo, StringLocalizado id) {
         return cdec_var(tipo, id);
     }
 
-    public Dec_tipo dec_tipo(StringLocalizado tipo, StringLocalizado id) {
+    public Dec_tipo dec_tipo(Tipo tipo, StringLocalizado id) {
         return cdec_tipo(tipo, id);
     }
 
@@ -89,6 +89,19 @@ public class SemOps extends TinyASint {
         return cdec_proc(id, params, insts);
     }
 
+    public ParamsF params_uno_f(ParamF param) {
+    	return cparams_uno_f(param);
+    }
+    public ParamsF params_muchos_f(ParamsF params, ParamF param) {
+    	return cparams_muchos_f(params, param);
+    }
+    public ParamF param_f_sin_amp(Tipo tipo, Exp exp) {
+    	return cparam_f_sin_amp(tipo, exp);
+    }
+    public ParamF param_f_con_amp(Tipo tipo, Exp exp) {
+    	return cparam_f_con_amp(tipo, exp);
+    }
+    
     public Inst inst(StringLocalizado id, Exp exp) {
         return cinst(id, exp);
     }
@@ -100,4 +113,133 @@ public class SemOps extends TinyASint {
     public Insts insts_una(Inst inst) {
         return cinsts_una(inst);
     }
+    
+    /* TERMINAL */
+    public Inst inst_asig(Exp exp1, Exp exp2) {
+        return cinst_asig(exp1, exp2);
+    }
+    
+    public InstsOpc insts_opc_sin_insts() {
+    	return cinsts_opc_sin_insts();
+    }
+    
+    public InstsOpc insts_opc_con_insts(Insts insts) {
+    	return cinsts_opc_con_insts(insts);
+    }
+    
+    public Inst inst_ifthen(Exp exp, InstsOpc  insts) {
+    	return cinst_ifthen(exp, insts);
+    }
+    
+    public Inst inst_ifthenelse (Exp exp, InstsOpc  insts, InstsOpc  insts2) {
+    	return cinst_ifthenelse(insts, insts, insts2);
+    }
+    
+    public Inst inst_while(Exp exp, InstsOpc  insts) {
+    	return cinst_while(exp, insts);
+    }
+    
+    public Inst inst_lectura(Exp exp) {
+    	return cinst_lectura(exp);
+    }
+    
+    public Inst inst_escritura(Exp exp) {
+    	return cinst_escritura(exp);
+    }
+    
+    public Inst inst_new_line() {
+    	return cinst_new_line();
+    }
+    
+    public Inst inst_reserv_mem(Exp exp) {
+    	return cinst_reserv_mem(exp);
+    }
+    
+    public Inst inst_lib_mem(Exp exp) {
+    	return cinst_lib_mem(exp);
+    }
+    
+    public Inst inst_invoc_proc(Id id, ParamsR params) {
+    	return cinst_invoc_proc(id, params);
+    }
+    
+    public Insts inst_comp(Bloque b) {
+    	return cinst_comp(b);
+    }
+    
+    public ParamsR params_vacio() {
+    	return cparams_vacio();
+    }
+    
+    public ParamsR params_lleno(Expresiones e) {
+    	return cparams_lleno(e);
+    }
+    
+    public Expresiones exprs_una(Exp exp) {
+    	return cexprs_una(exp);
+    }
+    
+    public Expresiones exprs_muchas(Expresiones e, Exp exp) {
+    	return cexprs_muchas(e, exp);
+    }
+    
+    public Id id(StringLocalizado id) {
+    	return cid(id);
+    }
+    
+    public Tipo tipo_basico(StringLocalizado id) {
+    	return ctipo_basico(id);
+    }
+    
+    public Tipo tipo_id(Id id) {
+    	return ctipo_id(id);
+    }
+    
+    public Exp string(StringLocalizado s) {
+    	return cstring(s);
+    }
+    
+    public Exp none() { // Null
+    	return cnone();
+    }
+    
+    public Tipo tipo_array(StringLocalizado s, Tipo t) { 
+    	return ctipo_array(s, t);
+    }
+    
+    public Tipo tipo_registro(Campos c) { 
+    	return ctipo_registro(c);
+    }
+    
+    public Campos campos_uno(Campo c) { 
+    	return ccampos_uno(c);
+    }
+    
+    public Campos campos_muchos(Campos cs, Campo c) { 
+    	return ccampos_muchos(cs, c);
+    }
+    
+    public Campo campo(Tipo t, Id id) { 
+    	return ccampo(t, id);
+    }
+    
+    public Tipo tipo_puntero(Tipo t) { 
+    	return ctipo_puntero(t);
+    }
+    
+    public Bloque bloque_vacio() { 
+    	return cbloque_vacio();
+    }
+    
+    public Bloque bloque_lleno(Prog p) { 
+    	return cbloque_lleno(p);
+    }
+    
+    public Exp num_int(StringLocalizado s) { 
+    	return cnum_int(s);
+    }
+    
+    public Exp num_real(StringLocalizado s) {
+    	return cnum_real(s);
+    }    
 }

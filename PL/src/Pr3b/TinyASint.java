@@ -1,21 +1,6 @@
 package Pr3b;
 
-import Pr3b.CUP.Bloque;
-import Pr3b.CUP.Campo;
-import Pr3b.CUP.Campos;
-import Pr3b.CUP.Expresiones;
-import Pr3b.CUP.InstsOpc;
-import Pr3b.CUP.ParamF;
-import Pr3b.CUP.ParamsF;
-import Pr3b.CUP.ParamsR;
 import Pr3b.CUP.Procesamiento;
-import Pr3b.TinyASint.Exp;
-import Pr3b.TinyASint.Id;
-import Pr3b.TinyASint.Inst;
-import Pr3b.TinyASint.Insts;
-import Pr3b.TinyASint.Prog;
-import Pr3b.TinyASint.StringLocalizado;
-import Pr3b.TinyASint.Tipo;
 
 public class TinyASint {
 
@@ -546,12 +531,12 @@ public class TinyASint {
 	public static class Dec_proc extends Dec {
 		private StringLocalizado id;
 		private ParamsF params;
-		private Insts insts;
+		private Bloque bloque;
 
-		public Dec_proc(StringLocalizado id, ParamsF params, Insts insts) {
+		public Dec_proc(StringLocalizado id, ParamsF params, Bloque bloque) {
 			this.id = id;
 			this.params = params;
-			this.insts = insts;
+			this.bloque = bloque;
 		}
 
 		public StringLocalizado id() {
@@ -562,8 +547,8 @@ public class TinyASint {
 			return params;
 		}
 
-		public Insts insts() {
-			return insts;
+		public Bloque Bloque() {
+			return bloque;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -747,14 +732,14 @@ public class TinyASint {
 		}
 	}
 
-	public static abstract class InstsOpc {
-		public InstsOpc() {
+	public static abstract class BloqueOpc {
+		public BloqueOpc() {
 		}
 
 		public abstract void procesa(Procesamiento p);
 	}
 
-	public static class Insts_opc_sin_insts extends InstsOpc {
+	public static class Insts_opc_sin_insts extends BloqueOpc {
 
 		public Insts_opc_sin_insts() {
 			super();
@@ -765,7 +750,7 @@ public class TinyASint {
 		}
 	}
 
-	public static class Insts_opc_con_insts extends InstsOpc {
+	public static class Insts_opc_con_insts extends BloqueOpc {
 		private Insts insts;
 
 		public Insts_opc_con_insts(Insts insts) {
@@ -783,17 +768,17 @@ public class TinyASint {
 	}
 
 	public static class Inst_ifthen extends Inst {
-		private InstsOpc inst;
+		private BloqueOpc bloque;
 		private Exp exp1;
 
-		public Inst_ifthen(Exp exp, InstsOpc insts) {
+		public Inst_ifthen(Exp exp, BloqueOpc bloque) {
 			super();
 			this.exp1 = exp;
-			this.inst = insts;
+			this.bloque = bloque;
 		}
 
-		public InstsOpc inst() {
-			return inst;
+		public BloqueOpc inst() {
+			return bloque;
 		}
 
 		public Exp exp1() {
@@ -806,23 +791,23 @@ public class TinyASint {
 	}
 
 	public static class Inst_ifthenelse extends Inst {
-		private InstsOpc inst;
-		private InstsOpc inst2;
+		private BloqueOpc bloque1;
+		private BloqueOpc bloque2;
 		private Exp exp1;
 
-		public Inst_ifthenelse(Exp exp, InstsOpc insts, InstsOpc insts2) {
+		public Inst_ifthenelse(Exp exp, BloqueOpc bloque1, BloqueOpc bloque2) {
 			super();
 			this.exp1 = exp;
-			this.inst = insts;
-			this.inst2 = insts2;
+			this.bloque1 = bloque1;
+			this.bloque2 = bloque2;
 		}
 
-		public InstsOpc inst() {
-			return inst;
+		public BloqueOpc bloque1() {
+			return bloque1;
 		}
 
-		public InstsOpc inst2() {
-			return inst;
+		public BloqueOpc bloque2() {
+			return bloque2;
 		}
 
 		public Exp exp1() {
@@ -835,17 +820,17 @@ public class TinyASint {
 	}
 
 	public static class Inst_while extends Inst {
-		private InstsOpc inst;
+		private BloqueOpc bloque;
 		private Exp exp1;
 
-		public Inst_while(Exp exp, InstsOpc insts) {
+		public Inst_while(Exp exp, BloqueOpc bloque) {
 			super();
 			this.exp1 = exp;
-			this.inst = insts;
+			this.bloque = bloque;
 		}
 
-		public InstsOpc inst() {
-			return inst;
+		public BloqueOpc inst() {
+			return bloque;
 		}
 
 		public Exp exp1() {
@@ -937,16 +922,16 @@ public class TinyASint {
 	}
 
 	public static class Inst_invoc_proc extends Inst {
-		private Id id;
+		private StringLocalizado id;
 		private ParamsR params;
 
-		public Inst_invoc_proc(Id id, ParamsR params) {
+		public Inst_invoc_proc(StringLocalizado id, ParamsR params) {
 			super();
 			this.id = id;
 			this.params = params;
 		}
 
-		public Id id() {
+		public StringLocalizado id() {
 			return id;
 		}
 
@@ -1061,7 +1046,7 @@ public class TinyASint {
 		public Tipo() {
 		}
 
-		public void procesa(Procesamiento p);
+		public abstract void procesa(Procesamiento p);
 	}
 
 	public static class Tipo_basico extends Tipo {
@@ -1082,14 +1067,14 @@ public class TinyASint {
 	}
 
 	public static class Tipo_id extends Tipo {
-		private Id id;
+		private StringLocalizado id;
 
-		public Tipo_id(Id id) {
+		public Tipo_id(StringLocalizado id) {
 			super();
 			this.id = id;
 		}
 
-		public Id id() {
+		public StringLocalizado id() {
 			return id;
 		}
 
@@ -1204,9 +1189,9 @@ public class TinyASint {
 
 	public static class Campo {
 		private Tipo tipo;
-		private Id id;
+		private StringLocalizado id;
 
-		public Campo(Tipo tipo, Id id) {
+		public Campo(Tipo tipo, StringLocalizado id) {
 			super();
 			this.tipo = tipo;
 			this.id = id;
@@ -1216,7 +1201,7 @@ public class TinyASint {
 			return tipo;
 		}
 
-		public Id id() {
+		public StringLocalizado id() {
 			return id;
 		}
 
@@ -1258,8 +1243,27 @@ public class TinyASint {
 			p.procesa(this);
 		}
 	}
+	
+	public static class ProgramaAux extends Bloque {
+		private Prog prog;
+		
+		public ProgramaAux(Prog prog) {
+			super();
+			this.prog = prog;
+		}
+		
+		public Prog prog() {
+			return prog;
+		}
+		
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+	
+	
 
-	static class Num extends Exp {
+	/*public static class Num extends Exp {
 		private StringLocalizado num;
 
 		public Num(StringLocalizado num) {
@@ -1278,7 +1282,7 @@ public class TinyASint {
 		public final int prioridad() {
 			return 7;
 		}
-	}
+	}*/
 
 	public static class Id extends Exp {
 		private StringLocalizado id;
@@ -1494,9 +1498,9 @@ public class TinyASint {
 		return new Asterix(arg);
 	}
 
-	public Exp cnum(StringLocalizado num) {
+	/*public Exp cnum(StringLocalizado num) {
 		return new Num(num);
-	}
+	}*/
 
 	public Id cid(StringLocalizado num) {
 		return new Id(num);
@@ -1530,8 +1534,8 @@ public class TinyASint {
 		return new Dec_tipo(tipo, id);
 	}
 
-	public Dec_proc cdec_proc(StringLocalizado id, ParamsF params, Insts insts) {
-		return new Dec_proc(id, params, insts);
+	public Dec_proc cdec_proc(StringLocalizado id, ParamsF params, Bloque bloque) {
+		return new Dec_proc(id, params, bloque);
 	}
 
 	public Insts cinsts_una(Inst inst) {
@@ -1567,24 +1571,24 @@ public class TinyASint {
         return new Inst_asig(exp1, exp2);
     }
 
-	public InstsOpc cinsts_opc_sin_insts() {
+	public BloqueOpc cinsts_opc_sin_insts() {
 		return new Insts_opc_sin_insts();
 	}
 
-	public InstsOpc cinsts_opc_con_insts(Insts insts) {
+	public BloqueOpc cinsts_opc_con_insts(Insts insts) {
 		return new Insts_opc_con_insts(insts);
 	}
 
-	public Inst cinst_ifthen(Exp exp, InstsOpc insts) {
-		return new Inst_ifthen(exp, insts);
+	public Inst cinst_ifthen(Exp exp, BloqueOpc bloque) {
+		return new Inst_ifthen(exp, bloque);
 	}
 
-	public Inst cinst_ifthenelse(Exp exp, InstsOpc insts, InstsOpc insts2) {
-		return new Inst_ifthenelse(exp, insts, insts2);
+	public Inst cinst_ifthenelse(Exp exp, BloqueOpc bloque1, BloqueOpc bloque2) {
+		return new Inst_ifthenelse(exp, bloque1, bloque2);
 	}
 
-	public Inst cinst_while(Exp exp, InstsOpc insts) {
-		return new Inst_while(exp, insts);
+	public Inst cinst_while(Exp exp, BloqueOpc bloque) {
+		return new Inst_while(exp, bloque);
 	}
 
 	public Inst cinst_lectura(Exp exp) {
@@ -1607,7 +1611,7 @@ public class TinyASint {
 		return new Inst_lib_mem(exp);
 	}
 
-	public Inst cinst_invoc_proc(Id id, ParamsR params) {
+	public Inst cinst_invoc_proc(StringLocalizado id, ParamsR params) {
 		return new Inst_invoc_proc(id, params);
 	}
 
@@ -1635,7 +1639,7 @@ public class TinyASint {
 		return new Tipo_basico(tipo);
 	}
 
-	public Tipo ctipo_id(Id id) {
+	public Tipo ctipo_id(StringLocalizado id) {
 		return new Tipo_id(id);
 	}
 
@@ -1663,7 +1667,7 @@ public class TinyASint {
 		return new Campos_muchos(cs, c);
 	}
 
-	public Campo ccampo(Tipo t, Id id) {
+	public Campo ccampo(Tipo t, StringLocalizado id) {
 		return new Campo(t, id);
 	}
 
@@ -1684,6 +1688,14 @@ public class TinyASint {
 	}	
 	
 	public Exp cnum_real(StringLocalizado s) {
+		return new Num_real(s);
+	}
+	
+	public Exp cverdad(StringLocalizado s) {
+		return new Num_int(s);
+	}	
+	
+	public Exp cfalso(StringLocalizado s) {
 		return new Num_real(s);
 	}
 

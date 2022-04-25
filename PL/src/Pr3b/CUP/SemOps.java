@@ -85,8 +85,8 @@ public class SemOps extends TinyASint {
         return cdec_tipo(tipo, id);
     }
 
-    public Dec_proc dec_proc(StringLocalizado id, ParamsF params, Insts insts) {
-        return cdec_proc(id, params, insts);
+    public Dec_proc dec_proc(StringLocalizado id, ParamsF params, Bloque bloque) {
+        return cdec_proc(id, params, bloque);
     }
 
     public ParamsF params_uno_f(ParamF param) {
@@ -115,24 +115,24 @@ public class SemOps extends TinyASint {
         return cinst_asig(exp1, exp2);
     }
     
-    public InstsOpc insts_opc_sin_insts() {
+    public BloqueOpc insts_opc_sin_insts() {
     	return cinsts_opc_sin_insts();
     }
     
-    public InstsOpc insts_opc_con_insts(Insts insts) {
+    public BloqueOpc insts_opc_con_insts(Insts insts) {
     	return cinsts_opc_con_insts(insts);
     }
     
-    public Inst inst_ifthen(Exp exp, InstsOpc  insts) {
-    	return cinst_ifthen(exp, insts);
+    public Inst inst_ifthen(Exp exp, BloqueOpc bloque) {
+    	return cinst_ifthen(exp, bloque);
     }
     
-    public Inst inst_ifthenelse (Exp exp, InstsOpc  insts, InstsOpc  insts2) {
-    	return cinst_ifthenelse(exp, insts, insts2);
+    public Inst inst_ifthenelse (Exp exp, BloqueOpc bloque1, BloqueOpc bloque2) {
+    	return cinst_ifthenelse(exp, bloque1, bloque2);
     }
     
-    public Inst inst_while(Exp exp, InstsOpc  insts) {
-    	return cinst_while(exp, insts);
+    public Inst inst_while(Exp exp, BloqueOpc bloque) {
+    	return cinst_while(exp, bloque);
     }
     
     public Inst inst_lectura(Exp exp) {
@@ -155,7 +155,7 @@ public class SemOps extends TinyASint {
     	return cinst_lib_mem(exp);
     }
     
-    public Inst inst_invoc_proc(Id id, ParamsR params) {
+    public Inst inst_invoc_proc(StringLocalizado id, ParamsR params) {
     	return cinst_invoc_proc(id, params);
     }
     
@@ -187,7 +187,7 @@ public class SemOps extends TinyASint {
     	return ctipo_basico(id);
     }
     
-    public Tipo tipo_id(Id id) {
+    public Tipo tipo_id(StringLocalizado id) {
     	return ctipo_id(id);
     }
     
@@ -215,7 +215,7 @@ public class SemOps extends TinyASint {
     	return ccampos_muchos(cs, c);
     }
     
-    public Campo campo(Tipo t, Id id) { 
+    public Campo campo(Tipo t, StringLocalizado id) { 
     	return ccampo(t, id);
     }
     
@@ -238,4 +238,12 @@ public class SemOps extends TinyASint {
     public Exp num_real(StringLocalizado s) {
     	return cnum_real(s);
     }    
+    
+    public Exp verdad() { 
+    	return ctrue_bool();
+    }
+    
+    public Exp falso() {
+    	return cfalse_bool();
+    }
 }

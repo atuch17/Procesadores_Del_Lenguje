@@ -115,24 +115,24 @@ public class SemOps extends TinyASint {
         return cinst_asig(exp1, exp2);
     }
     
-    public BloqueOpc insts_opc_sin_insts() {
+    public InstsOpc insts_opc_sin_insts() {
     	return cinsts_opc_sin_insts();
     }
     
-    public BloqueOpc insts_opc_con_insts(Insts insts) {
+    public InstsOpc insts_opc_con_insts(Insts insts) {
     	return cinsts_opc_con_insts(insts);
     }
     
-    public Inst inst_ifthen(Exp exp, BloqueOpc bloque) {
-    	return cinst_ifthen(exp, bloque);
+    public Inst inst_ifthen(Exp exp, InstsOpc insts) {
+    	return cinst_ifthen(exp, insts);
     }
     
-    public Inst inst_ifthenelse (Exp exp, BloqueOpc bloque1, BloqueOpc bloque2) {
-    	return cinst_ifthenelse(exp, bloque1, bloque2);
+    public Inst inst_ifthenelse (Exp exp, InstsOpc insts1, InstsOpc insts2) {
+    	return cinst_ifthenelse(exp, insts1, insts2);
     }
     
-    public Inst inst_while(Exp exp, BloqueOpc bloque) {
-    	return cinst_while(exp, bloque);
+    public Inst inst_while(Exp exp, InstsOpc insts) {
+    	return cinst_while(exp, insts);
     }
     
     public Inst inst_lectura(Exp exp) {

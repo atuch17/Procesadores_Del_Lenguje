@@ -1,7 +1,5 @@
 package Pr3b;
 
-import Pr3b.CUP.Procesamiento;
-
 public class TinyASint {
 
 	public static abstract class Exp {
@@ -732,14 +730,14 @@ public class TinyASint {
 		}
 	}
 
-	public static abstract class BloqueOpc {
-		public BloqueOpc() {
+	public static abstract class InstsOpc {
+		public InstsOpc() {
 		}
 
 		public abstract void procesa(Procesamiento p);
 	}
 
-	public static class Insts_opc_sin_insts extends BloqueOpc {
+	public static class Insts_opc_sin_insts extends InstsOpc {
 
 		public Insts_opc_sin_insts() {
 			super();
@@ -750,7 +748,7 @@ public class TinyASint {
 		}
 	}
 
-	public static class Insts_opc_con_insts extends BloqueOpc {
+	public static class Insts_opc_con_insts extends InstsOpc {
 		private Insts insts;
 
 		public Insts_opc_con_insts(Insts insts) {
@@ -768,17 +766,17 @@ public class TinyASint {
 	}
 
 	public static class Inst_ifthen extends Inst {
-		private BloqueOpc bloque;
+		private InstsOpc insts;
 		private Exp exp1;
 
-		public Inst_ifthen(Exp exp, BloqueOpc bloque) {
+		public Inst_ifthen(Exp exp, InstsOpc insts) {
 			super();
 			this.exp1 = exp;
-			this.bloque = bloque;
+			this.insts = insts;
 		}
 
-		public BloqueOpc inst() {
-			return bloque;
+		public InstsOpc inst() {
+			return insts;
 		}
 
 		public Exp exp1() {
@@ -791,22 +789,22 @@ public class TinyASint {
 	}
 
 	public static class Inst_ifthenelse extends Inst {
-		private BloqueOpc bloque1;
-		private BloqueOpc bloque2;
+		private InstsOpc bloque1;
+		private InstsOpc bloque2;
 		private Exp exp1;
 
-		public Inst_ifthenelse(Exp exp, BloqueOpc bloque1, BloqueOpc bloque2) {
+		public Inst_ifthenelse(Exp exp, InstsOpc bloque1, InstsOpc bloque2) {
 			super();
 			this.exp1 = exp;
 			this.bloque1 = bloque1;
 			this.bloque2 = bloque2;
 		}
 
-		public BloqueOpc bloque1() {
+		public InstsOpc bloque1() {
 			return bloque1;
 		}
 
-		public BloqueOpc bloque2() {
+		public InstsOpc bloque2() {
 			return bloque2;
 		}
 
@@ -820,17 +818,17 @@ public class TinyASint {
 	}
 
 	public static class Inst_while extends Inst {
-		private BloqueOpc bloque;
+		private InstsOpc insts;
 		private Exp exp1;
 
-		public Inst_while(Exp exp, BloqueOpc bloque) {
+		public Inst_while(Exp exp, InstsOpc insts) {
 			super();
 			this.exp1 = exp;
-			this.bloque = bloque;
+			this.insts = insts;
 		}
 
-		public BloqueOpc inst() {
-			return bloque;
+		public InstsOpc inst() {
+			return insts;
 		}
 
 		public Exp exp1() {
@@ -1571,24 +1569,24 @@ public class TinyASint {
         return new Inst_asig(exp1, exp2);
     }
 
-	public BloqueOpc cinsts_opc_sin_insts() {
+	public InstsOpc cinsts_opc_sin_insts() {
 		return new Insts_opc_sin_insts();
 	}
 
-	public BloqueOpc cinsts_opc_con_insts(Insts insts) {
+	public InstsOpc cinsts_opc_con_insts(Insts insts) {
 		return new Insts_opc_con_insts(insts);
 	}
 
-	public Inst cinst_ifthen(Exp exp, BloqueOpc bloque) {
-		return new Inst_ifthen(exp, bloque);
+	public Inst cinst_ifthen(Exp exp, InstsOpc insts) {
+		return new Inst_ifthen(exp, insts);
 	}
 
-	public Inst cinst_ifthenelse(Exp exp, BloqueOpc bloque1, BloqueOpc bloque2) {
-		return new Inst_ifthenelse(exp, bloque1, bloque2);
+	public Inst cinst_ifthenelse(Exp exp, InstsOpc insts1, InstsOpc insts2) {
+		return new Inst_ifthenelse(exp, insts1, insts2);
 	}
 
-	public Inst cinst_while(Exp exp, BloqueOpc bloque) {
-		return new Inst_while(exp, bloque);
+	public Inst cinst_while(Exp exp, InstsOpc insts) {
+		return new Inst_while(exp, insts);
 	}
 
 	public Inst cinst_lectura(Exp exp) {

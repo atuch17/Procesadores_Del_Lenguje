@@ -48,7 +48,7 @@ non terminal Tipo TipoPuntero;
 non terminal Insts Instrucciones;
 non terminal Inst Instruccion;
 non terminal Inst InstrAsig;
-non terminal BloqueOpc BloqOpc;
+non terminal InstsOpc InstOpc;
 non terminal Inst InstrIfThen;
 non terminal Inst InstrIfThenElse;
 non terminal Inst InstrWhile;
@@ -161,15 +161,15 @@ Instruccion ::= Bloque: bloque
     {: RESULT = sem.inst_comp(bloque); :};
 InstrAsig ::= E0: arg0 ASIG E0: arg1 
     {: RESULT = sem.inst_asig(arg0, arg1); :};
-BloqOpc ::= Instrucciones: insts
+InstOpc ::= Instrucciones: insts
     {: RESULT = sem.insts_opc_con_insts(insts); :};
-BloqOpc ::= 
+InstOpc ::= 
     {: RESULT = sem.insts_opc_sin_insts(); :};
-InstrIfThen ::= IF E0: arg0 THEN BloqOpc: bloque_opc ENDIF
+InstrIfThen ::= IF E0: arg0 THEN InstOpc: bloque_opc ENDIF
     {: RESULT = sem.inst_ifthen(arg0, bloque_opc); :};
-InstrIfThenElse ::= IF E0: arg0 THEN BloqOpc: bloque_opc_0 ELSE BloqOpc: bloque_opc_1 ENDIF
+InstrIfThenElse ::= IF E0: arg0 THEN InstOpc: bloque_opc_0 ELSE InstOpc: bloque_opc_1 ENDIF
     {: RESULT = sem.inst_ifthenelse(arg0, bloque_opc_0, bloque_opc_1); :};
-InstrWhile ::= WHILE E0: arg0 DO BloqOpc: bloque_opc ENDWHILE
+InstrWhile ::= WHILE E0: arg0 DO InstOpc: bloque_opc ENDWHILE
     {: RESULT = sem.inst_while(arg0, bloque_opc); :};
 InstrLectura ::= READ E0: arg0 
     {: RESULT = sem.inst_lectura(arg0); :};

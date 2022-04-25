@@ -1,1 +1,1 @@
-java -cp cup.jar java_cup.Main -parser AnalizadorSintacticoCUP -symbols ClaseLexica -dump_states -nopositions ConstructorAST.cup 2> automata.txt
+java -cp cup.jar java_cup.Main -parser ConstructorAST -symbols ClaseLexica -dump_states -nopositions ConstructorAST.cup 2> automata.txt

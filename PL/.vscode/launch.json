@@ -6,6 +6,14 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "mainClass": "Pr3b.Main",
+            "projectName": "Procesadores_Del_Lenguje_PL",
+            "args": "Tiny1_prueba1.txt asc"
+        },
+        {
+            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"

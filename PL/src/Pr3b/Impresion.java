@@ -6,88 +6,6 @@ public class Impresion extends ProcesamientoPorDefecto {
     public Impresion() {
     }
 
-    public void procesa(Prog_con_decs prog);
-	public void procesa(Prog_sin_decs prog);
-	public void procesa(Decs_una decs);
-	public void procesa(Decs_muchas decs);
-
-    public void procesa(Dec_var dec);
-	public void procesa(Dec_tipo dec);
-	public void procesa(Dec_proc dec);
-	public void procesa(Params_uno_f p);
-	public void procesa(Params_muchos_f p);
-	public void procesa(Param_f_sin_amp p);
-	public void procesa(Param_f_con_amp p);
-	public void procesa(Insts_una insts);
-	public void procesa(Insts_muchas intss);
-	public void procesa(Inst_asig inst);
-	public void procesa(Insts_opc_sin_insts inst);
-	public void procesa(Insts_opc_con_insts inst);
-	public void procesa(Inst_ifthen inst);
-	public void procesa(Inst_ifthenelse inst);
-	public void procesa(Inst_while inst);
-	public void procesa(Inst_lectura inst);
-	public void procesa(Inst_escritura inst);
-	public void procesa(Inst_new_line inst);
-	public void procesa(Inst_reserv_mem inst);
-	public void procesa(Inst_lib_mem inst);
-	public void procesa(Inst_invoc_proc inst);
-	public void procesa(Inst_comp inst);
-	public void procesa(Params_vacio p);
-	public void procesa(Params_lleno p);
-	public void procesa(Exprs_una e);
-	public void procesa(Exprs_muchas e);
-	public void procesa(ProgramaAux p);
-    
-	public void procesa(Tipo_basico tipo);
-	public void procesa(Tipo_id tipo);
-	public void procesa(Tipo_array tipo);
-	public void procesa(Tipo_registro tipo);
-	public void procesa(Tipo_puntero tipo);
-	public void procesa(Campos_uno c);
-	public void procesa(Campos_muchos c);
-	public void procesa(Campo c);
-	public void procesa(Bloque_vacio b);
-	public void procesa(Bloque_lleno b);
-	 
-	public void procesa(Id exp);
-	 
-	public void procesa(True exp);
-	public void procesa(False exp);
-	 
-	public void procesa(Sstring exp);
-	public void procesa(None exp);
-	public void procesa(Num_int exp);
-	public void procesa(Num_real exp);
-	 
-    public void procesa(Suma exp);
-    public void procesa(Resta exp);
-     
-    public void procesa(And exp);
-    public void procesa(Or exp);
-     
-    public void procesa(Mayor exp);    
-    public void procesa(Menor exp);    
-    public void procesa(Mayor_eq exp);    
-    public void procesa(Menor_eq exp);
-    public void procesa(Comp exp);    
-    public void procesa(Dist exp);    
-     
-    public void procesa(Mul exp);
-    public void procesa(Div exp);
-    public void procesa(Mod exp);
-	 
-    public void procesa(Corch exp);
-    public void procesa(Punto exp);
-    public void procesa(Flecha exp);
-
-    public void procesa(Menos exp);
-    public void procesa(Not exp);
-
-    public void procesa(Asterix exp);
-
-    //-----------------------------------------------
-
     public void procesa(Prog_con_decs prog) {
         prog.decs().procesa(this);
         System.out.println();
@@ -96,124 +14,360 @@ public class Impresion extends ProcesamientoPorDefecto {
         System.out.println();
     }
 
-    public void procesa(Decs_muchas decs) {
+	public void procesa(Prog_sin_decs prog) {
+        prog.insts().procesa(this);
+        System.out.println();
+    }
+
+	public void procesa(Decs_una decs) {
+        decs.dec().procesa(this);
+    }
+
+	public void procesa(Decs_muchas decs) {
         decs.decs().procesa(this);
         System.out.println(";");
         decs.dec().procesa(this);
     }
 
-    public void procesa(Decs_una decs) {
-        decs.dec().procesa(this);
+    public void procesa(Dec_var dec) {
+        System.out.print("var ");
+        dec.tipo().procesa(this);
+        System.out.print(dec.id());
     }
 
-    public void procesa(Dec dec) {
-        System.out.print("  " + dec.tipo() + " " + dec.id());
+	public void procesa(Dec_tipo dec) {
+        System.out.print("type ");
+        dec.tipo().procesa(this);
+        System.out.print(dec.id());
     }
 
-    public void procesa(Insts_muchas insts) {
+	public void procesa(Dec_proc dec) {
+        System.out.print("proc ");
+        System.out.print(dec.id());
+        System.out.print("(");
+        if (dec.params() != null)
+        	dec.params().procesa(this);
+        System.out.print(") ");
+        dec.Bloque().procesa(this);
+    }
+
+	public void procesa(Params_uno_f p) {
+        p.param().procesa(this);
+    }
+
+	public void procesa(Params_muchos_f p) {
+        p.ps().procesa(this);
+        System.out.print(", ");
+        p.s().procesa(this);
+    }
+
+	public void procesa(Param_f_sin_amp p) {
+        p.tipo().procesa(this);
+        System.out.print(p.id());
+    }
+
+	public void procesa(Param_f_con_amp p) {
+        p.tipo().procesa(this);
+        System.out.print("& ");
+        System.out.print(p.id());
+    }
+
+	public void procesa(Insts_una insts) {
+        insts.inst().procesa(this);
+    }
+
+	public void procesa(Insts_muchas insts) {
         insts.insts().procesa(this);
         System.out.println(";");
         insts.inst().procesa(this);
     }
 
-    public void procesa(Insts_una insts) {
-        insts.inst().procesa(this);
+	public void procesa(Inst_asig inst) {
+        inst.exp1().procesa(this);
+        System.out.print(" = ");
+        inst.exp2().procesa(this);
     }
 
-    public void procesa(Inst inst) {
-        System.out.print("  " + inst.id() + " = ");
-        inst.exp().procesa(this);
+	public void procesa(Insts_opc_sin_insts inst) {
     }
 
-    public void procesa(Suma exp) {
-        imprime_arg(exp.arg0(), 1);
-        System.out.print(" + ");
-        imprime_arg(exp.arg1(), 0);
+	public void procesa(Insts_opc_con_insts inst) {
+        inst.insts().procesa(this);
     }
 
-    public void procesa(Resta exp) {
-        imprime_arg(exp.arg0(), 1);
-        System.out.print(" - ");
-        imprime_arg(exp.arg1(), 1);
+	public void procesa(Inst_ifthen inst) {
+        System.out.print("if ");
+        inst.exp1().procesa(this);
+        System.out.println(" then");
+        inst.inst().procesa(this);
+        System.out.println();
+        System.out.print("endif");
     }
 
-    public void procesa(Mul exp) {
-        imprime_arg(exp.arg0(), 4);
-        System.out.print(" * ");
-        imprime_arg(exp.arg1(), 4);
+	public void procesa(Inst_ifthenelse inst) {
+        System.out.print("if ");
+        inst.exp1().procesa(this);
+        System.out.println(" then");
+        inst.bloque1().procesa(this);
+        System.out.println();
+        System.out.println("else");
+        inst.bloque2().procesa(this);
+        System.out.println();
+        System.out.print("endif");
     }
 
-    public void procesa(Div exp) {
-        imprime_arg(exp.arg0(), 4);
-        System.out.print(" / ");
-        imprime_arg(exp.arg1(), 4);
+	public void procesa(Inst_while inst) {
+        System.out.print("while ");
+        inst.exp1().procesa(this);
+        System.out.println(" do");
+        inst.inst().procesa(this);
+        System.out.println();
+        System.out.print("endwhile");
     }
 
-    public void procesa(Mayor exp) {
-        imprime_arg(exp.arg0(), 2);
-        System.out.print(" > ");
-        imprime_arg(exp.arg1(), 3);
+	public void procesa(Inst_lectura inst) {
+        System.out.print("read ");
+        inst.exp1().procesa(this);
     }
 
-    public void procesa(Menor exp) {
-        imprime_arg(exp.arg0(), 2);
-        System.out.print(" < ");
-        imprime_arg(exp.arg1(), 3);
+	public void procesa(Inst_escritura inst) {
+        System.out.print("write ");
+        inst.exp1().procesa(this);
     }
 
-    public void procesa(Mayor_eq exp) {
-        imprime_arg(exp.arg0(), 2);
-        System.out.print(" >= ");
-        imprime_arg(exp.arg1(), 3);
+	public void procesa(Inst_new_line inst) {
+        System.out.print("nl");
     }
 
-    public void procesa(Menor_eq exp) {
-        imprime_arg(exp.arg0(), 2);
-        System.out.print(" <= ");
-        imprime_arg(exp.arg1(), 3);
+	public void procesa(Inst_reserv_mem inst) {
+        System.out.print("new ");
+        inst.exp1().procesa(this);
     }
 
-    public void procesa(Comp exp) {
-        imprime_arg(exp.arg0(), 2);
-        System.out.print(" == ");
-        imprime_arg(exp.arg1(), 3);
+	public void procesa(Inst_lib_mem inst) {
+        System.out.print("delete ");
+        inst.exp1().procesa(this);
     }
 
-    public void procesa(Dist exp) {
-        imprime_arg(exp.arg0(), 2);
-        System.out.print(" != ");
-        imprime_arg(exp.arg1(), 3);
+	public void procesa(Inst_invoc_proc inst) {
+        System.out.print("call ");
+        System.out.print(inst.id());
+        inst.params().procesa(this);
     }
 
-    public void procesa(And exp) {
-        imprime_arg(exp.arg0(), 1);
-        System.out.print(" and ");
-        imprime_arg(exp.arg1(), 2);
+	public void procesa(Inst_comp inst) {
+        inst.b().procesa(this);
     }
 
-    public void procesa(Or exp) {
-        imprime_arg(exp.arg0(), 1);
-        System.out.print(" or ");
-        imprime_arg(exp.arg1(), 2);
+	public void procesa(Params_vacio p) {
+        System.out.print("() ");
     }
 
-    public void procesa(Not exp) {
-        System.out.print("not ");
-        imprime_arg(exp.arg(), 4);
+	public void procesa(Params_lleno p) {
+        System.out.print("(");
+        p.expresiones().procesa(this);
+        System.out.print(") ");
     }
 
-    public void procesa(Menos exp) { //TODO preguntar
-        System.out.print("- ");
-        imprime_arg(exp.arg(), 5);
+	public void procesa(Exprs_una e) {
+        e.e().procesa(this);
     }
 
-    public void procesa(True exp) {
-        System.out.print("true");
+	public void procesa(Exprs_muchas e) {
+        e.expresiones().procesa(this);
+        System.out.print(", ");
+        e.exp().procesa(this);
     }
 
-    public void procesa(False exp) {
-        System.out.print("false");
-    }
+	public void procesa(ProgramaAux p) {
+		p.prog().procesa(this);
+	}
+
+	public void procesa(Tipo_basico tipo) {
+		System.out.print(tipo.tipo() + " ");
+	};
+
+	public void procesa(Tipo_id tipo) {
+		System.out.print(tipo.id() + " ");
+	};
+
+	public void procesa(Tipo_array tipo){
+        System.out.print("array [");
+		System.out.print(tipo.valor() + "] of ");
+		tipo.tipo().procesa(this);
+	};
+	public void procesa(Tipo_registro tipo) {
+        System.out.println("record {");
+		tipo.campos().procesa(this);
+        System.out.print("} ");
+	};
+	public void procesa(Tipo_puntero tipo) {
+        System.out.print("pointer ");
+		tipo.tipo().procesa(this);
+	};
+
+	public void procesa(Campos_uno c) {
+		c.campo().procesa(this);
+	};
+
+	public void procesa(Campos_muchos c) {
+		c.campos().procesa(this);	
+		c.campo().procesa(this);		
+	};
+	public void procesa(Campo c) {
+		c.tipo().procesa(this);		
+		System.out.println(c.id() + ";");
+	};
+
+	public void procesa(Bloque_vacio b){
+		System.out.println("{");
+        System.out.print("}");
+	}
+	public void procesa(Bloque_lleno b) {
+        System.out.println("{");
+		b.prog().procesa(this);
+        System.out.print("}");
+	}
+
+	public void procesa(Id exp) {
+		System.out.print(exp.id());
+	}
+
+	public void procesa(True exp) {
+		System.out.print("true");
+	}
+
+	public void procesa(False exp) {
+		System.out.print("false");
+	}
+
+	public void procesa(Sstring exp) {
+		System.out.print(exp.string());
+	}
+
+	public void procesa(None exp) {
+		System.out.print("null");
+	}
+
+	public void procesa(Num_int exp) {
+		System.out.print(exp.s());
+	}
+
+	public void procesa(Num_real exp) {
+		System.out.print(exp.s());
+	}
+
+	public void procesa(Suma exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" + ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Resta exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" - ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(And exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" and ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Or exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" or ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Mayor exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" > ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Menor exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" < ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Mayor_eq exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" >= ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Menor_eq exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" <= ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Comp exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" == ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Dist exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" != ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Mul exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" * ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Div exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" / ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Mod exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print(" % ");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+	}
+
+	public void procesa(Corch exp) {
+		imprime_arg(exp.arg0(), exp.arg0().prioridad());
+		System.out.print("[");
+		imprime_arg(exp.arg1(), exp.arg1().prioridad());
+		System.out.print("]");
+	}
+
+	public void procesa(Punto exp) {
+		imprime_arg(exp.arg(), exp.arg().prioridad());
+		System.out.print(".");
+        System.out.print(exp.id());
+	}
+
+	public void procesa(Flecha exp) {
+		imprime_arg(exp.arg(), exp.arg().prioridad());
+		System.out.print("->");
+		System.out.print(exp.id());
+	}
+
+	public void procesa(Menos exp) {
+		System.out.print("-");
+		imprime_arg(exp.arg(), exp.arg().prioridad());
+	}
+
+	public void procesa(Not exp) {
+		System.out.print("not ");
+		imprime_arg(exp.arg(), exp.arg().prioridad());
+	}
+
+	public void procesa(Asterix exp) {
+		imprime_arg(exp.arg(), exp.arg().prioridad());
+		System.out.print(" * ");
+	}
 
     private void imprime_arg(Exp arg, int p) {
         if (arg.prioridad() < p) {
@@ -223,13 +377,5 @@ public class Impresion extends ProcesamientoPorDefecto {
         } else {
             arg.procesa(this);
         }
-    }
-
-    public void procesa(Id exp) {
-        System.out.print(exp.id());
-    }
-
-    public void procesa(Num exp) {
-        System.out.print(exp.num());
     }
 }

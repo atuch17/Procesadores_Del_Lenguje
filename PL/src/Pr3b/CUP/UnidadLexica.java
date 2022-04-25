@@ -1,6 +1,6 @@
 package Pr3b.CUP;
 
-import Pr3a.TinyASint.StringLocalizado;
+import Pr3b.TinyASint.StringLocalizado;
 import java_cup.runtime.Symbol;
 
 public class UnidadLexica extends Symbol {

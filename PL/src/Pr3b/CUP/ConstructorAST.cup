@@ -1,7 +1,6 @@
 package Pr3b.CUP;
 
 import java_cup.runtime.*;
-import Pr3b.CUP.SemOps;
 import Pr3b.TinyASint.*;
 
 scan with {: return getScanner().next_token(); :};

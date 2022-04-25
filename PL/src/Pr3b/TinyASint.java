@@ -62,33 +62,22 @@ public class TinyASint {
 		}
 	}
 
-	private static abstract class ExpBin2 extends Exp { // TODO revisar
-		private Exp arg0;
-		private Exp arg1;
+	private static abstract class ExpBin2 extends Exp {
+		private Exp arg;
 		private StringLocalizado id;
 
-		public Exp arg0() {
-			return arg0;
+		public ExpBin2(Exp arg, StringLocalizado id) {
+			super();
+			this.arg = arg;
+			this.id = id;
 		}
-
-		public Exp arg1() {
-			return arg1;
+		
+		public Exp arg() {
+			return arg;
 		}
 
 		public StringLocalizado id() {
 			return id;
-		}
-
-		public ExpBin2(Exp arg0, StringLocalizado id) {
-			super();
-			this.arg0 = arg0;
-			this.id = id;
-		}
-
-		public ExpBin2(Exp arg0, Exp arg1) {
-			super();
-			this.arg0 = arg0;
-			this.arg1 = arg1;
 		}
 	}
 
@@ -307,21 +296,7 @@ public class TinyASint {
 	}
 
 	/* ---5--- */
-	private static abstract class ExpOperadores extends ExpBin2 {
-		public ExpOperadores(Exp arg0, StringLocalizado id) {
-			super(arg0, id);
-		}
-
-		public ExpOperadores(Exp arg0, Exp arg1) {
-			super(arg0, arg1);
-		}
-
-		public final int prioridad() {
-			return 5;
-		}
-	}
-
-	public static class Corch extends ExpOperadores {
+	public static class Corch extends ExpBin {
 		public Corch(Exp arg0, Exp arg1) {
 			super(arg0, arg1);
 		}
@@ -329,9 +304,14 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+
+		@Override
+		public int prioridad() {
+			return 5;
+		}
 	}
 
-	public static class Punto extends ExpOperadores {
+	public static class Punto extends ExpBin2 {
 		public Punto(Exp arg0, StringLocalizado id) {
 			super(arg0, id);
 		}
@@ -339,15 +319,25 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		
+		@Override
+		public int prioridad() {
+			return 5;
+		}
 	}
 
-	public static class Flecha extends ExpOperadores {
+	public static class Flecha extends ExpBin2 {
 		public Flecha(Exp arg0, StringLocalizado id) {
 			super(arg0, id);
 		}
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		
+		@Override
+		public int prioridad() {
+			return 5;
 		}
 	}
 
@@ -874,8 +864,7 @@ public class TinyASint {
 		}
 	}
 
-	public static class Inst_new_line extends Inst { // TODO revisar
-
+	public static class Inst_new_line extends Inst {
 		public Inst_new_line() {
 			super();
 		}
@@ -1380,12 +1369,12 @@ public class TinyASint {
 
 		@Override
 		public int prioridad() {
-			// TODO Auto-generated method stub
 			return 7;
 		}
 
 		@Override
-		public void procesa(Procesamiento procesamiento) {
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
 		}
 	}
 
@@ -1407,7 +1396,8 @@ public class TinyASint {
 		}
 
 		@Override
-		public void procesa(Procesamiento procesamiento) {
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
 		}
 	}
 	

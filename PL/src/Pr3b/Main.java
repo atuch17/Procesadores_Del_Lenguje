@@ -11,13 +11,14 @@ import Pr3b.TinyASint.Prog;
 public class Main {
 	public static void main(String[] args) throws Exception {
 		Prog prog = null;
-		if (args[2].equals("asc"))
-			prog = ejecuta_ascendente(args[1]);
+		if (args[1].equals("asc"))
+			prog = ejecuta_ascendente(args[0]);
 		//else if (args[2].equals("desc"))
 		//	prog = ejecuta_descendente(args[1]);
-		else
+		else {
 			System.out.println("Error en los argumentos");
 			System.exit(1);
+		}
 		prog.procesa(new Impresion());
 	}
 

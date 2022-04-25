@@ -1,6 +1,4 @@
-package Pr3b.CUP;
-
-import Pr3b.TinyASint;
+package Pr3b;
 
 public class SemOps extends TinyASint {
     public Exp exp(String op, Exp arg0, Exp arg1) {

@@ -4,6 +4,9 @@ options  {
 PARSER_BEGIN(ConstructorAST)
 package Pr3b.JavaCC;
 
+import Pr3b.SemOps;
+import Pr3b.TinyASint.*;
+
 public class ConstructorAST {
    private SemOps sem = new SemOps();
 }
@@ -64,11 +67,11 @@ PARSER_END(ConstructorAST)
     dec=DeclaracionTipo() {return dec;} |
     dec=DeclaracionProc() {return dec;}}
   Dec DeclaracionVar() : {Tipo tipo; Token id;}
-    {<var> tipo=Tipo() id=<Id> {return sem.dec_var(tipo, id);}}
+    {<var> tipo=Tipo() id=<Id> {return sem.dec_var(tipo, sem.str(id.image, id.beginLine, id.beginColumn));}}
   Dec DeclaracionTipo(): {Tipo tipo; Token id;}
-  	{<type> tipo=Tipo() id=<Id> {return sem.dec_tipo(tipo, id);}}
+  	{<type> tipo=Tipo() id=<Id> {return sem.dec_tipo(tipo, sem.str(id.image, id.beginLine, id.beginColumn));}}
   Dec DeclaracionProc(): {Token id; ParamsF params; Bloque bloque;}
-  	{<proc> id=<Id> params=ParametrosFormales() bloque=Bloque() {return sem.dec_proc(id, params, bloque);}}
+  	{<proc> id=<Id> params=ParametrosFormales() bloque=Bloque() {return sem.dec_proc(sem.str(id.image, id.beginLine, id.beginColumn), params, bloque);}}
   ParamsF ParametrosFormales(): {ParamsF params;}
   	{"(" params=RPF() {return params;}}
   ParamsF RPF() : {ParamsF params;}
@@ -82,26 +85,26 @@ PARSER_END(ConstructorAST)
   ParamF Parametro(): {Tipo tipo;}
     {tipo=Tipo() {return RP(tipo);}}
   ParamF RP(Tipo tipo) : {Token id;}
-    {"&" id=<Id> {return sem.param_f_con_amp(tipo, id);} |
-    id=<Id> {return sem.param_f_sin_amp(tipo, id);}}
-  Bloque Bloque(): {ProgAux prog;}
+    {"&" id=<Id> {return sem.param_f_con_amp(tipo, sem.str(id.image, id.beginLine, id.beginColumn));} |
+    id=<Id> {return sem.param_f_sin_amp(tipo, sem.str(id.image, id.beginLine, id.beginColumn));}}
+  Bloque Bloque(): {Bloque prog;}
     {"{" prog=ProgramaAux() "}" {return prog;}}
-  ProgAux ProgramaAux(): {Prog prog;}
+  Bloque ProgramaAux(): {Prog prog;}
     {prog=Programa() {return sem.bloque_lleno(prog);} |
     {return sem.bloque_vacio();}}
   Tipo Tipo(): {Tipo tipo; Token id;}
     {tipo=TipoBasico() {return tipo;} |
-    id=<Id> {return sem.tipo_id(id);} |
+    id=<Id> {return sem.tipo_id(sem.str(id.image, id.beginLine, id.beginColumn));} |
     tipo=TipoArray() {return tipo;} |
     tipo=TipoRegistro() {return tipo;} |
     tipo=TipoPuntero() {return tipo;}}
-  Tipo TipoBasico(): {Token entero, real, booleano, str;}
-    {entero=<Int> {return sem.tipo_basico(entero.image);} |
-    real=<real>  {return sem.tipo_basico(real.image);} |
-    booleano=<bool>  {return sem.tipo_basico(booleano.image);} |
-    str=<string>  {return sem.tipo_basico(str.image);}}
+  Tipo TipoBasico(): {Token entero, Real, booleano, str;}
+    {entero=<Int> {return sem.tipo_basico(sem.str(entero.image, entero.beginLine, entero.beginColumn));} |
+    Real=<real>  {return sem.tipo_basico(sem.str(Real.image, Real.beginLine, Real.beginColumn));} |
+    booleano=<bool>  {return sem.tipo_basico(sem.str(booleano.image, booleano.beginLine, booleano.beginColumn));} |
+    str=<string>  {return sem.tipo_basico(sem.str(str.image, str.beginLine, str.beginColumn));}}
   Tipo TipoArray(): {Token num; Tipo tipo;}
-    {<array> "[" num=<NumInt> "]" <of> tipo=Tipo() {return sem.tipo_array(num.image, tipo);}}
+    {<array> "[" num=<NumInt> "]" <of> tipo=Tipo() {return sem.tipo_array(sem.str(num.image, num.beginLine, num.beginColumn), tipo);}}
   Tipo TipoRegistro(): {Campos campos;}
     {<record> "{" campos=Campos() "}" {return sem.tipo_registro(campos);}}
   Campos Campos(): {Campo campo; Campos campos;}
@@ -110,8 +113,8 @@ PARSER_END(ConstructorAST)
     {";" campo=Campo() campos=RC(sem.campos_muchos(camposh, campo)) {return campos;} |
     {return camposh;}} 
   Campo Campo() : {Tipo tipo; Token id;}
-    {tipo=Tipo() id=<Id> {return sem.campo(tipo, id);}}
-  void TipoPuntero() : {Tipo tipo;}
+    {tipo=Tipo() id=<Id> {return sem.campo(tipo, sem.str(id.image, id.beginLine, id.beginColumn));}}
+  Tipo TipoPuntero() : {Tipo tipo;}
     {<pointer> tipo=Tipo() {return sem.tipo_puntero(tipo);}}
 
   Insts Instrucciones() : {Inst inst; Insts insts;}
@@ -139,7 +142,7 @@ PARSER_END(ConstructorAST)
     {inst=InitIfThen() insts=RIT(inst) {return insts;}}
   Insts RIT(Inst insth) : {Insts insts;}
     {<Else> insts=BloqueOpcional() <endif> {return insts;} |
-    <endif> {return instsh;}}
+    <endif> {return insth;}}
   Inst InitIfThen(): {Exp exp; InstsOpc insts; Inst inst;}
     {<If> exp=E0() <then> insts=BloqueOpcional() {return sem.inst_ifthen(exp, insts);}}
   Inst InstrWhile(): {Exp exp; InstsOpc insts;}
@@ -155,7 +158,7 @@ PARSER_END(ConstructorAST)
   Inst InstrLibMem(): {Exp exp;}
     {<delete> exp=E0() {return sem.inst_lib_mem(exp);}}
   Inst InstrInvocProc(): {Token id; ParamsR params;}
-    {<call> id=<Id> params=ParametrosReales() {return sem.inst_invoc_proc(id, params);}}
+    {<call> id=<Id> params=ParametrosReales() {return sem.inst_invoc_proc(sem.str(id.image, id.beginLine, id.beginColumn), params);}}
   ParamsR ParametrosReales(): {ParamsR params;}
     {"(" params=RPR(sem.params_vacio()) {return params;}}
   ParamsR RPR(ParamsR paramsh): {Expresiones exps;}
@@ -167,20 +170,20 @@ PARSER_END(ConstructorAST)
     {"," exp=E0() exps=RE(sem.exprs_muchas(expsh, exp)) {return exps;} |
     {return expsh;}}
   
-  Exp EBasica(): {Token entero, real, verdad, falso, string, id, none;}
-    {entero=<NumInt> {return sem.num_int(sem.str(entero.image, entero.beginLine, entero.beginColumn).lexema());} |
-    real=<NumReal> {return sem.num_real(sem.str(real.image, real.beginLine, real.beginColumn).lexema());} |
+  Exp EBasica(): {Token entero, real, verdad, falso, cadena, id, none;}
+    {entero=<NumInt> {return sem.num_int(sem.str(entero.image, entero.beginLine, entero.beginColumn));} |
+    real=<NumReal> {return sem.num_real(sem.str(real.image, real.beginLine, real.beginColumn));} |
     verdad=<True> {return sem.verdad();} |
     falso=<False> {return sem.falso();} |
-    string=<string> {return sem.string(sem.str(string.image, string.beginLine, string.beginColumn).lexema());} |
-    id=<Id> {return sem.id(sem.str(id.image, id.beginLine, id.beginColumn).lexema());} |
+    cadena=<string> {return sem.string(sem.str(cadena.image, cadena.beginLine, cadena.beginColumn));} |
+    id=<Id> {return sem.id(sem.str(id.image, id.beginLine, id.beginColumn));} |
     none=<Null> {return sem.none();}}
   Exp E0(): {Exp arg0, resul;}
     {arg0=E1() resul=RE0(arg0) {return resul;}}
   Exp RE0(Exp argh): {Exp arg1;}
     {"+" arg1=E0() {return sem.exp("+", argh, arg1);} |
     "-" arg1=E1() {return sem.exp("-", argh, arg1);} |
-    {return exph;}}
+    {return argh;}}
   Exp E1(): {Exp arg0, resul;}
     {arg0=E2() resul=RE1(arg0) {return resul;}}
   Exp RE1(Exp exph): {String op; Exp arg1; Exp exp;} 
@@ -204,8 +207,8 @@ PARSER_END(ConstructorAST)
     {arg0=E6() resul=RE5(arg0) {return resul;}}
   Exp RE5(Exp argh): {Exp arg1, resul; Token id;}
     {"[" arg1=E0() "]" resul=RE5(sem.exp("[]", argh, arg1)){return resul;} |
-    "." id=<Id> resul=RE5(sem.exp(".", argh, id.image)) {return resul;} |
-    "->" id=<Id> resul=RE5(sem.exp("->", argh, id.image)) {return resul;} |
+    "." id=<Id> resul=RE5(sem.exp(".", argh, sem.str(id.image, id.beginLine, id.beginColumn))) {return resul;} |
+    "->" id=<Id> resul=RE5(sem.exp("->", argh, sem.str(id.image, id.beginLine, id.beginColumn))) {return resul;} |
     {return argh;}}
   Exp E6(): {Exp exp;}
   	{"*" exp=E6() {return sem.exp(exp);} |

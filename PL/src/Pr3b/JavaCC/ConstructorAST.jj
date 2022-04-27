@@ -92,21 +92,15 @@ PARSER_END(ConstructorAST)
   Bloque ProgramaAux(): {Prog prog;}
     {prog=Programa() {return sem.bloque_lleno(prog);} |
     {return sem.bloque_vacio();}}
-  Tipo Tipo(): {Tipo tipo; Token id;}
-    {tipo=TipoBasico() {return tipo;} |
-    id=<Id> {return sem.tipo_id(sem.str(id.image, id.beginLine, id.beginColumn));} |
-    tipo=TipoArray() {return tipo;} |
-    tipo=TipoRegistro() {return tipo;} |
-    tipo=TipoPuntero() {return tipo;}}
-  Tipo TipoBasico(): {Token entero, Real, booleano, str;}
-    {entero=<Int> {return sem.tipo_basico(sem.str(entero.image, entero.beginLine, entero.beginColumn));} |
-    Real=<real>  {return sem.tipo_basico(sem.str(Real.image, Real.beginLine, Real.beginColumn));} |
-    booleano=<bool>  {return sem.tipo_basico(sem.str(booleano.image, booleano.beginLine, booleano.beginColumn));} |
-    str=<string>  {return sem.tipo_basico(sem.str(str.image, str.beginLine, str.beginColumn));}}
-  Tipo TipoArray(): {Token num; Tipo tipo;}
-    {<array> "[" num=<NumInt> "]" <of> tipo=Tipo() {return sem.tipo_array(sem.str(num.image, num.beginLine, num.beginColumn), tipo);}}
-  Tipo TipoRegistro(): {Campos campos;}
-    {<record> "{" campos=Campos() "}" {return sem.tipo_registro(campos);}}
+  Tipo Tipo(): {Tipo tipo; Token num, id, entero, Real, booleano, str; Campos campos;}
+    {id=<Id> {return sem.tipo_id(sem.str(id.image, id.beginLine, id.beginColumn));} |
+    <Int> {return sem.t_int();} |
+    <real>  {return sem.t_real();} |
+    <bool>  {return sem.t_bool();} |
+    <string>  {return sem.t_cadena();} |
+    <array> "[" num=<NumInt> "]" <of> tipo=Tipo() {return sem.tipo_array(sem.str(num.image, num.beginLine, num.beginColumn), tipo);} |
+    <record> "{" campos=Campos() "}" {return sem.tipo_registro(campos);} |
+    <pointer> tipo=Tipo() {return sem.tipo_puntero(tipo);}}
   Campos Campos(): {Campo campo; Campos campos;}
     {campo=Campo() campos=RC(sem.campos_uno(campo)) {return campos;}}
   Campos RC(Campos camposh) : {Campo campo; Campos campos;}
@@ -114,8 +108,6 @@ PARSER_END(ConstructorAST)
     {return camposh;}} 
   Campo Campo() : {Tipo tipo; Token id;}
     {tipo=Tipo() id=<Id> {return sem.campo(tipo, sem.str(id.image, id.beginLine, id.beginColumn));}}
-  Tipo TipoPuntero() : {Tipo tipo;}
-    {<pointer> tipo=Tipo() {return sem.tipo_puntero(tipo);}}
 
   Insts Instrucciones() : {Inst inst; Insts insts;}
     {inst=Instruccion() insts=RI(sem.insts_una(inst)) {return insts;}}
@@ -170,14 +162,6 @@ PARSER_END(ConstructorAST)
     {"," exp=E0() exps=RE(sem.exprs_muchas(expsh, exp)) {return exps;} |
     {return expsh;}}
   
-  Exp EBasica(): {Token entero, real, verdad, falso, ccadena, id, none;}
-    {entero=<NumInt> {return sem.num_int(sem.str(entero.image, entero.beginLine, entero.beginColumn));} |
-    real=<NumReal> {return sem.num_real(sem.str(real.image, real.beginLine, real.beginColumn));} |
-    verdad=<True> {return sem.verdad();} |
-    falso=<False> {return sem.falso();} |
-    ccadena=<cadena> {return sem.string(sem.str(ccadena.image, ccadena.beginLine, ccadena.beginColumn));} |
-    id=<Id> {return sem.id(sem.str(id.image, id.beginLine, id.beginColumn));} |
-    none=<Null> {return sem.none();}}
   Exp E0(): {Exp arg0, resul;}
     {arg0=E1() resul=RE0(arg0) {return resul;}}
   Exp RE0(Exp argh): {Exp arg1;}
@@ -213,9 +197,15 @@ PARSER_END(ConstructorAST)
   Exp E6(): {Exp exp;}
   	{"*" exp=E6() {return sem.exp(exp);} |
   	exp=E7() {return exp;}}
-  Exp E7(): {Exp exp;}
+  Exp E7(): {Exp exp; Token entero, real, verdad, falso, ccadena, id, none;}
   	{"(" exp=E0() ")" {return exp;} |
-  	exp=EBasica() {return exp;}}
+  	entero=<NumInt> {return sem.num_int(sem.str(entero.image, entero.beginLine, entero.beginColumn));} |
+    real=<NumReal> {return sem.num_real(sem.str(real.image, real.beginLine, real.beginColumn));} |
+    verdad=<True> {return sem.verdad();} |
+    falso=<False> {return sem.falso();} |
+    ccadena=<cadena> {return sem.cadena(sem.str(ccadena.image, ccadena.beginLine, ccadena.beginColumn));} |
+    id=<Id> {return sem.id(sem.str(id.image, id.beginLine, id.beginColumn));} |
+    none=<Null> {return sem.none();}}
   
   String OP1(): {}
     {<and> {return "and";} |

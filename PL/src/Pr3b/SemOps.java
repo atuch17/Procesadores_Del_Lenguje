@@ -185,16 +185,28 @@ public class SemOps extends TinyASint {
     	return cid(id);
     }
     
-    public Tipo tipo_basico(StringLocalizado id) {
-    	return ctipo_basico(id);
-    }
-    
     public Tipo tipo_id(StringLocalizado id) {
     	return ctipo_id(id);
     }
-    
-    public Exp string(StringLocalizado s) {
-    	return cstring(s);
+
+    public Tipo t_int() {
+        return ctipo_int();
+    }
+
+    public Tipo t_real() {
+        return ctipo_real();
+    }
+
+    public Tipo t_bool() {
+        return ctipo_bool();
+    }
+
+    public Tipo t_cadena() {
+        return ctipo_cadena();
+    }
+
+    public Exp cadena(StringLocalizado s) {
+        return ccadena(s);
     }
     
     public Exp none() { // Null

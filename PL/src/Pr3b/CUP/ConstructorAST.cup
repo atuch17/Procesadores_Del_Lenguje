@@ -2,6 +2,7 @@ package Pr3b.CUP;
 
 import java_cup.runtime.*;
 import Pr3b.TinyASint.*;
+import Pr3b.SemOps;
 
 scan with {: return getScanner().next_token(); :};
 action code {:
@@ -24,7 +25,7 @@ terminal SEP_SEC, SEP_INS, ASIG, P_AP, P_CIERRE, OP_SUMA, OP_RESTA, OP_MULT, OP_
          LLAVE_AP, LLAVE_CIERRE, PUNTO, OP_FLECHA, COMA, OP_AMP, TRUE, FALSE,
          AND, OR, NOT, NULL, PROC, IF, THEN, ELSE, ENDIF, WHILE, DO, ENDWHILE, CALL,
          RECORD, ARRAY, OF, POINTER, NEW, DELETE, READ, WRITE, NL, VAR, TYPE;
-terminal StringLocalizado NUM_INT, NUM_REAL, CADENA, ID, INT, REAL, BOOL, STRING;
+terminal StringLocalizado NUM_INT, NUM_REAL, ID, INT, REAL, BOOL, CADENA, STRING;
 
 non terminal Prog Programa;
 non terminal Decs Declaraciones;
@@ -38,12 +39,8 @@ non terminal ParamF Parametro;
 non terminal Bloque Bloque;
 non terminal Bloque ProgramaAux;
 non terminal Tipo Tipo;
-non terminal Tipo TipoBasico;
-non terminal Tipo TipoArray;
-non terminal Tipo TipoRegistro;
 non terminal Campos Campos;
 non terminal Campo Campo;
-non terminal Tipo TipoPuntero;
 non terminal Insts Instrucciones;
 non terminal Inst Instruccion;
 non terminal Inst InstrAsig;
@@ -59,7 +56,7 @@ non terminal Inst InstrLibMem;
 non terminal Inst InstrInvocProc;
 non terminal ParamsR ParamsR;
 non terminal Expresiones Exprs;
-non terminal Exp EBasica, E0, E1, E2, E3, E4, E5, E6, E7;
+non terminal Exp E0, E1, E2, E3, E4, E5, E6, E7;
 non terminal String OP1, OP2, OP3;
 
 
@@ -101,27 +98,19 @@ ProgramaAux ::= Programa: prog
     {: RESULT = sem.bloque_lleno(prog); :};
 ProgramaAux ::= 
     {: RESULT = sem.bloque_vacio(); :};
-Tipo ::= TipoBasico: tipo_basico 
-    {: RESULT = tipo_basico; :};
 Tipo ::= ID: id 
     {: RESULT = sem.tipo_id(id); :};
-Tipo ::= TipoArray: tipo_array 
-    {: RESULT = tipo_array; :};
-Tipo ::= TipoRegistro: tipo_registro 
-    {: RESULT = tipo_registro; :};
-Tipo ::= TipoPuntero: tipo_puntero 
-    {: RESULT = tipo_puntero; :};
-TipoBasico ::= INT: entero
-    {: RESULT = sem.tipo_basico(entero); :};
-TipoBasico ::= REAL: real
-    {: RESULT = sem.tipo_basico(real); :};
-TipoBasico ::= BOOL: bool
-    {: RESULT = sem.tipo_basico(bool); :};
-TipoBasico ::= STRING: cadena
-    {: RESULT = sem.tipo_basico(cadena); :};
-TipoArray ::= ARRAY CORCHETE_AP NUM_INT: num_int CORCHETE_CIERRE OF Tipo: tipo 
+Tipo ::= INT
+    {: RESULT = sem.t_int(); :};
+Tipo ::= REAL
+    {: RESULT = sem.t_real(); :};
+Tipo ::= BOOL
+    {: RESULT = sem.t_bool(); :};
+Tipo ::= STRING
+    {: RESULT = sem.t_cadena(); :};
+Tipo ::= ARRAY CORCHETE_AP NUM_INT: num_int CORCHETE_CIERRE OF Tipo: tipo 
     {: RESULT = sem.tipo_array(num_int, tipo); :};
-TipoRegistro ::= RECORD LLAVE_AP Campos: campos LLAVE_CIERRE 
+Tipo ::= RECORD LLAVE_AP Campos: campos LLAVE_CIERRE 
     {: RESULT = sem.tipo_registro(campos); :};
 Campos ::= Campos: campos SEP_INS Campo: campo 
     {: RESULT = sem.campos_muchos(campos, campo); :};
@@ -129,7 +118,7 @@ Campos ::= Campo: campo
     {: RESULT = sem.campos_uno(campo); :};
 Campo ::= Tipo: tipo ID: id 
     {: RESULT = sem.campo(tipo, id); :};
-TipoPuntero ::= POINTER Tipo: tipo 
+Tipo ::= POINTER Tipo: tipo
     {: RESULT = sem.tipo_puntero(tipo); :};
 
 Instrucciones ::= Instrucciones: insts SEP_INS Instruccion: inst 
@@ -191,21 +180,6 @@ Exprs ::= Exprs: exprs COMA E0: arg0
 Exprs ::= E0: arg0 
     {: RESULT = sem.exprs_una(arg0); :};
 
-EBasica ::= NUM_INT: num_int 
-    {: RESULT = sem.num_int(num_int); :};
-EBasica ::= NUM_REAL: num_real 
-    {: RESULT = sem.num_real(num_real); :};
-EBasica ::= TRUE
-    {: RESULT = sem.verdad(); :};
-EBasica ::= FALSE
-    {: RESULT = sem.falso(); :};
-EBasica ::= CADENA: cadena 
-    {: RESULT = sem.string(cadena); :};
-EBasica ::= ID: id 
-    {: RESULT = sem.id(id); :};
-EBasica ::= NULL
-    {: RESULT = sem.none(); :};
-
 E0 ::= E1: arg0 OP_SUMA E0: arg1 
     {: RESULT = sem.exp("+", arg0, arg1); :};
 E0 ::= E1: arg0 OP_RESTA E1: arg1 
@@ -244,8 +218,20 @@ E6 ::= E7: arg0
     {: RESULT = arg0; :};
 E7 ::= P_AP E0: arg0 P_CIERRE
     {: RESULT = arg0; :};
-E7 ::= EBasica: arg0
-    {: RESULT = arg0; :};
+E7 ::= NUM_INT: num_int 
+    {: RESULT = sem.num_int(num_int); :};
+E7 ::= NUM_REAL: num_real 
+    {: RESULT = sem.num_real(num_real); :};
+E7 ::= TRUE
+    {: RESULT = sem.verdad(); :};
+E7 ::= FALSE
+    {: RESULT = sem.falso(); :};
+E7 ::= CADENA: cadena 
+    {: RESULT = sem.cadena(cadena); :};
+E7 ::= ID: id 
+    {: RESULT = sem.id(id); :};
+E7 ::= NULL
+    {: RESULT = sem.none(); :};
 
 OP1 ::= AND
     {: RESULT = "and"; :};

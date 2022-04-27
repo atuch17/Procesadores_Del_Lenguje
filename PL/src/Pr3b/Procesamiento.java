@@ -37,8 +37,11 @@ public interface Procesamiento {
 	void procesa(ProgramaAux p);
 	//void procesa(Var exp);
 	//void procesa(Tipo tipo);
-	void procesa(Tipo_basico tipo);
 	void procesa(Tipo_id tipo);
+	void procesa(Tipo_int tipo);
+	void procesa(Tipo_real tipo);
+	void procesa(Tipo_bool tipo);
+	void procesa(Tipo_cadena tipo);
 	void procesa(Tipo_array tipo);
 	void procesa(Tipo_registro tipo);
 	void procesa(Tipo_puntero tipo);

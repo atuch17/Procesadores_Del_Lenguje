@@ -1036,16 +1036,39 @@ public class TinyASint {
 		public abstract void procesa(Procesamiento p);
 	}
 
-	public static class Tipo_basico extends Tipo {
-		private StringLocalizado tipo;
-
-		public Tipo_basico(StringLocalizado tipo) {
+	public static class Tipo_int extends Tipo {
+		public Tipo_int() {
 			super();
-			this.tipo = tipo;
 		}
 
-		public StringLocalizado tipo() {
-			return tipo;
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Tipo_real extends Tipo {
+		public Tipo_real() {
+			super();
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Tipo_bool extends Tipo {
+		public Tipo_bool() {
+			super();
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Tipo_cadena extends Tipo {
+		public Tipo_cadena() {
+			super();
 		}
 
 		public void procesa(Procesamiento p) {
@@ -1623,15 +1646,27 @@ public class TinyASint {
 		return new Exprs_muchas(e, exp);
 	}
 
-	public Tipo ctipo_basico(StringLocalizado tipo) {
-		return new Tipo_basico(tipo);
-	}
-
 	public Tipo ctipo_id(StringLocalizado id) {
 		return new Tipo_id(id);
 	}
 
-	public Exp cstring(StringLocalizado s) {
+	public Tipo ctipo_int() {
+		return new Tipo_int();
+	}
+
+	public Tipo ctipo_real() {
+		return new Tipo_real();
+	}
+
+	public Tipo ctipo_bool() {
+		return new Tipo_bool();
+	}
+
+	public Tipo ctipo_cadena() {
+		return new Tipo_cadena();
+	}
+
+	public Exp ccadena(StringLocalizado s) {
 		return new Sstring(s);
 	}
 

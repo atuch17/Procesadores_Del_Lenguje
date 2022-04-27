@@ -183,12 +183,24 @@ public class Impresion extends ProcesamientoPorDefecto {
 		p.prog().procesa(this);
 	}
 
-	public void procesa(Tipo_basico tipo) {
-		System.out.print(tipo.tipo() + " ");
-	};
-
 	public void procesa(Tipo_id tipo) {
 		System.out.print(tipo.id() + " ");
+	};
+
+	public void procesa(Tipo_int tipo) {
+		System.out.print("int ");
+	};
+
+	public void procesa(Tipo_real tipo) {
+		System.out.print("real ");
+	};
+
+	public void procesa(Tipo_bool tipo) {
+		System.out.print("bool ");
+	};
+
+	public void procesa(Tipo_cadena tipo) {
+		System.out.print("string ");
 	};
 
 	public void procesa(Tipo_array tipo){

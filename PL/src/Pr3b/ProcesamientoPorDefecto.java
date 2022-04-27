@@ -33,8 +33,11 @@ public class ProcesamientoPorDefecto implements Procesamiento {
 	public void procesa(Params_lleno p) {}
 	public void procesa(Exprs_una e) {}
 	public void procesa(Exprs_muchas e) {}
-	public void procesa(Tipo_basico tipo) {}
 	public void procesa(Tipo_id tipo) {}
+	public void procesa(Tipo_int tipo) {}
+	public void procesa(Tipo_real tipo) {}
+	public void procesa(Tipo_bool tipo) {}
+	public void procesa(Tipo_cadena tipo) {}
 	public void procesa(Tipo_array tipo) {}
 	public void procesa(Tipo_registro tipo) {}
 	public void procesa(Tipo_puntero tipo) {}

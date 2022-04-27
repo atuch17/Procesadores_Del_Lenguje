@@ -13,8 +13,8 @@ public class Main {
 		Prog prog = null;
 		if (args[1].equals("asc"))
 			prog = ejecuta_ascendente(args[0]);
-		//else if (args[2].equals("desc"))
-		//	prog = ejecuta_descendente(args[1]);
+		else if (args[1].equals("desc"))
+			prog = ejecuta_descendente(args[0]);
 		else {
 			System.out.println("Error en los argumentos");
 			System.exit(1);
@@ -29,9 +29,9 @@ public class Main {
 		return (Prog) constructorast.parse().value;
 	}
 	
-	/*private static Prog ejecuta_descendente(String in) throws Exception {
+	private static Prog ejecuta_descendente(String in) throws Exception {
 		Reader input = new InputStreamReader(new FileInputStream(in));
 		Pr3b.JavaCC.ConstructorAST constructorast = new Pr3b.JavaCC.ConstructorAST(input);
 		return constructorast.ProgramaP(); //Init();
-	}*/
+	}
 }

@@ -129,6 +129,10 @@ public class SemOps extends TinyASint {
     	return cinst_ifthenelse(exp, insts1, insts2);
     }
     
+    public Inst_ifthen inst_if_then (Exp exp, InstsOpc insts1) {
+    	return new Inst_ifthen(exp,insts1);
+    }
+    
     public Inst inst_while(Exp exp, InstsOpc insts) {
     	return cinst_while(exp, insts);
     }

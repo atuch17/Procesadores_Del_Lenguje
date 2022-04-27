@@ -58,7 +58,7 @@ PARSER_END(ConstructorAST)
   				{decs=Declaraciones() "&&" insts=Instrucciones() {return sem.prog_con_decs(decs, insts);} |
   				insts=Instrucciones() {return sem.prog_sin_decs(insts);}}
   Decs Declaraciones(): {Dec dec; Decs decs;}
-  				{";" dec=Declaracion() decs=RD(sem.decs_una(dec)) {return decs;}}
+  				{dec=Declaracion() decs=RD(sem.decs_una(dec)) {return decs;}}
   Decs RD(Decs decsh) : {Dec dec; Decs decs;}
     {";" dec=Declaracion() decs=RD(sem.decs_muchas(decsh, dec)) {return decs;} |
     {return decsh;}}
@@ -138,13 +138,13 @@ PARSER_END(ConstructorAST)
   InstsOpc BloqueOpcional(): {Insts insts;}
     {insts=Instrucciones() {return sem.insts_opc_con_insts(insts);} |
     {return sem.insts_opc_sin_insts();}}
-  Inst InstrIfThen(): {Inst inst; Exp exp; InstsOpc instsOpc; Insts insts;}
+  Inst InstrIfThen(): {Inst_ifthen inst; Exp exp; InstsOpc instsOpc; Inst insts;}
     {inst=InitIfThen() insts=RIT(inst) {return insts;}}
-  Insts RIT(Inst insth) : {Insts insts;}
-    {<Else> insts=BloqueOpcional() <endif> {return insts;} |
-    <endif> {return insth;}}
-  Inst InitIfThen(): {Exp exp; InstsOpc insts; Inst inst;}
-    {<If> exp=E0() <then> insts=BloqueOpcional() {return sem.inst_ifthen(exp, insts);}}
+  Inst RIT(Inst_ifthen insth) : {InstsOpc insts;}
+    {<Else> insts=BloqueOpcional() <endif> {return sem.inst_ifthenelse(insth.exp1(), insth.inst(), insts);} |
+    <endif> {return sem.inst_ifthen(insth.exp1(), insth.inst());}}
+  Inst_ifthen InitIfThen(): {Exp exp; InstsOpc insts; Inst inst;}
+    {<If> exp=E0() <then> insts=BloqueOpcional() {return sem.inst_if_then(exp, insts);}}
   Inst InstrWhile(): {Exp exp; InstsOpc insts;}
     {<While> exp=E0() <Do> insts=BloqueOpcional() <endwhile> {return sem.inst_while(exp, insts);}}
   Inst InstrLectura(): {Exp exp;}
@@ -170,12 +170,12 @@ PARSER_END(ConstructorAST)
     {"," exp=E0() exps=RE(sem.exprs_muchas(expsh, exp)) {return exps;} |
     {return expsh;}}
   
-  Exp EBasica(): {Token entero, real, verdad, falso, cadena, id, none;}
+  Exp EBasica(): {Token entero, real, verdad, falso, ccadena, id, none;}
     {entero=<NumInt> {return sem.num_int(sem.str(entero.image, entero.beginLine, entero.beginColumn));} |
     real=<NumReal> {return sem.num_real(sem.str(real.image, real.beginLine, real.beginColumn));} |
     verdad=<True> {return sem.verdad();} |
     falso=<False> {return sem.falso();} |
-    cadena=<string> {return sem.string(sem.str(cadena.image, cadena.beginLine, cadena.beginColumn));} |
+    ccadena=<cadena> {return sem.string(sem.str(ccadena.image, ccadena.beginLine, ccadena.beginColumn));} |
     id=<Id> {return sem.id(sem.str(id.image, id.beginLine, id.beginColumn));} |
     none=<Null> {return sem.none();}}
   Exp E0(): {Exp arg0, resul;}

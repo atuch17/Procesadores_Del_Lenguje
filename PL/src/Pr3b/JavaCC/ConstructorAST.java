@@ -18,7 +18,9 @@ public class ConstructorAST implements ConstructorASTConstants {
   final public Prog Programa() throws ParseException {
                      Decs decs; Insts insts;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 43:
+    case proc:
+    case var:
+    case type:
       decs = Declaraciones();
       jj_consume_token(42);
       insts = Instrucciones();
@@ -27,7 +29,6 @@ public class ConstructorAST implements ConstructorASTConstants {
     case NumInt:
     case NumReal:
     case not:
-    case string:
     case Null:
     case If:
     case True:
@@ -40,6 +41,7 @@ public class ConstructorAST implements ConstructorASTConstants {
     case write:
     case nl:
     case Id:
+    case cadena:
     case 44:
     case 47:
     case 54:
@@ -57,10 +59,9 @@ public class ConstructorAST implements ConstructorASTConstants {
 
   final public Decs Declaraciones() throws ParseException {
                          Dec dec; Decs decs;
-    jj_consume_token(43);
     dec = Declaracion();
     decs = RD(sem.decs_una(dec));
-                                                                                   {if (true) return decs;}
+                                                                               {if (true) return decs;}
     throw new Error("Missing return statement in function");
   }
 
@@ -232,8 +233,8 @@ public class ConstructorAST implements ConstructorASTConstants {
     case NumInt:
     case NumReal:
     case not:
-    case string:
     case Null:
+    case proc:
     case If:
     case True:
     case While:
@@ -244,8 +245,10 @@ public class ConstructorAST implements ConstructorASTConstants {
     case read:
     case write:
     case nl:
+    case var:
+    case type:
     case Id:
-    case 43:
+    case cadena:
     case 44:
     case 47:
     case 54:
@@ -413,11 +416,11 @@ public class ConstructorAST implements ConstructorASTConstants {
     case NumInt:
     case NumReal:
     case not:
-    case string:
     case Null:
     case True:
     case False:
     case Id:
+    case cadena:
     case 44:
     case 54:
     case 57:
@@ -483,7 +486,6 @@ public class ConstructorAST implements ConstructorASTConstants {
     case NumInt:
     case NumReal:
     case not:
-    case string:
     case Null:
     case If:
     case True:
@@ -496,6 +498,7 @@ public class ConstructorAST implements ConstructorASTConstants {
     case write:
     case nl:
     case Id:
+    case cadena:
     case 44:
     case 47:
     case 54:
@@ -511,25 +514,25 @@ public class ConstructorAST implements ConstructorASTConstants {
   }
 
   final public Inst InstrIfThen() throws ParseException {
-                       Inst inst; Exp exp; InstsOpc instsOpc; Insts insts;
+                       Inst_ifthen inst; Exp exp; InstsOpc instsOpc; Inst insts;
     inst = InitIfThen();
     insts = RIT(inst);
                                         {if (true) return insts;}
     throw new Error("Missing return statement in function");
   }
 
-  final public Insts RIT(Inst insth) throws ParseException {
-                           Insts insts;
+  final public Inst RIT(Inst_ifthen insth) throws ParseException {
+                                 InstsOpc insts;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case Else:
       jj_consume_token(Else);
       insts = BloqueOpcional();
       jj_consume_token(endif);
-                                            {if (true) return insts;}
+                                            {if (true) return sem.inst_ifthenelse(insth.exp1(), insth.inst(), insts);}
       break;
     case endif:
       jj_consume_token(endif);
-             {if (true) return insth;}
+             {if (true) return sem.inst_ifthen(insth.exp1(), insth.inst());}
       break;
     default:
       jj_la1[13] = jj_gen;
@@ -539,13 +542,13 @@ public class ConstructorAST implements ConstructorASTConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public Inst InitIfThen() throws ParseException {
-                      Exp exp; InstsOpc insts; Inst inst;
+  final public Inst_ifthen InitIfThen() throws ParseException {
+                             Exp exp; InstsOpc insts; Inst inst;
     jj_consume_token(If);
     exp = E0();
     jj_consume_token(then);
     insts = BloqueOpcional();
-                                                  {if (true) return sem.inst_ifthen(exp, insts);}
+                                                  {if (true) return sem.inst_if_then(exp, insts);}
     throw new Error("Missing return statement in function");
   }
 
@@ -622,11 +625,11 @@ public class ConstructorAST implements ConstructorASTConstants {
     case NumInt:
     case NumReal:
     case not:
-    case string:
     case Null:
     case True:
     case False:
     case Id:
+    case cadena:
     case 44:
     case 54:
     case 57:
@@ -671,7 +674,7 @@ public class ConstructorAST implements ConstructorASTConstants {
   }
 
   final public Exp EBasica() throws ParseException {
-                  Token entero, real, verdad, falso, cadena, id, none;
+                  Token entero, real, verdad, falso, ccadena, id, none;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NumInt:
       entero = jj_consume_token(NumInt);
@@ -689,9 +692,9 @@ public class ConstructorAST implements ConstructorASTConstants {
       falso = jj_consume_token(False);
                    {if (true) return sem.falso();}
       break;
-    case string:
-      cadena = jj_consume_token(string);
-                     {if (true) return sem.string(sem.str(cadena.image, cadena.beginLine, cadena.beginColumn));}
+    case cadena:
+      ccadena = jj_consume_token(cadena);
+                      {if (true) return sem.string(sem.str(ccadena.image, ccadena.beginLine, ccadena.beginColumn));}
       break;
     case Id:
       id = jj_consume_token(Id);
@@ -831,11 +834,11 @@ public class ConstructorAST implements ConstructorASTConstants {
       break;
     case NumInt:
     case NumReal:
-    case string:
     case Null:
     case True:
     case False:
     case Id:
+    case cadena:
     case 44:
     case 57:
       exp = E5();
@@ -896,11 +899,11 @@ public class ConstructorAST implements ConstructorASTConstants {
       break;
     case NumInt:
     case NumReal:
-    case string:
     case Null:
     case True:
     case False:
     case Id:
+    case cadena:
     case 44:
       exp = E7();
                   {if (true) return exp;}
@@ -924,11 +927,11 @@ public class ConstructorAST implements ConstructorASTConstants {
       break;
     case NumInt:
     case NumReal:
-    case string:
     case Null:
     case True:
     case False:
     case Id:
+    case cadena:
       exp = EBasica();
                        {if (true) return exp;}
       break;
@@ -1029,10 +1032,10 @@ public class ConstructorAST implements ConstructorASTConstants {
       jj_la1_2();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x21297090,0x0,0x8000,0x5e002000,0x0,0x0,0x21297090,0x5e002000,0x1c002000,0x0,0x0,0x21297090,0x21297090,0x140000,0x20087090,0x0,0x20086090,0x0,0xc00,0x0,0x0,0x20087090,0x0,0x20086090,0x20086090,0xc00,0x0,0x0,};
+      jj_la1_0 = new int[] {0x2129d090,0x0,0x8000,0x5e002000,0x0,0x0,0x2129d090,0x5e002000,0x1c002000,0x0,0x0,0x21295090,0x21295090,0x140000,0x20085090,0x0,0x20084090,0x0,0xc00,0x0,0x0,0x20085090,0x0,0x20084090,0x20084090,0xc00,0x0,0x0,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x240993e,0x800,0xc0,0x2101,0x800,0x4100,0x240993e,0x101,0x0,0x800,0x800,0x240913e,0x240913e,0x0,0x2403100,0x100000,0x100,0x600000,0x0,0xfc000000,0x2000000,0x2401100,0x1820000,0x2001100,0x1100,0x0,0xfc000000,0x2000000,};
+      jj_la1_1 = new int[] {0x24093fe,0x800,0xc0,0x2101,0x800,0x4100,0x24093fe,0x101,0x0,0x800,0x800,0x240933e,0x240933e,0x0,0x2403300,0x100000,0x300,0x600000,0x0,0xfc000000,0x2000000,0x2401300,0x1820000,0x2001300,0x1300,0x0,0xfc000000,0x2000000,};
    }
    private static void jj_la1_2() {
       jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x3,};

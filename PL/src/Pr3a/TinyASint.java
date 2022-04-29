@@ -266,27 +266,6 @@ public class TinyASint {
 		}
 	}
 	
-	public static class Num extends Exp {
-		private StringLocalizado num;
-
-		public Num(StringLocalizado num) {
-			super();
-			this.num = num;
-		}
-
-		public StringLocalizado num() {
-			return num;
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-
-		public final int prioridad() {
-			return 5;
-		}
-	}
-
 	public static class Id extends Exp {
 		private StringLocalizado id;
 
@@ -334,32 +313,100 @@ public class TinyASint {
 		}
 	}
 	
-	public static class Tipo {
-		private StringLocalizado tipo;
-		
-		public Tipo(StringLocalizado tipo) {
-			this.tipo = tipo;
+	public static class Num_int extends Exp {
+		private StringLocalizado s;
+
+		public Num_int(StringLocalizado s) {
+			super();
+			this.s = s;
 		}
-		
-		public StringLocalizado tipo() {
-			return tipo;
+
+		public StringLocalizado s() {
+			return s;
 		}
-		
+
+		@Override
+		public int prioridad() {
+			return 7;
+		}
+
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Num_real extends Exp {
+		private StringLocalizado s;
+
+		public Num_real(StringLocalizado s) {
+			super();
+			this.s = s;
+		}
+
+		public StringLocalizado s() {
+			return s;
+		}
+
+		@Override
+		public int prioridad() {
+			return 7;
+		}
+
+		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 	}
 	
+	
+	public static abstract class Tipo {
+		public Tipo() {
+		}
+
+		public abstract void procesa(Procesamiento p);
+	}
+
+	public static class Tipo_int extends Tipo {
+		public Tipo_int() {
+			super();
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Tipo_real extends Tipo {
+		public Tipo_real() {
+			super();
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
+	public static class Tipo_bool extends Tipo {
+		public Tipo_bool() {
+			super();
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
 	public static class Dec {
-		private StringLocalizado tipo;
+		private Tipo tipo;
 		private StringLocalizado id;
 
-		public Dec(StringLocalizado tipo, StringLocalizado id) {
+		public Dec(Tipo tipo, StringLocalizado id) {
 			this.tipo = tipo;
 			this.id = id;
 		}
 
-		public StringLocalizado tipo() {
+		public Tipo tipo() {
 			return tipo;
 		}
 
@@ -572,10 +619,6 @@ public class TinyASint {
 		return new Menos(arg);
 	}
 	
-	public Exp cnum(StringLocalizado num) {
-		return new Num(num);
-	}
-
 	public Exp cid(StringLocalizado num) {
 		return new Id(num);
 	}
@@ -588,11 +631,19 @@ public class TinyASint {
 		return new False();
 	}
 	
-	public Tipo ctipo(StringLocalizado tipo) {
-		return new Tipo(tipo);
+	public Tipo ctipo_int() {
+		return new Tipo_int();
 	}
 
-	public Dec cdec(StringLocalizado tipo, StringLocalizado id) {
+	public Tipo ctipo_real() {
+		return new Tipo_real();
+	}
+
+	public Tipo ctipo_bool() {
+		return new Tipo_bool();
+	}
+	
+	public Dec cdec(Tipo tipo, StringLocalizado id) {
 		return new Dec(tipo, id);
 	}
 
@@ -619,4 +670,14 @@ public class TinyASint {
 	public StringLocalizado str(String s, int fila, int col) {
 		return new StringLocalizado(s, fila, col);
 	}
+	
+	// --- NEW --
+	public Exp cnum_int(StringLocalizado s) {
+		return new Num_int(s);
+	}	
+	
+	public Exp cnum_real(StringLocalizado s) {
+		return new Num_real(s);
+	}
+	
 }

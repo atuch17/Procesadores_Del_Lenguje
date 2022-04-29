@@ -75,7 +75,7 @@ public class ConstructorAST {
 		case INT:
 		case REAL:
 		case BOOL:
-			StringLocalizado tipo = Tipo();
+			Tipo tipo = Tipo();
 			UnidadLexica id = anticipo;
 			empareja(ClaseLexica.ID);
 			return sem.dec(tipo, sem.str(id.lexema(), id.fila(), id.columna()));
@@ -86,17 +86,17 @@ public class ConstructorAST {
 		}
 	}
 
-	private StringLocalizado Tipo() {
+	private Tipo Tipo() {
 		switch (anticipo.clase()) {
 		case INT:
 			empareja(ClaseLexica.INT);
-			return sem.str("int", anticipo.fila(), anticipo.columna());
+			return sem.ctipo_int();
 		case REAL:
 			empareja(ClaseLexica.REAL);
-			return sem.str("real", anticipo.fila(), anticipo.columna());
+			return sem.ctipo_real( );
 		case BOOL:
 			empareja(ClaseLexica.BOOL);
-			return sem.str("bool", anticipo.fila(), anticipo.columna());
+			return sem.ctipo_bool();
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.INT,
 					ClaseLexica.REAL, ClaseLexica.BOOL);
@@ -352,15 +352,15 @@ public class ConstructorAST {
 		case NUM_INT:
 			UnidadLexica num_int = anticipo;
 			empareja(ClaseLexica.NUM_INT);
-			return sem.cnum(sem.str(num_int.lexema(), num_int.fila(), num_int.columna()));
+			return sem.num_int(sem.str(num_int.lexema(), num_int.fila(), num_int.columna()));
 		case NUM_REAL:
 			UnidadLexica num_real = anticipo;
 			empareja(ClaseLexica.NUM_REAL);
-			return sem.cnum(sem.str(num_real.lexema(), num_real.fila(), num_real.columna()));
+			return sem.num_real(sem.str(num_real.lexema(), num_real.fila(), num_real.columna()));
 		case ID:
 			UnidadLexica id = anticipo;
 			empareja(ClaseLexica.ID);
-			return sem.cid(sem.str(id.lexema(), id.fila(), id.columna()));
+			return sem.id(sem.str(id.lexema(), id.fila(), id.columna()));
 		case PAP:
 			empareja(ClaseLexica.PAP);
 			Exp exp = E0();
@@ -368,10 +368,10 @@ public class ConstructorAST {
 			return exp;
 		case TRUE:
 			empareja(ClaseLexica.TRUE);
-			return sem.ctrue_bool();
+			return sem.verdad();
 		case FALSE:
 			empareja(ClaseLexica.FALSE);
-			return sem.cfalse_bool();
+			return sem.falso();
 		default:
 			errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), ClaseLexica.PAP,
 					ClaseLexica.ID, ClaseLexica.NUM_INT, ClaseLexica.NUM_REAL, ClaseLexica.TRUE, ClaseLexica.FALSE);

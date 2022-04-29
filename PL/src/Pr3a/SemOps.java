@@ -45,7 +45,7 @@ public class SemOps extends TinyASint {
         return cprog(decs, insts);
     }
 
-    public Dec dec(StringLocalizado tipo, StringLocalizado id) {
+    public Dec dec(Tipo tipo, StringLocalizado id) {
         return cdec(tipo, id);
     }
 
@@ -67,5 +67,37 @@ public class SemOps extends TinyASint {
 
     public Insts insts_una(Inst inst) {
         return cinsts_una(inst);
+    }
+    
+    public Exp id(StringLocalizado id) {
+    	return cid(id);
+    }
+    
+    public Exp num_int(StringLocalizado s) { 
+    	return cnum_int(s);
+    }
+    
+    public Exp num_real(StringLocalizado s) {
+    	return cnum_real(s);
+    }    
+    
+    public Tipo t_int() {
+        return ctipo_int();
+    }
+
+    public Tipo t_real() {
+        return ctipo_real();
+    }
+
+    public Tipo t_bool() {
+        return ctipo_bool();
+    }
+    
+    public Exp verdad() { 
+    	return ctrue_bool();
+    }
+    
+    public Exp falso() {
+    	return cfalse_bool();
     }
 }

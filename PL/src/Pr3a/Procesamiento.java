@@ -1,31 +1,6 @@
 package Pr3a;
 
-import Pr3a.TinyASint.And;
-import Pr3a.TinyASint.Comp;
-import Pr3a.TinyASint.Dec;
-import Pr3a.TinyASint.Decs_muchas;
-import Pr3a.TinyASint.Decs_una;
-import Pr3a.TinyASint.Dist;
-import Pr3a.TinyASint.Div;
-import Pr3a.TinyASint.False;
-import Pr3a.TinyASint.Id;
-import Pr3a.TinyASint.Inst;
-import Pr3a.TinyASint.Insts_muchas;
-import Pr3a.TinyASint.Insts_una;
-import Pr3a.TinyASint.Mayor;
-import Pr3a.TinyASint.Mayor_eq;
-import Pr3a.TinyASint.Menor;
-import Pr3a.TinyASint.Menor_eq;
-import Pr3a.TinyASint.Menos;
-import Pr3a.TinyASint.Mul;
-import Pr3a.TinyASint.Not;
-import Pr3a.TinyASint.Num;
-import Pr3a.TinyASint.Or;
-import Pr3a.TinyASint.Prog;
-import Pr3a.TinyASint.Resta;
-import Pr3a.TinyASint.Suma;
-import Pr3a.TinyASint.Tipo;
-import Pr3a.TinyASint.True;
+import Pr3a.TinyASint.*;
 
 public interface Procesamiento {
 	void procesa(Prog prog);
@@ -38,11 +13,14 @@ public interface Procesamiento {
 	
 	void procesa(Id exp);
 	//void procesa(Var exp);
-	void procesa(Tipo tipo);
+	//void procesa(Tipo tipo);
+	void procesa(Tipo_int tipo);
+	void procesa(Tipo_real tipo);
+	void procesa(Tipo_bool tipo);
 	
-	//void procesa(NumInt exp);
-	//void procesa(NumReal exp);
-	void procesa(Num exp);
+	void procesa(Num_int exp);
+	void procesa(Num_real exp);	
+	//void procesa(Num exp);
 	
 	void procesa(True exp);
 	void procesa(False exp);

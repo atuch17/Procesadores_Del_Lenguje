@@ -1,30 +1,14 @@
-/* package Pr4;
+package Pr4.Procesamientos;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import Pr3a.ProcesamientoPorDefecto;
-import Pr3a.TinyASint.Dec;
-import Pr3a.TinyASint.Decs_muchas;
-import Pr3a.TinyASint.Decs_una;
-import Pr3a.TinyASint.Div;
-import Pr3a.TinyASint.Id;
-import Pr3a.TinyASint.Inst;
-import Pr3a.TinyASint.Insts_muchas;
-import Pr3a.TinyASint.Insts_una;
-import Pr3a.TinyASint.Mayor;
-import Pr3a.TinyASint.Mul;
-import Pr3a.TinyASint.Num;
-import Pr3a.TinyASint.Prog;
-import Pr3a.TinyASint.Resta;
-import Pr3a.TinyASint.Suma;
-
 //class Valores extends HashMap<String, Double> {
 //}
 
 public class Evaluacion extends ProcesamientoPorDefecto {
-	private Set<String> variables;
+	/*private Set<String> variables;
 	private double resulD;
 	private int resulI;
 	private boolean resulB;
@@ -137,6 +121,5 @@ public class Evaluacion extends ProcesamientoPorDefecto {
 
 	public void procesa(Num exp) {
 		resul = Double.valueOf(exp.num().toString()).doubleValue();
-	}
+	}*/
 }
- */

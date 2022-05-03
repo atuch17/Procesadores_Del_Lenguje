@@ -377,6 +377,7 @@ public class TinyASint {
 		}
 
 		public abstract void procesa(Procesamiento p);
+		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Prog_con_decs extends Prog {
@@ -400,6 +401,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static class Prog_sin_decs extends Prog {
@@ -417,6 +421,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static abstract class Decs {
@@ -424,6 +431,7 @@ public class TinyASint {
 		}
 
 		public abstract void procesa(Procesamiento p);
+		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Decs_una extends Decs {
@@ -440,6 +448,9 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -464,14 +475,17 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
-	public static class Dec {
+	public abstract static class Dec {
 		public Dec() {
 		}
 
-		public void procesa(Procesamiento p) {
-		}
+		public abstract void procesa(Procesamiento p);
+		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Dec_var extends Dec {
@@ -494,6 +508,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static class Dec_tipo extends Dec {
@@ -515,6 +532,9 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -544,6 +564,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static abstract class ParamsF {
@@ -551,8 +574,8 @@ public class TinyASint {
 		public ParamsF() {
 		}
 
-		public void procesa(Procesamiento p) {
-		}
+		public abstract void procesa(Procesamiento p);
+		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Params_uno_f extends ParamsF {
@@ -568,6 +591,9 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -591,14 +617,17 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
-	public static abstract class ParamF {
+	public static abstract class ParamF extends Dec { //TODO Herencia dec no estoy seguro
 		public ParamF() {
 		}
 
-		public void procesa(Procesamiento p) {
-		}
+		public abstract void procesa(Procesamiento p);
+		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Param_f_sin_amp extends ParamF {
@@ -621,6 +650,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static class Param_f_con_amp extends ParamF {
@@ -642,6 +674,9 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -1036,6 +1071,7 @@ public class TinyASint {
 		}
 
 		public abstract void procesa(Procesamiento p);
+		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Tipo_int extends Tipo {
@@ -1045,6 +1081,9 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -1056,6 +1095,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static class Tipo_bool extends Tipo {
@@ -1065,6 +1107,9 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -1076,10 +1121,14 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static class Tipo_id extends Tipo {
 		private StringLocalizado id;
+		private Dec vinculo;
 
 		public Tipo_id(StringLocalizado id) {
 			super();
@@ -1089,9 +1138,20 @@ public class TinyASint {
 		public StringLocalizado id() {
 			return id;
 		}
+		
+		public void vinculo(Dec vinculo) {
+			this.vinculo = vinculo;
+		}
+
+		public Dec vinculo() {
+			return vinculo;
+		}
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -1116,6 +1176,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static class Tipo_registro extends Tipo {
@@ -1132,6 +1195,9 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -1150,6 +1216,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static abstract class Campos {
@@ -1157,6 +1226,7 @@ public class TinyASint {
 		}
 
 		public abstract void procesa(Procesamiento p);
+		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Campos_uno extends Campos {
@@ -1173,6 +1243,9 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -1197,6 +1270,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static class Campo {
@@ -1220,6 +1296,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 
 	public static abstract class Bloque {
@@ -1227,6 +1306,7 @@ public class TinyASint {
 		}
 
 		public abstract void procesa(Procesamiento p);
+		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Bloque_vacio extends Bloque {
@@ -1236,6 +1316,9 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 
@@ -1254,6 +1337,9 @@ public class TinyASint {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
+		}
 	}
 	
 	public static class ProgramaAux extends Bloque {
@@ -1270,6 +1356,9 @@ public class TinyASint {
 		
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		public void vincula_decs_fase2(Procesamiento p) {
+			p.vincula_decs_fase2(this);
 		}
 	}
 	
@@ -1298,6 +1387,7 @@ public class TinyASint {
 
 	public static class Id extends Exp {
 		private StringLocalizado id;
+		private Dec vinculo;
 
 		public Id(StringLocalizado id) {
 			super();
@@ -1306,6 +1396,14 @@ public class TinyASint {
 
 		public StringLocalizado id() {
 			return id;
+		}
+
+		public void vinculo(Dec vinculo) {
+			this.vinculo = vinculo;
+		}
+
+		public Dec vinculo() {
+			return vinculo;
 		}
 
 		public void procesa(Procesamiento p) {

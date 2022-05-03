@@ -4,17 +4,28 @@ import Pr4.AST.TinyASint.*;
 
 public interface Procesamiento {
 	void procesa(Prog_con_decs prog);
+	void vincula_decs_fase2(Prog_con_decs prog);
 	void procesa(Prog_sin_decs prog);
+	void vincula_decs_fase2(Prog_sin_decs prog);
 	void procesa(Decs_una decs);
+	void vincula_decs_fase2(Decs_una decs);
 	void procesa(Decs_muchas decs);
-	//void procesa(Dec dec);
+	void vincula_decs_fase2(Decs_muchas decs);
 	void procesa(Dec_var dec);
+	void vincula_decs_fase2(Dec_var dec);
 	void procesa(Dec_tipo dec);
+	void vincula_decs_fase2(Dec_tipo dec);
 	void procesa(Dec_proc dec);
+	void vincula_decs_fase2(Dec_proc dec);
 	void procesa(Params_uno_f p);
+	void vincula_decs_fase2(Params_uno_f p);
 	void procesa(Params_muchos_f p);
+	void vincula_decs_fase2(Params_muchos_f p);
 	void procesa(Param_f_sin_amp p);
+	void vincula_decs_fase2(Param_f_sin_amp p);
 	void procesa(Param_f_con_amp p);
+	void vincula_decs_fase2(Param_f_con_amp p);
+
 	void procesa(Insts_una insts);
 	void procesa(Insts_muchas intss);
 	void procesa(Inst_asig inst);
@@ -34,24 +45,36 @@ public interface Procesamiento {
 	void procesa(Params_lleno p);
 	void procesa(Exprs_una e);
 	void procesa(Exprs_muchas e);
+
 	void procesa(ProgramaAux p);
-	//void procesa(Var exp);
-	//void procesa(Tipo tipo);
+	void vincula_decs_fase2(ProgramaAux p);
 	void procesa(Tipo_id tipo);
+	void vincula_decs_fase2(Tipo_id tipo);
 	void procesa(Tipo_int tipo);
+	void vincula_decs_fase2(Tipo_int tipo);
 	void procesa(Tipo_real tipo);
+	void vincula_decs_fase2(Tipo_real tipo);
 	void procesa(Tipo_bool tipo);
+	void vincula_decs_fase2(Tipo_bool tipo);
 	void procesa(Tipo_cadena tipo);
+	void vincula_decs_fase2(Tipo_cadena tipo);
 	void procesa(Tipo_array tipo);
+	void vincula_decs_fase2(Tipo_array tipo);
 	void procesa(Tipo_registro tipo);
+	void vincula_decs_fase2(Tipo_registro tipo);
 	void procesa(Tipo_puntero tipo);
+	void vincula_decs_fase2(Tipo_puntero tipo);
 	void procesa(Campos_uno c);
+	void vincula_decs_fase2(Campos_uno c);
 	void procesa(Campos_muchos c);
+	void vincula_decs_fase2(Campos_muchos c);
 	void procesa(Campo c);
+	void vincula_decs_fase2(Campo c);
 	void procesa(Bloque_vacio b);
+	void vincula_decs_fase2(Bloque_vacio b);
 	void procesa(Bloque_lleno b);
+	void vincula_decs_fase2(Bloque_lleno b);
 	
-	//void procesa(Num exp);
 	void procesa(Id exp);
 	
 	void procesa(True exp);

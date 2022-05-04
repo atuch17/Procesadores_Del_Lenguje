@@ -17,6 +17,8 @@ public interface Procesamiento {
 	void vincula_decs_fase2(Dec_tipo dec);
 	void procesa(Dec_proc dec);
 	void vincula_decs_fase2(Dec_proc dec);
+	void procesa(Params_ninguno p);
+	void vincula_decs_fase2(Params_ninguno p);
 	void procesa(Params_uno_f p);
 	void vincula_decs_fase2(Params_uno_f p);
 	void procesa(Params_muchos_f p);
@@ -26,11 +28,10 @@ public interface Procesamiento {
 	void procesa(Param_f_con_amp p);
 	void vincula_decs_fase2(Param_f_con_amp p);
 
+	void procesa(Insts_ninguna insts);
 	void procesa(Insts_una insts);
-	void procesa(Insts_muchas intss);
+	void procesa(Insts_muchas insts);
 	void procesa(Inst_asig inst);
-	void procesa(Insts_opc_sin_insts inst);
-	void procesa(Insts_opc_con_insts inst);
 	void procesa(Inst_ifthen inst);
 	void procesa(Inst_ifthenelse inst);
 	void procesa(Inst_while inst);
@@ -41,8 +42,7 @@ public interface Procesamiento {
 	void procesa(Inst_lib_mem inst);
 	void procesa(Inst_invoc_proc inst);
 	void procesa(Inst_comp inst);
-	void procesa(Params_vacio p);
-	void procesa(Params_lleno p);
+	void procesa(Exprs_ninguna e);
 	void procesa(Exprs_una e);
 	void procesa(Exprs_muchas e);
 

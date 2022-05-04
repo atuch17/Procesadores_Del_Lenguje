@@ -88,13 +88,6 @@ public class Impresion extends ProcesamientoPorDefecto {
         inst.exp2().procesa(this);
     }
 
-	public void procesa(Insts_opc_sin_insts inst) {
-    }
-
-	public void procesa(Insts_opc_con_insts inst) {
-        inst.insts().procesa(this);
-    }
-
 	public void procesa(Inst_ifthen inst) {
         System.out.print("if ");
         inst.exp1().procesa(this);
@@ -152,21 +145,13 @@ public class Impresion extends ProcesamientoPorDefecto {
 	public void procesa(Inst_invoc_proc inst) {
         System.out.print("call ");
         System.out.print(inst.id());
+		System.out.print("(");
         inst.params().procesa(this);
+		System.out.print(")");
     }
 
 	public void procesa(Inst_comp inst) {
         inst.b().procesa(this);
-    }
-
-	public void procesa(Params_vacio p) {
-        System.out.print("() ");
-    }
-
-	public void procesa(Params_lleno p) {
-        System.out.print("(");
-        p.expresiones().procesa(this);
-        System.out.print(") ");
     }
 
 	public void procesa(Exprs_una e) {
@@ -211,6 +196,7 @@ public class Impresion extends ProcesamientoPorDefecto {
 	public void procesa(Tipo_registro tipo) {
         System.out.println("record {");
 		tipo.campos().procesa(this);
+		System.out.println();
         System.out.print("} ");
 	};
 	public void procesa(Tipo_puntero tipo) {
@@ -223,12 +209,13 @@ public class Impresion extends ProcesamientoPorDefecto {
 	};
 
 	public void procesa(Campos_muchos c) {
-		c.campos().procesa(this);	
+		c.campos().procesa(this);
+		System.out.println(";");	
 		c.campo().procesa(this);		
 	};
 	public void procesa(Campo c) {
 		c.tipo().procesa(this);		
-		System.out.println(c.id() + ";");
+		System.out.print(c.id());
 	};
 
 	public void procesa(Bloque_vacio b){

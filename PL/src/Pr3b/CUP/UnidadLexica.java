@@ -59,8 +59,8 @@ public class UnidadLexica extends Symbol {
         return "OP_COMP";
       case ClaseLexica.OP_DIST:
         return "OP_DIST";
-      case ClaseLexica.OP_100:
-        return "OP_100";
+      case ClaseLexica.OP_MOD:
+        return "OP_MOD";
       case ClaseLexica.CORCHETE_AP:
         return "CORCHETE_AP";
       case ClaseLexica.CORCHETE_CIERRE:

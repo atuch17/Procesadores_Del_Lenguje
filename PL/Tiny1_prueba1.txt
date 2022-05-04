@@ -15,14 +15,14 @@ var tArbol arbol; # Aquí se construirá un árbol de búsqueda que contendrá
 proc lee_nombres(tListaNombres & nombres) {
  var int i
  &&
- write "Introduce el número de nombres a ordenar (max 50): "; nl;
+ write "Introduce el numero de nombres a ordenar (max 50): "; nl;
  read nombres.cont;
  while (nombres.cont < 0) or (nombres.cont > 50) do
-  write "Introduce el número de nombres a ordenar (max 50): "; nl;
+  write "Introduce el numero de nombres a ordenar (max 50): "; nl;
   read nombres.cont
  endwhile;
  i=0;
- write "Introduce un nombre en cada línea: "; nl;
+ write "Introduce un nombre en cada linea: "; nl;
  while i < nombres.cont do
   read nombres.nombres[i];
   i = i + 1

@@ -826,7 +826,7 @@ public class AnalizadorLexico implements java_cup.runtime.Scanner {
             // fall through
           case 62: break;
           case 3:
-            { return ops.token(ClaseLexica.OP_100);
+            { return ops.token(ClaseLexica.OP_MOD);
             }
             // fall through
           case 63: break;

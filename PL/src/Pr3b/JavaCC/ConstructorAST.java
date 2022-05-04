@@ -157,7 +157,7 @@ public class ConstructorAST implements ConstructorASTConstants {
       break;
     case 45:
       jj_consume_token(45);
-         {if (true) return null;}
+         {if (true) return sem.params_ninguno();}
       break;
     default:
       jj_la1[3] = jj_gen;
@@ -441,8 +441,8 @@ public class ConstructorAST implements ConstructorASTConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public InstsOpc BloqueOpcional() throws ParseException {
-                              Insts insts;
+  final public Insts BloqueOpcional() throws ParseException {
+                           Insts insts;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NumInt:
     case NumReal:
@@ -465,35 +465,38 @@ public class ConstructorAST implements ConstructorASTConstants {
     case 54:
     case 57:
       insts = Instrucciones();
-                            {if (true) return sem.insts_opc_con_insts(insts);}
+                            {if (true) return insts;}
       break;
     default:
       jj_la1[11] = jj_gen;
-     {if (true) return sem.insts_opc_sin_insts();}
+     {if (true) return sem.insts_ninguna();}
     }
     throw new Error("Missing return statement in function");
   }
 
   final public Inst InstrIfThen() throws ParseException {
-                       Inst_ifthen inst; Exp exp; InstsOpc instsOpc; Inst insts;
-    inst = InitIfThen();
-    insts = RIT(inst);
-                                        {if (true) return insts;}
+                       Exp exp; Insts insts; Inst inst;
+    jj_consume_token(If);
+    exp = E0();
+    jj_consume_token(then);
+    insts = BloqueOpcional();
+    inst = RIT(exp, insts);
+                                                                       {if (true) return inst;}
     throw new Error("Missing return statement in function");
   }
 
-  final public Inst RIT(Inst_ifthen insth) throws ParseException {
-                                 InstsOpc insts;
+  final public Inst RIT(Exp exph, Insts insth) throws ParseException {
+                                     Insts insts;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case Else:
       jj_consume_token(Else);
       insts = BloqueOpcional();
       jj_consume_token(endif);
-                                            {if (true) return sem.inst_ifthenelse(insth.exp1(), insth.inst(), insts);}
+                                            {if (true) return sem.inst_ifthenelse(exph, insth, insts);}
       break;
     case endif:
       jj_consume_token(endif);
-             {if (true) return sem.inst_ifthen(insth.exp1(), insth.inst());}
+             {if (true) return sem.inst_ifthen(exph, insth);}
       break;
     default:
       jj_la1[12] = jj_gen;
@@ -503,18 +506,8 @@ public class ConstructorAST implements ConstructorASTConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public Inst_ifthen InitIfThen() throws ParseException {
-                             Exp exp; InstsOpc insts; Inst inst;
-    jj_consume_token(If);
-    exp = E0();
-    jj_consume_token(then);
-    insts = BloqueOpcional();
-                                                  {if (true) return sem.inst_if_then(exp, insts);}
-    throw new Error("Missing return statement in function");
-  }
-
   final public Inst InstrWhile() throws ParseException {
-                      Exp exp; InstsOpc insts;
+                      Exp exp; Insts insts;
     jj_consume_token(While);
     exp = E0();
     jj_consume_token(Do);
@@ -564,24 +557,18 @@ public class ConstructorAST implements ConstructorASTConstants {
   }
 
   final public Inst InstrInvocProc() throws ParseException {
-                          Token id; ParamsR params;
+                          Token id; Expresiones exps;
     jj_consume_token(call);
     id = jj_consume_token(Id);
-    params = ParametrosReales();
-                                               {if (true) return sem.inst_invoc_proc(sem.str(id.image, id.beginLine, id.beginColumn), params);}
-    throw new Error("Missing return statement in function");
-  }
-
-  final public ParamsR ParametrosReales() throws ParseException {
-                               ParamsR params;
     jj_consume_token(44);
-    params = RPR(sem.params_vacio());
-                                         {if (true) return params;}
+    exps = ListaExpresiones();
+    jj_consume_token(45);
+                                                     {if (true) return sem.inst_invoc_proc(sem.str(id.image, id.beginLine, id.beginColumn), exps);}
     throw new Error("Missing return statement in function");
   }
 
-  final public ParamsR RPR(ParamsR paramsh) throws ParseException {
-                                 Expresiones exps;
+  final public Expresiones ListaExpresiones() throws ParseException {
+                                   Expresiones exps;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NumInt:
     case NumReal:
@@ -595,17 +582,11 @@ public class ConstructorAST implements ConstructorASTConstants {
     case 54:
     case 57:
       exps = Expresiones();
-      jj_consume_token(45);
-                             {if (true) return sem.params_lleno(exps);}
-      break;
-    case 45:
-      jj_consume_token(45);
-         {if (true) return paramsh;}
+                         {if (true) return exps;}
       break;
     default:
       jj_la1[13] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+     {if (true) return sem.exprs_ninguna();}
     }
     throw new Error("Missing return statement in function");
   }
@@ -975,7 +956,7 @@ public class ConstructorAST implements ConstructorASTConstants {
       jj_la1_0 = new int[] {0x2129d090,0x0,0x8000,0x5e002000,0x0,0x0,0x2129d090,0x5e002000,0x0,0x0,0x21295090,0x21295090,0x140000,0x20085090,0x0,0x0,0xc00,0x0,0x0,0x20085090,0x0,0x20084090,0x20084090,0xc00,0x0,0x0,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x24093fe,0x800,0xc0,0x2101,0x800,0x4100,0x24093fe,0x101,0x800,0x800,0x240933e,0x240933e,0x0,0x2403300,0x100000,0x600000,0x0,0xfc000000,0x2000000,0x2401300,0x1820000,0x2001300,0x1300,0x0,0xfc000000,0x2000000,};
+      jj_la1_1 = new int[] {0x24093fe,0x800,0xc0,0x2101,0x800,0x4100,0x24093fe,0x101,0x800,0x800,0x240933e,0x240933e,0x0,0x2401300,0x100000,0x600000,0x0,0xfc000000,0x2000000,0x2401300,0x1820000,0x2001300,0x1300,0x0,0xfc000000,0x2000000,};
    }
    private static void jj_la1_2() {
       jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x3,};

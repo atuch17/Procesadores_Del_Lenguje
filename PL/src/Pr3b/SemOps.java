@@ -87,15 +87,22 @@ public class SemOps extends TinyASint {
         return cdec_proc(id, params, bloque);
     }
 
+    public ParamsF params_ninguno() {
+        return cparams_ninguno();
+    }
+
     public ParamsF params_uno_f(ParamF param) {
     	return cparams_uno_f(param);
     }
+
     public ParamsF params_muchos_f(ParamsF params, ParamF param) {
     	return cparams_muchos_f(params, param);
     }
+
     public ParamF param_f_sin_amp(Tipo tipo, StringLocalizado id) {
     	return cparam_f_sin_amp(tipo, id);
     }
+
     public ParamF param_f_con_amp(Tipo tipo, StringLocalizado id) {
     	return cparam_f_con_amp(tipo, id);
     }
@@ -107,33 +114,25 @@ public class SemOps extends TinyASint {
     public Insts insts_una(Inst inst) {
         return cinsts_una(inst);
     }
+
+    public Insts insts_ninguna() {
+        return cinsts_ninguna();
+    }
     
     /* TERMINAL */
     public Inst inst_asig(Exp exp1, Exp exp2) {
         return cinst_asig(exp1, exp2);
     }
-    
-    public InstsOpc insts_opc_sin_insts() {
-    	return cinsts_opc_sin_insts();
-    }
-    
-    public InstsOpc insts_opc_con_insts(Insts insts) {
-    	return cinsts_opc_con_insts(insts);
-    }
-    
-    public Inst inst_ifthen(Exp exp, InstsOpc insts) {
+
+    public Inst inst_ifthen(Exp exp, Insts insts) {
     	return cinst_ifthen(exp, insts);
     }
     
-    public Inst inst_ifthenelse (Exp exp, InstsOpc insts1, InstsOpc insts2) {
+    public Inst inst_ifthenelse(Exp exp, Insts insts1, Insts insts2) {
     	return cinst_ifthenelse(exp, insts1, insts2);
     }
     
-    public Inst_ifthen inst_if_then (Exp exp, InstsOpc insts1) {
-    	return new Inst_ifthen(exp,insts1);
-    }
-    
-    public Inst inst_while(Exp exp, InstsOpc insts) {
+    public Inst inst_while(Exp exp, Insts insts) {
     	return cinst_while(exp, insts);
     }
     
@@ -157,20 +156,16 @@ public class SemOps extends TinyASint {
     	return cinst_lib_mem(exp);
     }
     
-    public Inst inst_invoc_proc(StringLocalizado id, ParamsR params) {
-    	return cinst_invoc_proc(id, params);
+    public Inst inst_invoc_proc(StringLocalizado id, Expresiones e) {
+    	return cinst_invoc_proc(id, e);
     }
     
     public Inst inst_comp(Bloque b) {
     	return cinst_comp(b);
     }
     
-    public ParamsR params_vacio() {
-    	return cparams_vacio();
-    }
-    
-    public ParamsR params_lleno(Expresiones e) {
-    	return cparams_lleno(e);
+    public Expresiones exprs_ninguna() {
+    	return cexprs_ninguna();
     }
     
     public Expresiones exprs_una(Exp exp) {

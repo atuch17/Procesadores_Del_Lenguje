@@ -86,7 +86,7 @@ opMenIg = \<=
 opMayIg = \>=
 opComp = \==
 opDist = \!=
-op100 = \%
+opMod = \%
 corcheteAp = \[
 corcheteCierre = \]
 llavAp = \{
@@ -116,7 +116,7 @@ opAmp = \&
 {opMayIg}         {return ops.token(ClaseLexica.OP_MAY_IG);}
 {opComp}          {return ops.token(ClaseLexica.OP_COMP);}
 {opDist}          {return ops.token(ClaseLexica.OP_DIST);}
-{op100}           {return ops.token(ClaseLexica.OP_100);}
+{opMod}           {return ops.token(ClaseLexica.OP_MOD);}
 {corcheteAp}      {return ops.token(ClaseLexica.CORCHETE_AP);}
 {corcheteCierre}  {return ops.token(ClaseLexica.CORCHETE_CIERRE);}
 {llavAp}          {return ops.token(ClaseLexica.LLAVE_AP);}

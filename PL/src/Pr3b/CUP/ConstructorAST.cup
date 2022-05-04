@@ -21,7 +21,7 @@ init with {:
 :};
 
 terminal SEP_SEC, SEP_INS, ASIG, P_AP, P_CIERRE, OP_SUMA, OP_RESTA, OP_MULT, OP_DIV, OP_MENOR,
-         OP_MAYOR, OP_MEN_IG, OP_MAY_IG, OP_COMP, OP_DIST, OP_100, CORCHETE_AP, CORCHETE_CIERRE,
+         OP_MAYOR, OP_MEN_IG, OP_MAY_IG, OP_COMP, OP_DIST, OP_MOD, CORCHETE_AP, CORCHETE_CIERRE,
          LLAVE_AP, LLAVE_CIERRE, PUNTO, OP_FLECHA, COMA, OP_AMP, TRUE, FALSE,
          AND, OR, NOT, NULL, PROC, IF, THEN, ELSE, ENDIF, WHILE, DO, ENDWHILE, CALL,
          RECORD, ARRAY, OF, POINTER, NEW, DELETE, READ, WRITE, NL, VAR, TYPE;
@@ -44,7 +44,7 @@ non terminal Campo Campo;
 non terminal Insts Instrucciones;
 non terminal Inst Instruccion;
 non terminal Inst InstrAsig;
-non terminal InstsOpc InstOpc;
+non terminal Insts BloqueOpc;
 non terminal Inst InstrIfThen;
 non terminal Inst InstrIfThenElse;
 non terminal Inst InstrWhile;
@@ -54,7 +54,7 @@ non terminal Inst InstrNewLine;
 non terminal Inst InstrReservMem;
 non terminal Inst InstrLibMem;
 non terminal Inst InstrInvocProc;
-non terminal ParamsR ParamsR;
+non terminal Expresiones ListaExprs;
 non terminal Expresiones Exprs;
 non terminal Exp E0, E1, E2, E3, E4, E5, E6, E7;
 non terminal String OP1, OP2, OP3;
@@ -81,7 +81,7 @@ DeclaracionTipo ::= TYPE Tipo: tipo ID: id
 DeclaracionProc ::= PROC ID: id ParametrosFormales: params_f Bloque: bloque 
     {: RESULT = sem.dec_proc(id, params_f, bloque); :};
 ParametrosFormales ::= P_AP P_CIERRE
-    {: RESULT = null; :};
+    {: RESULT = sem.params_ninguno(); :};
 ParametrosFormales ::= P_AP Parametros: params P_CIERRE
     {: RESULT = params; :};
 Parametros ::= Parametros: params COMA Parametro: param 
@@ -149,15 +149,15 @@ Instruccion ::= Bloque: bloque
     {: RESULT = sem.inst_comp(bloque); :};
 InstrAsig ::= E0: arg0 ASIG E0: arg1 
     {: RESULT = sem.inst_asig(arg0, arg1); :};
-InstOpc ::= Instrucciones: insts
-    {: RESULT = sem.insts_opc_con_insts(insts); :};
-InstOpc ::= 
-    {: RESULT = sem.insts_opc_sin_insts(); :};
-InstrIfThen ::= IF E0: arg0 THEN InstOpc: bloque_opc ENDIF
+BloqueOpc ::= Instrucciones: insts
+    {: RESULT = insts; :};
+BloqueOpc ::= 
+    {: RESULT = sem.insts_ninguna(); :};
+InstrIfThen ::= IF E0: arg0 THEN BloqueOpc: bloque_opc ENDIF
     {: RESULT = sem.inst_ifthen(arg0, bloque_opc); :};
-InstrIfThenElse ::= IF E0: arg0 THEN InstOpc: bloque_opc_0 ELSE InstOpc: bloque_opc_1 ENDIF
+InstrIfThenElse ::= IF E0: arg0 THEN BloqueOpc: bloque_opc_0 ELSE BloqueOpc: bloque_opc_1 ENDIF
     {: RESULT = sem.inst_ifthenelse(arg0, bloque_opc_0, bloque_opc_1); :};
-InstrWhile ::= WHILE E0: arg0 DO InstOpc: bloque_opc ENDWHILE
+InstrWhile ::= WHILE E0: arg0 DO BloqueOpc: bloque_opc ENDWHILE
     {: RESULT = sem.inst_while(arg0, bloque_opc); :};
 InstrLectura ::= READ E0: arg0 
     {: RESULT = sem.inst_lectura(arg0); :};
@@ -169,12 +169,12 @@ InstrReservMem ::= NEW E0: arg0
     {: RESULT = sem.inst_reserv_mem(arg0); :};
 InstrLibMem ::= DELETE E0: arg0
     {: RESULT = sem.inst_lib_mem(arg0); :};
-InstrInvocProc ::= CALL ID: id ParamsR: params_r
-    {: RESULT = sem.inst_invoc_proc(id, params_r); :};
-ParamsR ::= P_AP P_CIERRE
-    {: RESULT = sem.params_vacio(); :};
-ParamsR ::= P_AP Exprs: exprs P_CIERRE
-    {: RESULT = sem.params_lleno(exprs); :};
+InstrInvocProc ::= CALL ID: id P_AP ListaExprs: lista_exprs P_CIERRE
+    {: RESULT = sem.inst_invoc_proc(id, lista_exprs); :};
+ListaExprs ::= Exprs: exprs
+    {: RESULT = exprs; :};
+ListaExprs ::=
+    {: RESULT = sem.exprs_ninguna(); :};
 Exprs ::= Exprs: exprs COMA E0: arg0 
     {: RESULT = sem.exprs_muchas(exprs, arg0); :};
 Exprs ::= E0: arg0 
@@ -253,5 +253,5 @@ OP3 ::= OP_MULT
     {: RESULT = "*"; :};
 OP3 ::= OP_DIV
     {: RESULT = "/"; :};
-OP3 ::= OP_100
+OP3 ::= OP_MOD
     {: RESULT = "%"; :};

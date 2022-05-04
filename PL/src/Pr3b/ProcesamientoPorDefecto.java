@@ -10,15 +10,15 @@ public class ProcesamientoPorDefecto implements Procesamiento {
 	public void procesa(Dec_var dec) {}
 	public void procesa(Dec_tipo dec) {}
 	public void procesa(Dec_proc dec) {}
+	public void procesa(Params_ninguno p) {}
 	public void procesa(Params_uno_f p) {}
 	public void procesa(Params_muchos_f p) {}
 	public void procesa(Param_f_sin_amp p) {}
 	public void procesa(Param_f_con_amp p) {}
+	public void procesa(Insts_ninguna insts) {}
 	public void procesa(Insts_una insts) {}
-	public void procesa(Insts_muchas intss) {}
+	public void procesa(Insts_muchas insts) {}
 	public void procesa(Inst_asig inst) {}
-	public void procesa(Insts_opc_sin_insts inst) {}
-	public void procesa(Insts_opc_con_insts inst) {}
 	public void procesa(Inst_ifthen inst) {}
 	public void procesa(Inst_ifthenelse inst) {}
 	public void procesa(Inst_while inst) {}
@@ -29,8 +29,7 @@ public class ProcesamientoPorDefecto implements Procesamiento {
 	public void procesa(Inst_lib_mem inst) {}
 	public void procesa(Inst_invoc_proc inst) {}
 	public void procesa(Inst_comp inst) {}
-	public void procesa(Params_vacio p) {}
-	public void procesa(Params_lleno p) {}
+	public void procesa(Exprs_ninguna e) {}
 	public void procesa(Exprs_una e) {}
 	public void procesa(Exprs_muchas e) {}
 	public void procesa(Tipo_id tipo) {}

@@ -553,6 +553,15 @@ public class TinyASint {
 		}
 	}
 
+	public static class Params_ninguno extends ParamsF {
+		public Params_ninguno() {
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
 	public static class Params_uno_f extends ParamsF {
 		private ParamF param;
 
@@ -650,6 +659,16 @@ public class TinyASint {
 		public abstract void procesa(Procesamiento p);
 	}
 
+	public static class Insts_ninguna extends Insts {
+		public Insts_ninguna() {
+			super();
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+	}
+
 	public static class Insts_una extends Insts {
 		private Inst inst;
 
@@ -720,52 +739,17 @@ public class TinyASint {
 		}
 	}
 
-	public static abstract class InstsOpc {
-		public InstsOpc() {
-		}
-
-		public abstract void procesa(Procesamiento p);
-	}
-
-	public static class Insts_opc_sin_insts extends InstsOpc {
-
-		public Insts_opc_sin_insts() {
-			super();
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-	}
-
-	public static class Insts_opc_con_insts extends InstsOpc {
-		private Insts insts;
-
-		public Insts_opc_con_insts(Insts insts) {
-			super();
-			this.insts = insts;
-		}
-
-		public Insts insts() {
-			return insts;
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-	}
-
 	public static class Inst_ifthen extends Inst {
-		private InstsOpc insts;
+		private Insts insts;
 		private Exp exp1;
 
-		public Inst_ifthen(Exp exp, InstsOpc insts) {
+		public Inst_ifthen(Exp exp, Insts insts) {
 			super();
 			this.exp1 = exp;
 			this.insts = insts;
 		}
 
-		public InstsOpc inst() {
+		public Insts inst() {
 			return insts;
 		}
 
@@ -779,22 +763,22 @@ public class TinyASint {
 	}
 
 	public static class Inst_ifthenelse extends Inst {
-		private InstsOpc bloque1;
-		private InstsOpc bloque2;
+		private Insts bloque1;
+		private Insts bloque2;
 		private Exp exp1;
 
-		public Inst_ifthenelse(Exp exp, InstsOpc bloque1, InstsOpc bloque2) {
+		public Inst_ifthenelse(Exp exp, Insts bloque1, Insts bloque2) {
 			super();
 			this.exp1 = exp;
 			this.bloque1 = bloque1;
 			this.bloque2 = bloque2;
 		}
 
-		public InstsOpc bloque1() {
+		public Insts bloque1() {
 			return bloque1;
 		}
 
-		public InstsOpc bloque2() {
+		public Insts bloque2() {
 			return bloque2;
 		}
 
@@ -808,16 +792,16 @@ public class TinyASint {
 	}
 
 	public static class Inst_while extends Inst {
-		private InstsOpc insts;
+		private Insts insts;
 		private Exp exp1;
 
-		public Inst_while(Exp exp, InstsOpc insts) {
+		public Inst_while(Exp exp, Insts insts) {
 			super();
 			this.exp1 = exp;
 			this.insts = insts;
 		}
 
-		public InstsOpc inst() {
+		public Insts inst() {
 			return insts;
 		}
 
@@ -910,20 +894,20 @@ public class TinyASint {
 
 	public static class Inst_invoc_proc extends Inst {
 		private StringLocalizado id;
-		private ParamsR params;
+		private Expresiones e;
 
-		public Inst_invoc_proc(StringLocalizado id, ParamsR params) {
+		public Inst_invoc_proc(StringLocalizado id, Expresiones e) {
 			super();
 			this.id = id;
-			this.params = params;
+			this.e = e;
 		}
 
 		public StringLocalizado id() {
 			return id;
 		}
 
-		public ParamsR params() {
-			return params;
+		public Expresiones params() {
+			return e;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -948,45 +932,21 @@ public class TinyASint {
 		}
 	}
 
-	public static abstract class ParamsR {
-		public ParamsR() {
-		}
-
-		public abstract void procesa(Procesamiento p);
-	}
-
-	public static class Params_vacio extends ParamsR {
-		public Params_vacio() {
-			super();
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-	}
-
-	public static class Params_lleno extends ParamsR {
-		private Expresiones e;
-
-		public Params_lleno(Expresiones e) {
-			super();
-			this.e = e;
-		}
-
-		public Expresiones expresiones() {
-			return e;
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-	}
-
 	public static abstract class Expresiones {
 		public Expresiones() {
 		}
 
 		public abstract void procesa(Procesamiento p);
+	}
+
+	public static class Exprs_ninguna extends Expresiones {
+		public Exprs_ninguna() {
+			super();
+		}
+
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
 	}
 
 	public static class Exprs_una extends Expresiones {
@@ -1549,12 +1509,20 @@ public class TinyASint {
 		return new Dec_proc(id, params, bloque);
 	}
 
+	public Insts cinsts_ninguna() {
+		return new Insts_ninguna();
+	}
+
 	public Insts cinsts_una(Inst inst) {
 		return new Insts_una(inst);
 	}
 
 	public Insts cinsts_muchas(Insts insts, Inst inst) {
 		return new Insts_muchas(insts, inst);
+	}
+
+	public ParamsF cparams_ninguno() {
+		return new Params_ninguno();
 	}
 
 	public ParamsF cparams_uno_f(ParamF param) {
@@ -1582,23 +1550,15 @@ public class TinyASint {
         return new Inst_asig(exp1, exp2);
     }
 
-	public InstsOpc cinsts_opc_sin_insts() {
-		return new Insts_opc_sin_insts();
-	}
-
-	public InstsOpc cinsts_opc_con_insts(Insts insts) {
-		return new Insts_opc_con_insts(insts);
-	}
-
-	public Inst cinst_ifthen(Exp exp, InstsOpc insts) {
+	public Inst cinst_ifthen(Exp exp, Insts insts) {
 		return new Inst_ifthen(exp, insts);
 	}
 
-	public Inst cinst_ifthenelse(Exp exp, InstsOpc insts1, InstsOpc insts2) {
+	public Inst cinst_ifthenelse(Exp exp, Insts insts1, Insts insts2) {
 		return new Inst_ifthenelse(exp, insts1, insts2);
 	}
 
-	public Inst cinst_while(Exp exp, InstsOpc insts) {
+	public Inst cinst_while(Exp exp, Insts insts) {
 		return new Inst_while(exp, insts);
 	}
 
@@ -1622,20 +1582,16 @@ public class TinyASint {
 		return new Inst_lib_mem(exp);
 	}
 
-	public Inst cinst_invoc_proc(StringLocalizado id, ParamsR params) {
-		return new Inst_invoc_proc(id, params);
+	public Inst cinst_invoc_proc(StringLocalizado id, Expresiones e) {
+		return new Inst_invoc_proc(id, e);
 	}
 
 	public Inst cinst_comp(Bloque b) {
 		return new Inst_comp(b);
 	}
 
-	public ParamsR cparams_vacio() {
-		return new Params_vacio();
-	}
-
-	public ParamsR cparams_lleno(Expresiones e) {
-		return new Params_lleno(e);
+	public Expresiones cexprs_ninguna() {
+		return new Exprs_ninguna();
 	}
 
 	public Expresiones cexprs_una(Exp exp) {

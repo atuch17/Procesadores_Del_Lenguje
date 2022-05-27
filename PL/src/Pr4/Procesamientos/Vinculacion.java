@@ -50,6 +50,9 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	public void vincula_decs_fase2(Prog_con_decs prog) {
 		prog.decs().vincula_decs_fase2(this);
 	}
+	public void vincula_procs(Prog_con_decs prog) {
+		prog.decs().vincula_procs(this);
+	}
 	public void procesa(Prog_sin_decs prog) {
 		prog.insts().procesa(this);
 	}
@@ -87,7 +90,7 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 		ParamsF params = dec.params();
 		if (params != null)
 			params.procesa(this);
-		dec.Bloque().procesa(this);
+		dec.bloque().procesa(this);
 		ts.remove(ts.size() - 1);
 	}
 	public void vincula_decs_fase2(Dec_proc dec) {
@@ -95,7 +98,7 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 		ParamsF params = dec.params();
 		if (params != null)
 			params.procesa(this);
-		dec.Bloque().vincula_decs_fase2(this);
+		dec.bloque().vincula_decs_fase2(this);
 		ts.remove(ts.size() - 1);
 	}
 	public void procesa(Params_uno_f p) {
@@ -105,12 +108,12 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 		p.param().vincula_decs_fase2(this);
 	}
 	public void procesa(Params_muchos_f p) {
-		p.ps().procesa(this);
-		p.s().procesa(this);
+		p.params().procesa(this);
+		p.param().procesa(this);
 	}
 	public void vincula_decs_fase2(Params_muchos_f p) {
-		p.ps().vincula_decs_fase2(this);
-		p.s().vincula_decs_fase2(this);
+		p.params().vincula_decs_fase2(this);
+		p.param().vincula_decs_fase2(this);
 	}
 	public void procesa(Param_f_sin_amp p) {
 		p.tipo().procesa(this);
@@ -138,12 +141,9 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 		inst.exp1().procesa(this);
 		inst.exp2().procesa(this);
 	}
-	public void procesa(Insts_opc_con_insts inst) {
-		inst.insts().procesa(this);
-	}
 	public void procesa(Inst_ifthen inst) {
 		inst.exp1().procesa(this);
-		inst.inst().procesa(this);
+		inst.insts().procesa(this);
 	}
 	public void procesa(Inst_ifthenelse inst) {
 		inst.exp1().procesa(this);
@@ -152,7 +152,7 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	}
 	public void procesa(Inst_while inst) {
 		inst.exp1().procesa(this);
-		inst.inst().procesa(this);
+		inst.insts().procesa(this);
 	}
 	public void procesa(Inst_lectura inst) {
 		inst.exp1().procesa(this);
@@ -172,9 +172,6 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	}
 	public void procesa(Inst_comp inst) {
 		inst.b().procesa(this);
-	}
-	public void procesa(Params_lleno p) {
-		p.expresiones().procesa(this);
 	}
 	public void procesa(Exprs_una e) {
 		e.e().procesa(this);
@@ -317,5 +314,8 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	}
 	public void procesa(ProgramaAux aux) {
 		aux.prog().procesa(this); //TODO Quizas nuevo nivel
+	}
+	public void vincula_decs_fase2(ProgramaAux aux) {
+		aux.prog().vincula_decs_fase2(this); //TODO Quizas nuevo nivel
 	}
 }

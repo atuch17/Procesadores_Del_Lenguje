@@ -3,9 +3,7 @@ package Pr4.Procesamientos;
 import Pr4.AST.TinyASint.*;
 
 public class Impresion extends ProcesamientoPorDefecto {
-    public Impresion() {
-    }
-
+	
     public void procesa(Prog_con_decs prog) {
         prog.decs().procesa(this);
         System.out.println();
@@ -48,7 +46,7 @@ public class Impresion extends ProcesamientoPorDefecto {
         if (dec.params() != null)
         	dec.params().procesa(this);
         System.out.print(") ");
-        dec.Bloque().procesa(this);
+        dec.bloque().procesa(this);
     }
 
 	public void procesa(Params_uno_f p) {
@@ -56,9 +54,9 @@ public class Impresion extends ProcesamientoPorDefecto {
     }
 
 	public void procesa(Params_muchos_f p) {
-        p.ps().procesa(this);
+        p.params().procesa(this);
         System.out.print(", ");
-        p.s().procesa(this);
+        p.param().procesa(this);
     }
 
 	public void procesa(Param_f_sin_amp p) {
@@ -92,7 +90,7 @@ public class Impresion extends ProcesamientoPorDefecto {
         System.out.print("if ");
         inst.exp1().procesa(this);
         System.out.println(" then");
-        inst.inst().procesa(this);
+        inst.insts().procesa(this);
         System.out.println();
         System.out.print("endif");
     }
@@ -113,7 +111,7 @@ public class Impresion extends ProcesamientoPorDefecto {
         System.out.print("while ");
         inst.exp1().procesa(this);
         System.out.println(" do");
-        inst.inst().procesa(this);
+        inst.insts().procesa(this);
         System.out.println();
         System.out.print("endwhile");
     }

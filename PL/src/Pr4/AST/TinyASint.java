@@ -1,11 +1,30 @@
 package Pr4.AST;
 
 import Pr4.Procesamientos.Procesamiento;
+import Pr4.Procesamientos.Tipos;
 
 public class TinyASint {
 
 	public static abstract class Exp {
+		private Tipos type;
+
 		public Exp() {
+		}
+
+		public Tipos type() {
+			return type;
+		}
+
+		public void type(Tipos type) {
+			this.type = type;
+		}
+
+		public int tam() {
+			throw new UnsupportedOperationException();
+		}
+
+		public void tam(int tam) {
+			throw new UnsupportedOperationException();
 		}
 
 		public abstract int prioridad();
@@ -373,11 +392,22 @@ public class TinyASint {
 
 	/* ---CLASES--- */
 	public static abstract class Prog {
+		private Tipos type;
+
 		public Prog() {
+		}
+
+		public Tipos type() {
+			return type;
+		}
+
+		public void type(Tipos type) {
+			this.type = type;
 		}
 
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
+		public abstract void recolecta_procs(Procesamiento p);
 	}
 
 	public static class Prog_con_decs extends Prog {
@@ -404,6 +434,12 @@ public class TinyASint {
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
+		public void vincula_procs(Procesamiento p) {
+			p.vincula_procs(this);
+		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
+		}
 	}
 
 	public static class Prog_sin_decs extends Prog {
@@ -424,14 +460,28 @@ public class TinyASint {
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
+		}
 	}
 
 	public static abstract class Decs {
+		private Tipos type;
+
 		public Decs() {
+		}
+
+		public Tipos type() {
+			return type;
+		}
+
+		public void type(Tipos type) {
+			this.type = type;
 		}
 
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
+		public abstract void recolecta_procs(Procesamiento p);
 	}
 
 	public static class Decs_una extends Decs {
@@ -451,6 +501,9 @@ public class TinyASint {
 		}
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
+		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
 		}
 	}
 
@@ -478,19 +531,44 @@ public class TinyASint {
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
+		}
 	}
 
 	public abstract static class Dec {
+		private Tipos type;
+		private int tam;
+
 		public Dec() {
+		}
+
+		public Tipos type() {
+			return type;
+		}
+
+		public void type(Tipos type) {
+			this.type = type;
+		}
+
+		public int tam() {
+			return tam;
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
 		}
 
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
+		public abstract void recolecta_procs(Procesamiento p);
 	}
 
 	public static class Dec_var extends Dec {
 		private Tipo tipo;
 		private StringLocalizado id;
+		private int dir;
+		private int nivel;
 
 		public Dec_var(Tipo tipo, StringLocalizado id) {
 			this.tipo = tipo;
@@ -505,11 +583,30 @@ public class TinyASint {
 			return id;
 		}
 
+		public int dir() {
+			return dir;
+		}
+
+		public void dir(int dir) {
+			this.dir = dir;
+		}
+
+		public int nivel() {
+			return nivel;
+		}
+
+		public void nivel(int nivel) {
+			this.nivel = nivel;
+		}
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
+		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
 		}
 	}
 
@@ -536,12 +633,18 @@ public class TinyASint {
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
+		}
 	}
 
 	public static class Dec_proc extends Dec {
 		private StringLocalizado id;
 		private ParamsF params;
 		private Bloque bloque;
+		private int nivel;
+		private int tam_datos;
+		private int dir_inic;
 
 		public Dec_proc(StringLocalizado id, ParamsF params, Bloque bloque) {
 			this.id = id;
@@ -557,21 +660,57 @@ public class TinyASint {
 			return params;
 		}
 
-		public Bloque Bloque() {
+		public Bloque bloque() {
 			return bloque;
 		}
 
+		public int nivel() {
+			return nivel;
+		}
+
+		public void nivel(int nivel) {
+			this.nivel = nivel;
+		}
+
+		public int tam_datos() {
+			return tam_datos;
+		}
+
+		public void tam_datos(int tam_datos) {
+			this.tam_datos = tam_datos;
+		}
+
+		public int dir_inic() {
+			return dir_inic;
+		}
+
+		public void dir_inic(int dir_inic) {
+			this.dir_inic = dir_inic;
+		}
+		
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
+		}
 	}
 
 	public static abstract class ParamsF {
+		private Tipos type;
 
 		public ParamsF() {
+		}
+
+		public Tipos type() {
+			return type;
+		}
+
+		public void type(Tipos type) {
+			this.type = type;
 		}
 
 		public abstract void procesa(Procesamiento p);
@@ -619,11 +758,11 @@ public class TinyASint {
 			this.s = s;
 		}
 
-		public ParamsF ps() {
+		public ParamsF params() {
 			return ps;
 		}
 
-		public ParamF s() {
+		public ParamF param() {
 			return s;
 		}
 
@@ -636,11 +775,31 @@ public class TinyASint {
 	}
 
 	public static abstract class ParamF extends Dec { //TODO Herencia dec no estoy seguro
+		private int dir;
+		private int nivel;
+
 		public ParamF() {
+		}
+
+		public int dir() {
+			return dir;
+		}
+
+		public void dir(int dir) {
+			this.dir = dir;
+		}
+
+		public int nivel() {
+			return nivel;
+		}
+
+		public void nivel(int nivel) {
+			this.nivel = nivel;
 		}
 
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
+		public void recolecta_procs(Procesamiento p) {}
 	}
 
 	public static class Param_f_sin_amp extends ParamF {
@@ -694,7 +853,17 @@ public class TinyASint {
 	}
 
 	public static abstract class Insts {
+		private Tipos type;
+
 		public Insts() {
+		}
+
+		public Tipos type() {
+			return type;
+		}
+
+		public void type(Tipos type) {
+			this.type = type;
 		}
 
 		public abstract void procesa(Procesamiento p);
@@ -751,7 +920,32 @@ public class TinyASint {
 	}
 
 	public static abstract class Inst {
+		private Tipos type;
+		protected int inicio;
+		protected int sig; 
+
 		public Inst() {
+		}
+
+		public Tipos type() {
+			return type;
+		}
+		public void type(Tipos type) {
+			this.type = type;
+		}
+
+		public int inicio() {
+			return inicio;
+		}
+		public void inicio(int inicio) {
+			this.inicio = inicio;
+		}
+
+		public int sig() {
+			return sig;
+		}
+		public void sig(int sig) {
+			this.sig = sig;
 		}
 
 		public abstract void procesa(Procesamiento p);
@@ -790,7 +984,7 @@ public class TinyASint {
 			this.insts = insts;
 		}
 
-		public Insts inst() {
+		public Insts insts() {
 			return insts;
 		}
 
@@ -842,7 +1036,7 @@ public class TinyASint {
 			this.insts = insts;
 		}
 
-		public Insts inst() {
+		public Insts insts() {
 			return insts;
 		}
 
@@ -936,11 +1130,20 @@ public class TinyASint {
 	public static class Inst_invoc_proc extends Inst {
 		private StringLocalizado id;
 		private Expresiones e;
+		private Dec vinculo;
 
 		public Inst_invoc_proc(StringLocalizado id, Expresiones e) {
 			super();
 			this.id = id;
 			this.e = e;
+		}
+
+		public void vinculo(Dec vinculo) {
+			this.vinculo = vinculo;
+		}
+
+		public Dec vinculo() {
+			return vinculo;
 		}
 
 		public StringLocalizado id() {
@@ -958,6 +1161,8 @@ public class TinyASint {
 
 	public static class Inst_comp extends Inst {
 		private Bloque b;
+		private int tam;
+		private int nivel;
 
 		public Inst_comp(Bloque b) {
 			super();
@@ -966,6 +1171,22 @@ public class TinyASint {
 
 		public Bloque b() {
 			return b;
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
+		}
+
+		public int tam() {
+			return tam;
+		}
+
+		public void nivel(int nivel) {
+			this.nivel = nivel;
+		}
+
+		public int nivel() {
+			return nivel;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -1031,7 +1252,26 @@ public class TinyASint {
 	}
 
 	public static abstract class Tipo {
+		private Tipos type;
+		private int tam;
+
 		public Tipo() {
+		}
+
+		public Tipos type() {
+			return type;
+		}
+
+		public void type(Tipos type) {
+			this.type = type;
+		}
+
+		public int tam() {
+			return tam;
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
 		}
 
 		public abstract void procesa(Procesamiento p);
@@ -1186,7 +1426,26 @@ public class TinyASint {
 	}
 
 	public static abstract class Campos {
+		private Tipos type;
+		private int tam;
+
 		public Campos() {
+		}
+
+		public Tipos type() {
+			return type;
+		}
+
+		public void type(Tipos type) {
+			this.type = type;
+		}
+		
+		public int tam() {
+			return tam;
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
 		}
 
 		public abstract void procesa(Procesamiento p);
@@ -1242,6 +1501,7 @@ public class TinyASint {
 	public static class Campo {
 		private Tipo tipo;
 		private StringLocalizado id;
+		private int tam;
 
 		public Campo(Tipo tipo, StringLocalizado id) {
 			super();
@@ -1257,6 +1517,14 @@ public class TinyASint {
 			return id;
 		}
 
+		public int tam() {
+			return tam;
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
+		}
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1266,11 +1534,22 @@ public class TinyASint {
 	}
 
 	public static abstract class Bloque {
+		private Tipos type;
+
 		public Bloque() {
+		}
+		
+		public Tipos type() {
+			return type;
+		}
+
+		public void type(Tipos type) {
+			this.type = type;
 		}
 
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
+		public abstract void recolecta_procs(Procesamiento p);
 	}
 
 	public static class Bloque_vacio extends Bloque {
@@ -1283,6 +1562,9 @@ public class TinyASint {
 		}
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
+		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
 		}
 	}
 
@@ -1304,6 +1586,9 @@ public class TinyASint {
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
+		}
 	}
 	
 	public static class ProgramaAux extends Bloque {
@@ -1323,6 +1608,9 @@ public class TinyASint {
 		}
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
+		}
+		public void recolecta_procs(Procesamiento p) {
+			p.recolecta_procs(this);
 		}
 	}
 	
@@ -1380,11 +1668,21 @@ public class TinyASint {
 	}
 
 	public static class True extends Exp {
+		private int tam;
+
 		public True() {
 		}
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
+		}
+
+		public int tam() {
+			return tam;
 		}
 
 		@Override
@@ -1394,7 +1692,17 @@ public class TinyASint {
 	}
 
 	public static class False extends Exp {
+		private int tam;
+
 		public False() {
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
+		}
+
+		public int tam() {
+			return tam;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -1409,6 +1717,7 @@ public class TinyASint {
 
 	public static class Sstring extends Exp {
 		private StringLocalizado string;
+		private int tam;
 
 		public Sstring(StringLocalizado string) {
 			super();
@@ -1417,6 +1726,14 @@ public class TinyASint {
 
 		public StringLocalizado string() {
 			return string;
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
+		}
+
+		public int tam() {
+			return tam;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -1444,6 +1761,7 @@ public class TinyASint {
 
 	public static class Num_int extends Exp {
 		private StringLocalizado s;
+		private int tam;
 
 		public Num_int(StringLocalizado s) {
 			super();
@@ -1452,6 +1770,14 @@ public class TinyASint {
 
 		public StringLocalizado s() {
 			return s;
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
+		}
+
+		public int tam() {
+			return tam;
 		}
 
 		@Override
@@ -1467,6 +1793,7 @@ public class TinyASint {
 
 	public static class Num_real extends Exp {
 		private StringLocalizado s;
+		private int tam;
 
 		public Num_real(StringLocalizado s) {
 			super();
@@ -1475,6 +1802,14 @@ public class TinyASint {
 
 		public StringLocalizado s() {
 			return s;
+		}
+
+		public void tam(int tam) {
+			this.tam = tam;
+		}
+
+		public int tam() {
+			return tam;
 		}
 
 		@Override

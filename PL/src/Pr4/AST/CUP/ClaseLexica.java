@@ -4,7 +4,7 @@
 // Wed May 04 15:46:21 CEST 2022
 //----------------------------------------------------
 
-package Pr4.AST;
+package Pr4.AST.CUP;
 
 /** CUP generated class containing symbol constants. */
 public class ClaseLexica {

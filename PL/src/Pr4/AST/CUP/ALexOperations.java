@@ -1,4 +1,4 @@
-package Pr4.AST;
+package Pr4.AST.CUP;
 
 public class ALexOperations {
   private AnalizadorLexico alex;

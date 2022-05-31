@@ -1,5 +1,6 @@
-package Pr4.AST;
+package Pr4.AST.CUP;
 
+import Pr4.AST.TinyASint;
 import Pr4.AST.TinyASint.StringLocalizado;
 import java_cup.runtime.Symbol;
 

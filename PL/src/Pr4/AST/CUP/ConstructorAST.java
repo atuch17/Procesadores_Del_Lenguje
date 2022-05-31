@@ -4,8 +4,9 @@
 // Wed May 04 15:46:21 CEST 2022
 //----------------------------------------------------
 
-package Pr4.AST;
+package Pr4.AST.CUP;
 
+import Pr4.AST.SemOps;
 import Pr4.AST.TinyASint.*;
 import java_cup.runtime.*;
 

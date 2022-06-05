@@ -122,7 +122,7 @@ public class Impresion extends ProcesamientoPorDefecto {
         imprime_arg(exp.arg(), 4);
     }
 
-    public void procesa(Menos exp) { //TODO preguntar
+    public void procesa(Menos exp) {
         System.out.print("- ");
         imprime_arg(exp.arg(), 5);
     }

@@ -71,10 +71,10 @@ public class ProcesamientoPorDefecto implements Procesamiento {
 	public void procesa(Menos exp) {}
 	public void procesa(Not exp) {}
 	public void procesa(Asterix exp) {}
-	public void procesa(ProgramaAux aux) {}
 	public void vincula_decs_fase2(Prog_con_decs prog) {}
 	public void vincula_procs(Prog_con_decs prog) {}
 	public void vincula_decs_fase2(Prog_sin_decs prog) {}
+	public void vincula_procs(Prog_sin_decs prog) {}
 	public void vincula_decs_fase2(Decs_una decs) {}
 	public void vincula_procs(Decs_una decs) {}
 	public void vincula_decs_fase2(Decs_muchas decs) {}
@@ -90,7 +90,6 @@ public class ProcesamientoPorDefecto implements Procesamiento {
 	public void vincula_decs_fase2(Params_muchos_f p) {}
 	public void vincula_decs_fase2(Param_f_sin_amp p) {}
 	public void vincula_decs_fase2(Param_f_con_amp p) {}
-	public void vincula_decs_fase2(ProgramaAux p) {}
 	public void vincula_decs_fase2(Tipo_id tipo) {}
 	public void vincula_decs_fase2(Tipo_int tipo) {}
 	public void vincula_decs_fase2(Tipo_real tipo) {}
@@ -106,7 +105,6 @@ public class ProcesamientoPorDefecto implements Procesamiento {
 	public void vincula_decs_fase2(Bloque_lleno b) {}
 	public void recolecta_procs(Bloque_vacio b) {}
 	public void recolecta_procs(Bloque_lleno b) {}
-	public void recolecta_procs(ProgramaAux p) {}
 	public void recolecta_procs(Prog_con_decs prog) {}
 	public void recolecta_procs(Prog_sin_decs prog) {}
 	public void recolecta_procs(Decs_una decs) {}

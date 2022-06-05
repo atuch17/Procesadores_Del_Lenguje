@@ -34,7 +34,6 @@ public interface Procesamiento {
 	void procesa(Exprs_una e);
 	void procesa(Exprs_muchas e);
 
-	void procesa(ProgramaAux p);
 	void procesa(Tipo_id tipo);
 	void procesa(Tipo_int tipo);
 	void procesa(Tipo_real tipo);
@@ -88,6 +87,7 @@ public interface Procesamiento {
 	void vincula_decs_fase2(Prog_con_decs prog);
 	void vincula_procs(Prog_con_decs prog);
     void vincula_decs_fase2(Prog_sin_decs prog);
+	void vincula_procs(Prog_sin_decs prog);
 	void vincula_decs_fase2(Decs_una decs);
     void vincula_procs(Decs_una decs);
     void vincula_decs_fase2(Decs_muchas decs);
@@ -104,7 +104,6 @@ public interface Procesamiento {
 	void vincula_decs_fase2(Param_f_sin_amp p);
 	void vincula_decs_fase2(Param_f_con_amp p);
 
-    void vincula_decs_fase2(ProgramaAux p);
 	void vincula_decs_fase2(Tipo_id tipo);
 	void vincula_decs_fase2(Tipo_int tipo);
 	void vincula_decs_fase2(Tipo_real tipo);
@@ -121,7 +120,6 @@ public interface Procesamiento {
 
 	void recolecta_procs(Bloque_vacio b);
 	void recolecta_procs(Bloque_lleno b);
-	void recolecta_procs(ProgramaAux p);
 	void recolecta_procs(Prog_con_decs prog);
 	void recolecta_procs(Prog_sin_decs prog);
 	void recolecta_procs(Decs_una decs);

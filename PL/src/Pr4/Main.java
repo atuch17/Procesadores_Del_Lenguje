@@ -10,9 +10,9 @@ import Pr4.AST.TinyASint.Prog;
 import Pr4.Procesamientos.Codificacion;
 import Pr4.Procesamientos.Espaciado;
 import Pr4.Procesamientos.Etiquetado;
-import Pr4.Procesamientos.Impresion;
 import Pr4.Procesamientos.Tipado;
 import Pr4.Procesamientos.Vinculacion;
+import Pr4.maquinaP.MaquinaP;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
@@ -25,12 +25,22 @@ public class Main {
 			System.out.println("Error en los argumentos");
 			System.exit(1);
 		}
-		prog.procesa(new Impresion()); //No seria necesario
-		prog.procesa(new Vinculacion());
-		prog.procesa(new Tipado());
+		Vinculacion v = new Vinculacion();
+		prog.procesa(v);
+		if (v.algun_error())
+			return;
+		Tipado t = new Tipado();
+		prog.procesa(t);
+		if (t.algun_error())
+			return;
 		prog.procesa(new Espaciado());
 		prog.procesa(new Etiquetado());
-		prog.procesa(new Codificacion());
+		Codificacion cod = new Codificacion();
+		prog.procesa(cod);
+		MaquinaP m = cod.getMaquina();
+		m.muestraCodigo();
+		m.ejecuta();
+		m.muestraEstado();
 	}
 
 	private static Prog ejecuta_ascendente(String in) throws Exception {       

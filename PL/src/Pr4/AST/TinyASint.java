@@ -1,30 +1,46 @@
 package Pr4.AST;
 
 import Pr4.Procesamientos.Procesamiento;
-import Pr4.Procesamientos.Tipos;
 
 public class TinyASint {
 
 	public static abstract class Exp {
-		private Tipos type;
+		private Tipo type;
+		private int inicio;
+		private int sig;
 
-		public Exp() {
-		}
-
-		public Tipos type() {
+		public Tipo type() {
 			return type;
 		}
 
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
 		}
 
 		public int tam() {
-			throw new UnsupportedOperationException();
+			return type.tam();
 		}
 
 		public void tam(int tam) {
 			throw new UnsupportedOperationException();
+		}
+
+		public boolean es_designador() {
+			return false;
+		}
+
+		public int inicio() {
+			return inicio;
+		}
+		public void inicio(int inicio) {
+			this.inicio = inicio;
+		}
+
+		public int sig() {
+			return sig;
+		}
+		public void sig(int sig) {
+			this.sig = sig;
 		}
 
 		public abstract int prioridad();
@@ -327,6 +343,11 @@ public class TinyASint {
 		}
 
 		@Override
+		public boolean es_designador() {
+			return true;
+		}
+
+		@Override
 		public int prioridad() {
 			return 5;
 		}
@@ -339,6 +360,11 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+
+		@Override
+		public boolean es_designador() {
+			return true;
 		}
 		
 		@Override
@@ -354,6 +380,11 @@ public class TinyASint {
 
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+
+		@Override
+		public boolean es_designador() {
+			return true;
 		}
 		
 		@Override
@@ -385,6 +416,10 @@ public class TinyASint {
 			super(arg0);
 		}
 
+		public boolean es_designador() {
+			return true;
+		}
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -392,21 +427,26 @@ public class TinyASint {
 
 	/* ---CLASES--- */
 	public static abstract class Prog {
-		private Tipos type;
+		private Tipo type;
 
 		public Prog() {
 		}
 
-		public Tipos type() {
+		public Tipo type() {
 			return type;
 		}
 
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
+		}
+
+		public boolean tiene_decs() {
+			return false;
 		}
 
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
+		public abstract void vincula_procs(Procesamiento p);
 		public abstract void recolecta_procs(Procesamiento p);
 	}
 
@@ -426,6 +466,10 @@ public class TinyASint {
 
 		public Insts insts() {
 			return insts;
+		}
+
+		public boolean tiene_decs() {
+			return true;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -460,27 +504,31 @@ public class TinyASint {
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
+		public void vincula_procs(Procesamiento p) {
+			p.vincula_procs(this);
+		}
 		public void recolecta_procs(Procesamiento p) {
 			p.recolecta_procs(this);
 		}
 	}
 
 	public static abstract class Decs {
-		private Tipos type;
+		private Tipo type;
 
 		public Decs() {
 		}
 
-		public Tipos type() {
+		public Tipo type() {
 			return type;
 		}
 
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
 		}
 
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
+		public abstract void vincula_procs(Procesamiento p);
 		public abstract void recolecta_procs(Procesamiento p);
 	}
 
@@ -501,6 +549,9 @@ public class TinyASint {
 		}
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
+		}
+		public void vincula_procs(Procesamiento p) {
+			p.vincula_procs(this);
 		}
 		public void recolecta_procs(Procesamiento p) {
 			p.recolecta_procs(this);
@@ -531,36 +582,76 @@ public class TinyASint {
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
+		public void vincula_procs(Procesamiento p) {
+			p.vincula_procs(this);
+		}
 		public void recolecta_procs(Procesamiento p) {
 			p.recolecta_procs(this);
 		}
 	}
 
 	public abstract static class Dec {
-		private Tipos type;
-		private int tam;
+		private Tipo type;
 
 		public Dec() {
 		}
 
-		public Tipos type() {
+		public Tipo type() {
 			return type;
 		}
 
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
 		}
 
 		public int tam() {
-			return tam;
+			return -1;
 		}
 
-		public void tam(int tam) {
-			this.tam = tam;
+		public int nivel() {
+			throw new UnsupportedOperationException();
+		}
+		public void nivel(int nivel) {
+			throw new UnsupportedOperationException();
+		}
+
+		public int tam_datos() {
+			throw new UnsupportedOperationException();
+		}
+		public void tam_datos(int tam_datos) {
+			throw new UnsupportedOperationException();
+		}
+
+		public int dir_inic() {
+			throw new UnsupportedOperationException();
+		}
+		public void dir_inic(int dir_inic) {
+			throw new UnsupportedOperationException();
+		}
+
+		public int dir() {
+			throw new UnsupportedOperationException();
+		}
+		public void dir(int dir) {
+			throw new UnsupportedOperationException();
+		}
+
+		public boolean es_dec_var() {
+			return false;
+		}
+		public boolean es_dec_tipo() {
+			return false;
+		}
+		public boolean es_dec_proc() {
+			return false;
+		}
+		public boolean es_param_ref() {
+			return false;
 		}
 
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
+		public abstract void vincula_procs(Procesamiento p);
 		public abstract void recolecta_procs(Procesamiento p);
 	}
 
@@ -583,18 +674,25 @@ public class TinyASint {
 			return id;
 		}
 
+		@Override
+		public int tam() {
+			return tipo.tam();
+		}
+
+		@Override
 		public int dir() {
 			return dir;
 		}
-
+		@Override
 		public void dir(int dir) {
 			this.dir = dir;
 		}
 
+		@Override
 		public int nivel() {
 			return nivel;
 		}
-
+		@Override
 		public void nivel(int nivel) {
 			this.nivel = nivel;
 		}
@@ -604,6 +702,9 @@ public class TinyASint {
 		}
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
+		}
+		public void vincula_procs(Procesamiento p) {
+			p.vincula_procs(this);
 		}
 		public void recolecta_procs(Procesamiento p) {
 			p.recolecta_procs(this);
@@ -627,11 +728,24 @@ public class TinyASint {
 			return id;
 		}
 
+		@Override
+		public int tam() {
+			return tipo.tam();
+		}
+
+		@Override
+		public boolean es_dec_tipo() {
+			return true;
+		}
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
+		}
+		public void vincula_procs(Procesamiento p) {
+			p.vincula_procs(this);
 		}
 		public void recolecta_procs(Procesamiento p) {
 			p.recolecta_procs(this);
@@ -664,28 +778,36 @@ public class TinyASint {
 			return bloque;
 		}
 
+		@Override
 		public int nivel() {
 			return nivel;
 		}
-
+		@Override
 		public void nivel(int nivel) {
 			this.nivel = nivel;
 		}
 
+		@Override
 		public int tam_datos() {
 			return tam_datos;
 		}
-
+		@Override
 		public void tam_datos(int tam_datos) {
 			this.tam_datos = tam_datos;
 		}
 
+		@Override
 		public int dir_inic() {
 			return dir_inic;
 		}
-
+		@Override
 		public void dir_inic(int dir_inic) {
 			this.dir_inic = dir_inic;
+		}
+
+		@Override
+		public boolean es_dec_proc() {
+			return true;
 		}
 		
 		public void procesa(Procesamiento p) {
@@ -694,25 +816,35 @@ public class TinyASint {
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
+		public void vincula_procs(Procesamiento p) {
+			p.vincula_procs(this);
+		}
 		public void recolecta_procs(Procesamiento p) {
 			p.recolecta_procs(this);
 		}
 	}
 
 	public static abstract class ParamsF {
-		private Tipos type;
+		private Tipo type;
 
 		public ParamsF() {
 		}
 
-		public Tipos type() {
+		public Tipo type() {
 			return type;
 		}
-
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
 		}
 
+		public boolean hay_muchas() {
+			return false;
+		}
+		public boolean hay_una() {
+			return false;
+		}
+
+		public abstract int size();
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
@@ -721,10 +853,12 @@ public class TinyASint {
 		public Params_ninguno() {
 		}
 
+		public int size() {
+			return 0;
+		}
 		public void procesa(Procesamiento p) {	
 			p.procesa(this);	
 		}
-		
 		public void vincula_decs_fase2(Procesamiento p) {
 			p.vincula_decs_fase2(this);
 		}
@@ -741,6 +875,14 @@ public class TinyASint {
 			return param;
 		}
 
+		@Override
+		public boolean hay_una() {
+			return true;
+		}
+
+		public int size() {
+			return 1;
+		}
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -766,6 +908,18 @@ public class TinyASint {
 			return s;
 		}
 
+		public int size() {
+			return ps.size() + 1;
+		}
+		@Override
+		public boolean hay_muchas() {
+			return true;
+		}
+		@Override
+		public boolean hay_una() {
+			return true;
+		}
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -774,49 +928,37 @@ public class TinyASint {
 		}
 	}
 
-	public static abstract class ParamF extends Dec { //TODO Herencia dec no estoy seguro
-		private int dir;
-		private int nivel;
-
-		public ParamF() {
+	public static abstract class ParamF extends Dec_var {
+		public ParamF(Tipo tipo, StringLocalizado id) {
+			super(tipo, id);
 		}
 
-		public int dir() {
-			return dir;
+		public boolean es_param_ref() {
+			return por_ref();
 		}
-
-		public void dir(int dir) {
-			this.dir = dir;
+		public boolean por_valor() {
+			return false;
 		}
-
-		public int nivel() {
-			return nivel;
-		}
-
-		public void nivel(int nivel) {
-			this.nivel = nivel;
+		public boolean por_ref() {
+			return false;
 		}
 
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
+		public void vincula_procs(Procesamiento p) {
+			throw new UnsupportedOperationException();
+		}
 		public void recolecta_procs(Procesamiento p) {}
 	}
 
 	public static class Param_f_sin_amp extends ParamF {
-		private Tipo tipo;
-		private StringLocalizado id;
-
 		public Param_f_sin_amp(Tipo tipo, StringLocalizado id) {
-			this.tipo = tipo;
-			this.id = id;
+			super(tipo, id);
 		}
 
-		public Tipo tipo() {
-			return tipo;
-		}
-
-		public StringLocalizado id() {
-			return id;
+		@Override
+		public boolean por_valor() {
+			return true;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -828,20 +970,13 @@ public class TinyASint {
 	}
 
 	public static class Param_f_con_amp extends ParamF {
-		private Tipo tipo;
-		private StringLocalizado id;
-
 		public Param_f_con_amp(Tipo tipo, StringLocalizado id) {
-			this.tipo = tipo;
-			this.id = id;
+			super(tipo, id);
 		}
 
-		public Tipo tipo() {
-			return tipo;
-		}
-
-		public StringLocalizado id() {
-			return id;
+		@Override
+		public boolean por_ref() {
+			return true;
 		}
 
 		public void procesa(Procesamiento p) {
@@ -853,17 +988,33 @@ public class TinyASint {
 	}
 
 	public static abstract class Insts {
-		private Tipos type;
+		private Tipo type;
+		private int inicio;
+		private int sig;
 
 		public Insts() {
 		}
 
-		public Tipos type() {
+		public Tipo type() {
 			return type;
 		}
 
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
+		}
+
+		public int inicio() {
+			return inicio;
+		}
+		public void inicio(int inicio) {
+			this.inicio = inicio;
+		}
+
+		public int sig() {
+			return sig;
+		}
+		public void sig(int sig) {
+			this.sig = sig;
 		}
 
 		public abstract void procesa(Procesamiento p);
@@ -920,17 +1071,17 @@ public class TinyASint {
 	}
 
 	public static abstract class Inst {
-		private Tipos type;
+		private Tipo type;
 		protected int inicio;
 		protected int sig; 
 
 		public Inst() {
 		}
 
-		public Tipos type() {
+		public Tipo type() {
 			return type;
 		}
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
 		}
 
@@ -1131,6 +1282,7 @@ public class TinyASint {
 		private StringLocalizado id;
 		private Expresiones e;
 		private Dec vinculo;
+		private int dir_sig;
 
 		public Inst_invoc_proc(StringLocalizado id, Expresiones e) {
 			super();
@@ -1141,9 +1293,15 @@ public class TinyASint {
 		public void vinculo(Dec vinculo) {
 			this.vinculo = vinculo;
 		}
-
 		public Dec vinculo() {
 			return vinculo;
+		}
+
+		public void dir_sig(int dir_sig) {
+			this.dir_sig = dir_sig;
+		}
+		public int dir_sig() {
+			return dir_sig;
 		}
 
 		public StringLocalizado id() {
@@ -1198,6 +1356,14 @@ public class TinyASint {
 		public Expresiones() {
 		}
 
+		public boolean hay_muchas() {
+			return false;
+		}
+		public boolean hay_una() {
+			return false;
+		}
+
+		public abstract int size();
 		public abstract void procesa(Procesamiento p);
 	}
 
@@ -1206,6 +1372,9 @@ public class TinyASint {
 			super();
 		}
 
+		public int size() {
+			return 0;
+		}
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1219,10 +1388,18 @@ public class TinyASint {
 			this.e = e;
 		}
 
-		public Exp e() {
+		public Exp exp() {
 			return e;
 		}
 
+		@Override
+		public boolean hay_una() {
+			return true;
+		}
+
+		public int size() {
+			return 1;
+		}
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1246,23 +1423,35 @@ public class TinyASint {
 			return e;
 		}
 
+		@Override
+		public boolean hay_muchas() {
+			return true;
+		}
+		@Override
+		public boolean hay_una() {
+			return true;
+		}
+
+		public int size() {
+			return e.size() + 1;
+		}
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
 	}
 
 	public static abstract class Tipo {
-		private Tipos type;
+		private Tipo type;
 		private int tam;
-
 		public Tipo() {
+			this.tam = -1;
 		}
 
-		public Tipos type() {
+		public Tipo type() {
 			return type;
 		}
 
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
 		}
 
@@ -1274,15 +1463,52 @@ public class TinyASint {
 			this.tam = tam;
 		}
 
+		public boolean es_entero() {
+			return false;
+		}
+		public boolean es_real() {
+			return false;
+		}
+		public boolean es_booleano() {
+			return false;
+		}
+		public boolean es_cadena() {
+			return false;
+		}
+		public boolean es_null() {
+			return false;
+		}
+		public boolean es_id() {
+			return false;
+		}
+		public boolean es_puntero() {
+			return false;
+		}
+		public boolean es_array() {
+			return false;
+		}
+		public boolean es_registro() {
+			return false;
+		}
+
+		public Tipo refEx() {
+			return this;
+		}
+		public Tipo tipoDeCampo(StringLocalizado id) {
+			return null;
+		}
+		public int despDeCampo(StringLocalizado id) {
+			return -1;
+		}
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Tipo_int extends Tipo {
-		public Tipo_int() {
-			super();
+		@Override
+		public boolean es_entero() {
+			return true;
 		}
-
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1292,10 +1518,10 @@ public class TinyASint {
 	}
 
 	public static class Tipo_real extends Tipo {
-		public Tipo_real() {
-			super();
+		@Override
+		public boolean es_real() {
+			return true;
 		}
-
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1305,10 +1531,10 @@ public class TinyASint {
 	}
 
 	public static class Tipo_bool extends Tipo {
-		public Tipo_bool() {
-			super();
+		@Override
+		public boolean es_booleano() {
+			return true;
 		}
-
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1318,10 +1544,10 @@ public class TinyASint {
 	}
 
 	public static class Tipo_cadena extends Tipo {
-		public Tipo_cadena() {
-			super();
+		@Override
+		public boolean es_cadena() {
+			return true;
 		}
-
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1351,6 +1577,18 @@ public class TinyASint {
 			return vinculo;
 		}
 
+		@Override
+		public boolean es_id() {
+			return true;
+		}
+
+		public Tipo refEx() {
+			if (vinculo.es_dec_tipo())
+				return ((Dec_tipo) vinculo).tipo().refEx();
+			else
+				System.out.println("Error: Vinculo no valido");
+				return new Tipo_error();
+		}
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1377,6 +1615,11 @@ public class TinyASint {
 			return tipo;
 		}
 
+		@Override
+		public boolean es_array() {
+			return true;
+		}
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1397,6 +1640,18 @@ public class TinyASint {
 			return campos;
 		}
 
+		@Override
+		public boolean es_registro() {
+			return true;
+		}
+		@Override
+		public Tipo tipoDeCampo(StringLocalizado id) {
+			return campos.tipoDeCampo(id);
+		}
+		@Override
+		public int despDeCampo(StringLocalizado id) {
+			return campos.despDeCampo(id);
+		}
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1417,6 +1672,11 @@ public class TinyASint {
 			return tipo;
 		}
 
+		@Override
+		public boolean es_puntero() {
+			return true;
+		}
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1425,18 +1685,46 @@ public class TinyASint {
 		}
 	}
 
-	public static abstract class Campos {
-		private Tipos type;
-		private int tam;
+	public static class Tipo_error extends Tipo {
+		public void procesa(Procesamiento p) {}
+		public void vincula_decs_fase2(Procesamiento p) {}
+	}
 
-		public Campos() {
+	public static class Tipo_ok extends Tipo {
+		public void procesa(Procesamiento p) {}
+		public void vincula_decs_fase2(Procesamiento p) {}
+	}
+
+	public static class Tipo_null extends Tipo {
+		@Override
+		public boolean es_null() {
+			return true;
+		}
+		public void procesa(Procesamiento p) {}
+		public void vincula_decs_fase2(Procesamiento p) {}
+	}
+
+	public static abstract class Campos {
+		private Tipo type;
+		private int tam;
+		protected Campo campo;
+
+		public Campos(Campo campo) {
+			this.campo = campo;
 		}
 
-		public Tipos type() {
+		public Campo campo() {
+			return campo;
+		}
+		public Campos campos() {
+			throw new UnsupportedOperationException();
+		}
+
+		public Tipo type() {
 			return type;
 		}
 
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
 		}
 		
@@ -1448,22 +1736,33 @@ public class TinyASint {
 			this.tam = tam;
 		}
 
+		public abstract int size();
+		public abstract Tipo tipoDeCampo(StringLocalizado id);
+		public abstract int despDeCampo(StringLocalizado id);
 		public abstract void procesa(Procesamiento p);
 		public abstract void vincula_decs_fase2(Procesamiento p);
 	}
 
 	public static class Campos_uno extends Campos {
-		private Campo campo;
-
 		public Campos_uno(Campo campo) {
-			super();
-			this.campo = campo;
+			super(campo);
 		}
 
-		public Campo campo() {
-			return campo;
+		public int size() {
+			return 1;
 		}
-
+		public Tipo tipoDeCampo(StringLocalizado id) {
+			if (campo.id().equals(id))
+				return campo.tipo();
+			else
+				return null;
+		}
+		public int despDeCampo(StringLocalizado id) {
+			if (campo.id().equals(id))
+				return 0;
+			else
+				return -1;
+		}
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1473,23 +1772,37 @@ public class TinyASint {
 	}
 
 	public static class Campos_muchos extends Campos {
-		private Campo campo;
 		private Campos campos;
 
 		public Campos_muchos(Campos campos, Campo campo) {
-			super();
+			super(campo);
 			this.campos = campos;
-			this.campo = campo;
 		}
 
 		public Campo campo() {
 			return campo;
 		}
 
+		@Override
 		public Campos campos() {
 			return campos;
 		}
 
+		public int size() {
+			return campos.size() + 1;
+		}
+		public Tipo tipoDeCampo(StringLocalizado id) {
+			if (campo.id().equals(id))
+				return campo.tipo();
+			else
+				return campos.tipoDeCampo(id);
+		}
+		public int despDeCampo(StringLocalizado id) {
+			if (campo.id().equals(id))
+				return campos.tam();
+			else
+				return campos.despDeCampo(id);
+		}
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1501,6 +1814,7 @@ public class TinyASint {
 	public static class Campo {
 		private Tipo tipo;
 		private StringLocalizado id;
+		private Tipo type;
 		private int tam;
 
 		public Campo(Tipo tipo, StringLocalizado id) {
@@ -1517,10 +1831,16 @@ public class TinyASint {
 			return id;
 		}
 
+		public Tipo type() {
+			return type;
+		}
+		public void type(Tipo type) {
+			this.type = type;
+		}
+		
 		public int tam() {
 			return tam;
 		}
-
 		public void tam(int tam) {
 			this.tam = tam;
 		}
@@ -1534,17 +1854,18 @@ public class TinyASint {
 	}
 
 	public static abstract class Bloque {
-		private Tipos type;
-
-		public Bloque() {
-		}
+		private Tipo type;
 		
-		public Tipos type() {
+		public Tipo type() {
 			return type;
 		}
 
-		public void type(Tipos type) {
+		public void type(Tipo type) {
 			this.type = type;
+		}
+
+		public boolean esta_lleno() {
+			return false;
 		}
 
 		public abstract void procesa(Procesamiento p);
@@ -1580,6 +1901,11 @@ public class TinyASint {
 			return prog;
 		}
 
+		@Override
+		public boolean esta_lleno() {
+			return true;
+		}
+
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
@@ -1591,52 +1917,6 @@ public class TinyASint {
 		}
 	}
 	
-	public static class ProgramaAux extends Bloque {
-		private Prog prog;
-		
-		public ProgramaAux(Prog prog) {
-			super();
-			this.prog = prog;
-		}
-		
-		public Prog prog() {
-			return prog;
-		}
-		
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-		public void vincula_decs_fase2(Procesamiento p) {
-			p.vincula_decs_fase2(this);
-		}
-		public void recolecta_procs(Procesamiento p) {
-			p.recolecta_procs(this);
-		}
-	}
-	
-	
-
-	/*public static class Num extends Exp {
-		private StringLocalizado num;
-
-		public Num(StringLocalizado num) {
-			super();
-			this.num = num;
-		}
-
-		public StringLocalizado num() {
-			return num;
-		}
-
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		}
-
-		public final int prioridad() {
-			return 7;
-		}
-	}*/
-
 	public static class Id extends Exp {
 		private StringLocalizado id;
 		private Dec vinculo;
@@ -1656,6 +1936,11 @@ public class TinyASint {
 
 		public Dec vinculo() {
 			return vinculo;
+		}
+
+		@Override
+		public boolean es_designador() {
+			return true;
 		}
 
 		public void procesa(Procesamiento p) {

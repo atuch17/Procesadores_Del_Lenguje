@@ -32,12 +32,12 @@ public class Espaciado extends ProcesamientoPorDefecto {
     public void procesa(Dec_var dec) {
         dec.dir(dir);
         dec.nivel(nivel);
-        dec.tipo().procesa(this); //TODO revisar asigna_espacio_tipo
+        dec.tipo().procesa(this);
         dir = dir + dec.tipo().tam();
     }
 
     public void procesa(Dec_tipo dec) {
-        dec.tipo().procesa(this); //TODO revisar asigna_espacio_tipo
+        dec.tipo().procesa(this);
     }
 
     public void procesa(Dec_proc dec) {
@@ -52,8 +52,6 @@ public class Espaciado extends ProcesamientoPorDefecto {
         nivel = nivel - 1;
     }
 
-    public void procesa(Params_ninguno params) {}
-
     public void procesa(Params_uno_f params) {
         params.param().procesa(this);
     }
@@ -66,14 +64,14 @@ public class Espaciado extends ProcesamientoPorDefecto {
     public void procesa(Param_f_sin_amp param) {
         param.dir(dir);
         param.nivel(nivel);
-        param.tipo().procesa(this); //TODO revisar asigna_espacio_tipo
+        param.tipo().procesa(this);
         dir = dir + param.tipo().tam();
     }
 
     public void procesa(Param_f_con_amp param) {
         param.dir(dir);
         param.nivel(nivel);
-        param.tipo().procesa(this); //TODO revisar asigna_espacio_tipo
+        param.tipo().procesa(this);
         dir = dir + 1;
     }
 
@@ -81,40 +79,46 @@ public class Espaciado extends ProcesamientoPorDefecto {
         bloque.prog().procesa(this);
     }
 
-    public void procesa(Bloque_vacio bloque) {}
-
-/*asigna_espacio_tipo(T) =
-si indefinido(T.tam) entonces
-asigna_espacio(T)*/ //TODO implementar
-    public void procesa(Num_int tipo) {
-        tipo.tam(1);
+    public void procesa(Tipo_int tipo) {
+        if (tipo.tam() == -1) 
+            tipo.tam(1);
     }
-    public void procesa(Num_real tipo) {
-        tipo.tam(1);
+    public void procesa(Tipo_real tipo) {
+        if (tipo.tam() == -1)
+            tipo.tam(1);
     }
-    public void procesa(True tipo) {
-        tipo.tam(1);
+    public void procesa(Tipo_bool tipo) {
+        if (tipo.tam() == -1)
+            tipo.tam(1);
     }
-    public void procesa(False tipo) {
-        tipo.tam(1);
+    public void procesa(Tipo_cadena tipo) {
+        if (tipo.tam() == -1)
+            tipo.tam(1);
     }
-    public void procesa(Sstring tipo) {
-        tipo.tam(1);
+    public void procesa(Tipo_null tipo) {
+        if (tipo.tam() == -1)
+            tipo.tam(1);
     }
 
     public void procesa(Tipo_id tipo) {
-        tipo.vinculo().procesa(this);
-        tipo.tam(tipo.vinculo().tam());
+        if (tipo.tam() == -1) {
+            tipo.vinculo().procesa(this);
+            tipo.tam(tipo.vinculo().tam());
+        }
     }
 
     public void procesa(Tipo_array tipo) {
-        tipo.tipo().procesa(this);
-        tipo.tam(Integer.parseInt(tipo.valor().toString()) * tipo.tipo().tam());
+        if (tipo.tam() == -1) {
+            tipo.tipo().procesa(this);
+            tipo.tam(Integer.parseInt(tipo.valor().toString()) * tipo.tipo().tam());
+        }
     }
 
     public void procesa(Tipo_registro tipo) {
-        tipo.campos().procesa(this);
-        tipo.tam(tipo.campos().tam());
+        if (tipo.tam() == -1) {
+            tipo.campos().procesa(this);
+            tipo.tam(tipo.campos().tam());
+        }
     }
 
     public void procesa(Campos_muchos campos) {
@@ -134,11 +138,11 @@ asigna_espacio(T)*/ //TODO implementar
     }
 
     public void procesa(Tipo_puntero tipo) {
-        tipo.tipo().procesa(this);
-        tipo.tam(1);
+        if (tipo.tam() == -1) {
+            tipo.tam(1);
+            tipo.tipo().procesa(this);
+        }
     }
-
-    public void procesa(Insts_ninguna insts) {}
 
     public void procesa(Insts_una insts) {
         insts.inst().procesa(this);
@@ -148,8 +152,6 @@ asigna_espacio(T)*/ //TODO implementar
         insts.inst().procesa(this);
         insts.insts().procesa(this);
     }
-
-    public void procesa(Inst_asig inst) {}
 
     public void procesa(Inst_ifthen inst) {
         inst.insts().procesa(this);
@@ -163,13 +165,6 @@ asigna_espacio(T)*/ //TODO implementar
     public void procesa(Inst_while inst) {
         inst.insts().procesa(this);
     }
-
-    public void procesa(Inst_lectura inst) {}
-    public void procesa(Inst_escritura inst) {}
-    public void procesa(Inst_new_line inst) {}
-    public void procesa(Inst_reserv_mem inst) {}
-    public void procesa(Inst_lib_mem inst) {}
-    public void procesa(Inst_invoc_proc inst) {}
 
     public void procesa(Inst_comp inst) {
         int ant_dir = dir;

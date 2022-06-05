@@ -3,7 +3,30 @@ package Pr4.Procesamientos;
 import Pr4.AST.TinyASint.*;
 
 public class Tipado extends ProcesamientoPorDefecto {
-	
+	private Tipo tipoError;
+	private Tipo tipoOK;
+	private Tipo tipoString;
+	private Tipo tipoInt;
+	private Tipo tipoReal;
+	private Tipo tipoBool;
+	private Tipo tipoNull;
+	private boolean algun_error;
+
+	public Tipado() {
+		tipoError = new Tipo_error();
+		tipoOK = new Tipo_ok();
+		tipoString = new Tipo_cadena();
+		tipoInt = new Tipo_int();
+		tipoReal = new Tipo_real();
+		tipoBool = new Tipo_bool();
+		tipoNull = new Tipo_null();
+		algun_error = false;
+	}
+
+	public boolean algun_error() {
+		return algun_error;
+	}
+
     public void procesa(Prog_con_decs prog) {
         prog.decs().procesa(this);
         prog.insts().procesa(this);
@@ -43,7 +66,7 @@ public class Tipado extends ProcesamientoPorDefecto {
 	}
 
 	public void procesa(Params_ninguno params) {
-		params.type(Tipos.OK);
+		params.type(tipoOK);
 	}
 
 	public void procesa(Params_uno_f params) {
@@ -68,11 +91,29 @@ public class Tipado extends ProcesamientoPorDefecto {
 	}
 
 	public void procesa(Tipo_id tipo) {
-		if (tipo.vinculo() instanceof Dec_tipo) { //TODO ver si esto es legal
-			tipo.type(Tipos.OK);
+		if (tipo.vinculo().es_dec_tipo()) {
+			tipo.type(tipoOK);
 		} else {
-			tipo.type(Tipos.ERROR);
+			System.out.println("Error: tipo no declarado: " + tipo.id());
+			algun_error = true;
+			tipo.type(tipoError);
 		}
+	}
+
+	public void procesa(Tipo_int tipo) {
+		tipo.type(tipoOK);
+	}
+
+	public void procesa(Tipo_real tipo) {
+		tipo.type(tipoOK);
+	}
+
+	public void procesa(Tipo_bool tipo) {
+		tipo.type(tipoOK);
+	}
+
+	public void procesa(Tipo_cadena tipo) {
+		tipo.type(tipoOK);
 	}
 
 	public void procesa(Tipo_array tipo) {
@@ -80,20 +121,38 @@ public class Tipado extends ProcesamientoPorDefecto {
 			int n = Integer.parseInt(tipo.valor().toString());
 			if (n > 0) {
 				tipo.tipo().procesa(this);
-				tipo.type(tipo.tipo().type());
+				tipo.type(tipo.tipo());
 			} else {
-				//TODO mostrar error
-				tipo.type(Tipos.ERROR);
+				System.out.println("Error: tamano de array no valido: " + tipo.valor());
+				algun_error = true;
+				tipo.type(tipoError);
 			}
 		} catch (Exception e) {
-			//TODO mostrar error
-			tipo.type(Tipos.ERROR);
+			System.out.println("Error: tipo de array no valido: " + tipo.valor());
+			algun_error = true;
+			tipo.type(tipoError);
 		}		
 	}
 
 	public void procesa(Tipo_registro tipo) {
 		tipo.campos().procesa(this);
 		tipo.type(tipo.campos().type());
+	}
+
+	public void procesa(Campos_uno c) {
+		c.campo().procesa(this);
+		c.type(c.campo().type());
+	}
+
+	public void procesa(Campos_muchos c) {
+		c.campos().procesa(this);
+		c.campo().procesa(this);
+		c.type(ambos_ok(c.campos().type(), c.campo().type()));
+	}
+
+	public void procesa(Campo c) {
+		c.tipo().procesa(this);
+		c.type(c.tipo().type());
 	}
 
 	public void procesa(Tipo_puntero tipo) {
@@ -113,113 +172,122 @@ public class Tipado extends ProcesamientoPorDefecto {
 	}
 
 	public void procesa(Insts_ninguna insts) {
-		insts.type(Tipos.OK);
+		insts.type(tipoOK);
 	}
 
 	public void procesa(Inst_asig inst) {
 		inst.exp1().procesa(this);
 		inst.exp2().procesa(this);
-		if (es_designador(inst.exp1()) && 
-			son_compatibles(inst.exp1().type(), inst.exp2().type())) {
-			inst.type(Tipos.OK);
+		if (inst.exp1().es_designador() && son_compatibles(inst.exp1().type(), inst.exp2().type())) {
+			inst.type(tipoOK);
 		} else {
-			//TODO mostrar error
-			inst.type(Tipos.ERROR);
+			System.out.println("Error: asignacion de tipos incompatibles");
+			algun_error = true;
+			inst.type(tipoError);
 		}
 	}
 
 	public void procesa(Inst_ifthen inst) {
 		inst.exp1().procesa(this);
-		if (refEx(inst.exp1()) == Tipos.BOOL) {
+		if (inst.exp1().type().refEx().es_booleano()) {
 			inst.insts().procesa(this);
 			inst.type(inst.insts().type());
 		} else {
-			//TODO mostrar error
-			inst.type(Tipos.ERROR);
+			System.out.println("Error: condicion no booleana");
+			algun_error = true;
+			inst.type(tipoError);
 		}
 	}
 
 	public void procesa(Inst_ifthenelse inst) {
 		inst.exp1().procesa(this);
-		if (refEx(inst.exp1()) == Tipos.BOOL) {
+		if (inst.exp1().type().refEx().es_booleano()) {
 			inst.bloque1().procesa(this);
 			inst.bloque2().procesa(this);
 			inst.type(ambos_ok(inst.bloque1().type(), inst.bloque2().type()));
 		} else {
-			//TODO mostrar error
-			inst.type(Tipos.ERROR);
+			System.out.println("Error: condicion no booleana");
+			algun_error = true;
+			inst.type(tipoError);
 		}
 	}
 
 	public void procesa(Inst_while inst) {
 		inst.exp1().procesa(this);
-		if (refEx(inst.exp1()) == Tipos.BOOL) {
+		if (inst.exp1().type().refEx().es_booleano()) {
 			inst.insts().procesa(this);
 			inst.type(inst.insts().type());
 		} else {
-			//TODO mostrar error
-			inst.type(Tipos.ERROR);
+			System.out.println("Error: condicion no booleana");
+			algun_error = true;
+			inst.type(tipoError);
 		}
 	}
 
 	public void procesa(Inst_lectura inst) {
 		inst.exp1().procesa(this);
-		if (((refEx(inst.exp1()) == Tipos.INT) || (refEx(inst.exp1()) == Tipos.REAL) || 
-			(refEx(inst.exp1()) == Tipos.STRING)) && es_designador(inst.exp1())) {
-				inst.type(Tipos.OK);
+		if ((inst.exp1().type().refEx().es_entero() || inst.exp1().type().refEx().es_real() || 
+				inst.exp1().type().refEx().es_cadena()) && inst.exp1().es_designador()) {
+			inst.type(tipoOK);
 		} else {
-			//TODO mostrar error
-			inst.type(Tipos.ERROR);
+			System.out.println("Error: lectura de tipo no valido");
+			algun_error = true;
+			inst.type(tipoError);
 		}
 	}
 
 	public void procesa(Inst_escritura inst) {
 		inst.exp1().procesa(this);
-		if (((refEx(inst.exp1()) == Tipos.INT) || (refEx(inst.exp1()) == Tipos.REAL) || 
-			(refEx(inst.exp1()) == Tipos.BOOL) || (refEx(inst.exp1()) == Tipos.STRING))) {
-				inst.type(Tipos.OK);
+		if (((inst.exp1().type().refEx().es_entero()) || (inst.exp1().type().refEx().es_real()) || 
+				(inst.exp1().type().refEx().es_booleano()) || (inst.exp1().type().refEx().es_cadena()))) {
+			inst.type(tipoOK);
 		} else {
-			//TODO mostrar error
-			inst.type(Tipos.ERROR);
+			System.out.println("Error: escritura de tipo no valido");
+			algun_error = true;
+			inst.type(tipoError);
 		}
 	}
 
 	public void procesa(Inst_new_line inst) {
-		inst.type(Tipos.OK);
+		inst.type(tipoOK);
 	}
 
 	public void procesa(Inst_reserv_mem inst) {
 		inst.exp1().procesa(this);
-		if (refEx(inst.exp1()) == Tipos.POINTER) {
-			inst.type(Tipos.OK);
+		if (inst.exp1().type().refEx().es_puntero()) {
+			inst.type(tipoOK);
 		} else {
-			//TODO mostrar error
-			inst.type(Tipos.ERROR);
+			System.out.println("Error: reserva de memoria no valida");
+			algun_error = true;
+			inst.type(tipoError);
 		}
 	}
 
 	public void procesa(Inst_lib_mem inst) {
 		inst.exp1().procesa(this);
-		if (refEx(inst.exp1()) == Tipos.POINTER) {
-			inst.type(Tipos.OK);
+		if (inst.exp1().type().refEx().es_puntero()) {
+			inst.type(tipoOK);
 		} else {
-			//TODO mostrar error
-			inst.type(Tipos.ERROR);
+			System.out.println("Error: liberacion de memoria no valida");
+			algun_error = true;
+			inst.type(tipoError);
 		}
 	}
 
 	public void procesa(Inst_invoc_proc inst) {
-		if (inst.vinculo() instanceof Dec_proc) {
+		if (inst.vinculo().es_dec_proc()) {
 			Dec_proc dec = (Dec_proc) inst.vinculo();
 			if (dec.params().size() != inst.params().size()) {
-				//TODO mostrar error
-				inst.type(Tipos.ERROR);
+				System.out.println("Error: numero de parametros incorrecto");
+				algun_error = true;
+				inst.type(tipoError);
 			} else {
-				inst.type(chequeo_params(inst.params(), dec.params())); //TODO tipos mal
+				inst.type(chequeo_params(inst.params(), dec.params()));
 			}
 		} else {
-			//TODO mostrar error
-			inst.type(Tipos.ERROR);
+			System.out.println("Error: invocacion de procedimiento no valida");
+			algun_error = true;
+			inst.type(tipoError);
 		}
 	}
 
@@ -228,572 +296,453 @@ public class Tipado extends ProcesamientoPorDefecto {
 		inst.type(inst.b().type());
 	}
 
-	public void procesa(Bloque_lleno inst) {
-		inst.prog().procesa(this);
-		inst.type(inst.prog().type());
+	public void procesa(Bloque_lleno b) {
+		b.prog().procesa(this);
+		b.type(b.prog().type());
 	}
 
-	public Tipos chequeo_params(Exprs_ninguna exprs, Params_ninguno params) {
-		return Tipos.OK;
+	public void procesa(Bloque_vacio b) {
+		b.type(tipoOK);
 	}
 
-	public Tipos chequeo_params(Exprs_una exprs, Params_uno_f params) {
-		return chequeo_param(exprs.e(), params.param());
-	}
+	private Tipo chequeo_params(Expresiones exprs, ParamsF params) {
+        if (exprs.hay_muchas() && params.hay_muchas()) {
+            Tipo t0 = chequeo_params(((Exprs_muchas) exprs).expresiones(), ((Params_muchos_f) params).params());
+            Tipo t1 = chequeo_param(((Exprs_muchas) exprs).exp(), ((Params_muchos_f) params).param());
+			return ambos_ok(t0, t1);
+        } else if (exprs.hay_una() && params.hay_una()) {
+            return chequeo_param(((Exprs_una) exprs).exp(), ((Params_uno_f) params).param());
+        }
+		return tipoOK;
+    }
 
-	public Tipos chequeo_params(Exprs_muchas exprs, Params_muchos_f params) {
-		return ambos_ok(chequeo_params(exprs.expresiones(), params.params()), chequeo_param(exprs.exp(), params.param()));
-	}
-
-	public Tipos chequeo_param(Exp e, Param_f_sin_amp param) {
+    public Tipo chequeo_param(Exp e, ParamF param) {
 		e.procesa(this);
-		if (son_compatibles(param.type(), e.type())) {
-			return Tipos.OK;
+		if (param.por_valor()) {
+			if (son_compatibles(e.type(), param.tipo())) {
+				return tipoOK;
+			} else {
+				System.out.println("Error: parametro no compatible");
+				algun_error = true;
+				return tipoError;
+			}
 		} else {
-			//TODO mostrar error
-			return Tipos.ERROR;
+			if (e.es_designador() && son_compatibles(param.tipo(), e.type())) {
+				return tipoOK;
+			} else {
+				System.out.println("Error: parametro no compatible");
+				algun_error = true;
+				return tipoError;
+			}
 		}
-	}
-
-	public Tipos chequeo_param(Exp e, Param_f_con_amp param) {
-		e.procesa(this);
-		if (es_designador(e) && son_compatibles(param.type(), e.type())) {
-			return Tipos.OK;
-		} else {
-			//TODO mostrar error
-			return Tipos.ERROR;
-		}
-	}
+    }
 
 	public void procesa(Id id) {
 		Dec dec = id.vinculo();
-		if (dec instanceof Dec_var || dec instanceof Param_f_sin_amp || dec instanceof Param_f_con_amp) {
-			id.type(dec.type());
-		} else {
-			//TODO mostrar error
-			id.type(Tipos.ERROR);
+		if (!dec.es_dec_tipo() && !dec.es_dec_proc())
+			id.type(((Dec_var) dec).tipo());
+		else {
+			System.out.println("Error: identificador no valido");
+			algun_error = true;
+			id.type(tipoError);
 		}
 	}
 
 	public void procesa(Sstring id) {
-		id.type(Tipos.STRING);
+		id.type(tipoString);
 	}
 
 	public void procesa(Num_int num) {
-		num.type(Tipos.INT);
+		num.type(tipoInt);
 	}
 
 	public void procesa(Num_real num) {
-		num.type(Tipos.REAL);
+		num.type(tipoReal);
 	}
 
 	public void procesa(True t) {
-		t.type(Tipos.BOOL);
+		t.type(tipoBool);
 	}
 
 	public void procesa(False f) {
-		f.type(Tipos.BOOL);
+		f.type(tipoBool);
 	}
 
 	public void procesa(None n) {
-		n.type(Tipos.NULL);
+		n.type(tipoNull);
 	}
 
-/*chequeo_tipo(suma(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si ref!(E0.tipo) = int() && ref!(E1.tipo) = int() entonces
-$.tipo = int() 
-si no
-	si (ref!(E0.tipo) = real() && (ref!(E1.tipo) = int() || ref!(E1.tipo) = real())) ||
-(ref!(E1.tipo) = real() && (ref!(E0.tipo) = int() || ref!(E0.tipo) = real())) entonces
-$.tipo = real()
-si no
-error
-$.tipo = error() */
 	public void procesa(Suma suma) {
 		suma.arg0().procesa(this);
 		suma.arg1().procesa(this);
-		if (refEx(suma.arg0()) == Tipos.INT && refEx(suma.arg1()) == Tipos.INT) {
-			suma.type(Tipos.INT);
-		} else if ((refEx(suma.arg0()) == Tipos.REAL && (refEx(suma.arg1()) == Tipos.INT || refEx(suma.arg1()) == Tipos.REAL))
-			 || (refEx(suma.arg1()) == Tipos.REAL && (refEx(suma.arg0()) == Tipos.INT || refEx(suma.arg0()) == Tipos.REAL))) {
-			suma.type(Tipos.REAL);
+		Tipo t0 = suma.arg0().type().refEx();
+		Tipo t1 = suma.arg1().type().refEx();
+		if (t0.es_entero() && t1.es_entero()) {
+			suma.type(tipoInt);
+		} else if ((t0.es_real() && (t1.es_entero() || t1.es_real()))
+			 || (t1.es_real() && (t0.es_entero() || t0.es_real()))) {
+			suma.type(tipoReal);
 		} else {
-			//TODO mostrar error
-			suma.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en suma");
+			algun_error = true;
+			suma.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(resta(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si ref!(E0.tipo) = int() && ref!(E1.tipo) = int() entonces
-$.tipo = int() 
-si no
-	si (ref!(E0.tipo) = real() && (ref!(E1.tipo) = int() || ref!(E1.tipo) = real())) ||
-(ref!(E1.tipo) = real() && (ref!(E0.tipo) = int() || ref!(E0.tipo) = real())) entonces
-$.tipo = real()
-si no
-error
-$.tipo = error()*/
 	public void procesa(Resta resta) {
 		resta.arg0().procesa(this);
 		resta.arg1().procesa(this);
-		if (refEx(resta.arg0()) == Tipos.INT && refEx(resta.arg1()) == Tipos.INT) {
-			resta.type(Tipos.INT);
-		} else if ((refEx(resta.arg0()) == Tipos.REAL && (refEx(resta.arg1()) == Tipos.INT || refEx(resta.arg1()) == Tipos.REAL))
-			 || (refEx(resta.arg1()) == Tipos.REAL && (refEx(resta.arg0()) == Tipos.INT || refEx(resta.arg0()) == Tipos.REAL))) {
-			resta.type(Tipos.REAL);
+		Tipo t0 = resta.arg0().type().refEx();
+		Tipo t1 = resta.arg1().type().refEx();
+		if (t0.es_entero() && t1.es_entero()) {
+			resta.type(tipoInt);
+		} else if ((t0.es_real() && (t1.es_entero() || t1.es_real()))
+			 || (t1.es_real() && (t0.es_entero() || t0.es_real()))) {
+			resta.type(tipoReal);
 		} else {
-			//TODO mostrar error
-			resta.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en resta");
+			algun_error = true;
+			resta.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(mul(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si ref!(E0.tipo) = int() && ref!(E1.tipo) = int() entonces
-$.tipo = int() 
-si no
-	si (ref!(E0.tipo) = real() && (ref!(E1.tipo) = int() || ref!(E1.tipo) = real())) ||
-(ref!(E1.tipo) = real() && (ref!(E0.tipo) = int() || ref!(E0.tipo) = real())) entonces
-$.tipo = real()
-si no
-error
-$.tipo = error()*/
 	public void procesa(Mul mul) {
 		mul.arg0().procesa(this);
 		mul.arg1().procesa(this);
-		if (refEx(mul.arg0()) == Tipos.INT && refEx(mul.arg1()) == Tipos.INT) {
-			mul.type(Tipos.INT);
-		} else if ((refEx(mul.arg0()) == Tipos.REAL && (refEx(mul.arg1()) == Tipos.INT || refEx(mul.arg1()) == Tipos.REAL))
-			 || (refEx(mul.arg1()) == Tipos.REAL && (refEx(mul.arg0()) == Tipos.INT || refEx(mul.arg0()) == Tipos.REAL))) {
-			mul.type(Tipos.REAL);
+		Tipo t0 = mul.arg0().type().refEx();
+		Tipo t1 = mul.arg1().type().refEx();
+		if (t0.es_entero() && t1.es_entero()) {
+			mul.type(tipoInt);
+		} else if ((t0.es_real() && (t1.es_entero() || t1.es_real()))
+			 || (t1.es_real() && (t0.es_entero() || t0.es_real()))) {
+			mul.type(tipoReal);
 		} else {
-			//TODO mostrar error
-			mul.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en multiplicacion");
+			algun_error = true;
+			mul.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(div(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si ref!(E0.tipo) = int() && ref!(E1.tipo) = int() entonces
-$.tipo = int() 
-si no
-	si (ref!(E0.tipo) = real() && (ref!(E1.tipo) = int() || ref!(E1.tipo) = real())) ||
-(ref!(E1.tipo) = real() && (ref!(E0.tipo) = int() || ref!(E0.tipo) = real())) entonces
-$.tipo = real()
-si no
-error
-$.tipo = error()*/
 	public void procesa(Div div) {
 		div.arg0().procesa(this);
 		div.arg1().procesa(this);
-		if (refEx(div.arg0()) == Tipos.INT && refEx(div.arg1()) == Tipos.INT) {
-			div.type(Tipos.INT);
-		} else if ((refEx(div.arg0()) == Tipos.REAL && (refEx(div.arg1()) == Tipos.INT || refEx(div.arg1()) == Tipos.REAL))
-			 || (refEx(div.arg1()) == Tipos.REAL && (refEx(div.arg0()) == Tipos.INT || refEx(div.arg0()) == Tipos.REAL))) {
-			div.type(Tipos.REAL);
+		Tipo t0 = div.arg0().type().refEx();
+		Tipo t1 = div.arg1().type().refEx();
+		if (t0.es_entero() && t1.es_entero()) {
+			div.type(tipoInt);
+		} else if ((t0.es_real() && (t1.es_entero() || t1.es_real()))
+			 || (t1.es_real() && (t0.es_entero() || t0.es_real()))) {
+			div.type(tipoReal);
 		} else {
-			//TODO mostrar error
-			div.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en division");
+			algun_error = true;
+			div.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(mod(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si ref!(E0.tipo) = int() && ref!(E1.tipo) = int() entonces
-$.tipo = int() 
-si no
-error
-$.tipo = error()*/
 	public void procesa(Mod mod) {
 		mod.arg0().procesa(this);
 		mod.arg1().procesa(this);
-		if (refEx(mod.arg0()) == Tipos.INT && refEx(mod.arg1()) == Tipos.INT) {
-			mod.type(Tipos.INT);
+		if (mod.arg0().type().refEx().es_entero() && mod.arg1().type().refEx().es_entero()) {
+			mod.type(tipoInt);
 		} else {
-			//TODO mostrar error
-			mod.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en modulo");
+			algun_error = true;
+			mod.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(and(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si ref!(E0.tipo) = bool() && ref!(E1.tipo) = bool() entonces
-$.tipo = bool() 
-si no
-error
-$.tipo = error()*/
 	public void procesa(And and) {
 		and.arg0().procesa(this);
 		and.arg1().procesa(this);
-		if (refEx(and.arg0()) == Tipos.BOOL && refEx(and.arg1()) == Tipos.BOOL) {
-			and.type(Tipos.BOOL);
+		if (and.arg0().type().refEx().es_booleano() && and.arg1().type().refEx().es_booleano()) {
+			and.type(tipoBool);
 		} else {
-			//TODO mostrar error
-			and.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en and");
+			algun_error = true;
+			and.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(and(E0,E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si ref!(E0.tipo) = bool() && ref!(E1.tipo) = bool() entonces
-$.tipo = bool() 
-si no
-error
-$.tipo = error()*/
 	public void procesa(Or or) {
 		or.arg0().procesa(this);
 		or.arg1().procesa(this);
-		if (refEx(or.arg0()) == Tipos.BOOL && refEx(or.arg1()) == Tipos.BOOL) {
-			or.type(Tipos.BOOL);
+		if (or.arg0().type().refEx().es_booleano() && or.arg1().type().refEx().es_booleano()) {
+			or.type(tipoBool);
 		} else {
-			//TODO mostrar error
-			or.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en or");
+			algun_error = true;
+			or.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(menor(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si (ref!(E0.tipo) = int() || ref!(E0.tipo) = real()) && 
-(ref!(E1.tipo) = int() || ref!(E1.tipo) = real()) entonces
-$.tipo = bool() 
-si no
-	si ref!(E0.tipo) = bool() && ref!(E1.tipo) = bool() entonces
-$.tipo = bool()
-si no
-	si ref!(E0.tipo) = string() && ref!(E1.tipo) = string() entonces
-$.tipo = bool()
-	si no
-error
-$.tipo = error()*/
 	public void procesa(Menor menor) {
 		menor.arg0().procesa(this);
 		menor.arg1().procesa(this);
-		if ((refEx(menor.arg0()) == Tipos.INT || refEx(menor.arg0()) == Tipos.REAL) && 
-			(refEx(menor.arg1()) == Tipos.INT || refEx(menor.arg1()) == Tipos.REAL)) {
-			menor.type(Tipos.BOOL);
-		} else if (refEx(menor.arg0()) == Tipos.BOOL && refEx(menor.arg1()) == Tipos.BOOL) {
-			menor.type(Tipos.BOOL);
-		} else if (refEx(menor.arg0()) == Tipos.STRING && refEx(menor.arg1()) == Tipos.STRING) {
-			menor.type(Tipos.BOOL);
+		Tipo t0 = menor.arg0().type().refEx();
+		Tipo t1 = menor.arg1().type().refEx();
+		if ((t0.es_entero() || t0.es_real()) && (t1.es_entero() || t1.es_real())) {
+			menor.type(tipoBool);
+		} else if (t0.es_booleano() && t1.es_booleano()) {
+			menor.type(tipoBool);
+		} else if (t0.es_cadena() && t1.es_cadena()) {
+			menor.type(tipoBool);
 		} else {
-			//TODO mostrar error
-			menor.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en menor");
+			algun_error = true;
+			menor.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(mayor(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si (ref!(E0.tipo) = int() || ref!(E0.tipo) = real()) && 
-(ref!(E1.tipo) = int() || ref!(E1.tipo) = real()) entonces
-$.tipo = bool() 
-si no
-	si ref!(E0.tipo) = bool() && ref!(E1.tipo) = bool() entonces
-$.tipo = bool()
-si no
-	si ref!(E0.tipo) = string() && ref!(E1.tipo) = string() entonces
-$.tipo = bool()
-	si no
-error
-$.tipo = error()*/
 	public void procesa(Mayor mayor) {
 		mayor.arg0().procesa(this);
 		mayor.arg1().procesa(this);
-		if ((refEx(mayor.arg0()) == Tipos.INT || refEx(mayor.arg0()) == Tipos.REAL) && 
-			(refEx(mayor.arg1()) == Tipos.INT || refEx(mayor.arg1()) == Tipos.REAL)) {
-			mayor.type(Tipos.BOOL);
-		} else if (refEx(mayor.arg0()) == Tipos.BOOL && refEx(mayor.arg1()) == Tipos.BOOL) {
-			mayor.type(Tipos.BOOL);
-		} else if (refEx(mayor.arg0()) == Tipos.STRING && refEx(mayor.arg1()) == Tipos.STRING) {
-			mayor.type(Tipos.BOOL);
+		Tipo t0 = mayor.arg0().type().refEx();
+		Tipo t1 = mayor.arg1().type().refEx();
+		if ((t0.es_entero() || t0.es_real()) && (t1.es_entero() || t1.es_real())) {
+			mayor.type(tipoBool);
+		} else if (t0.es_booleano() && t1.es_booleano()) {
+			mayor.type(tipoBool);
+		} else if (t0.es_cadena() && t1.es_cadena()) {
+			mayor.type(tipoBool);
 		} else {
-			//TODO mostrar error
-			mayor.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en mayor");
+			algun_error = true;
+			mayor.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(menor_eq(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si (ref!(E0.tipo) = int() || ref!(E0.tipo) = real()) && 
-(ref!(E1.tipo) = int() || ref!(E1.tipo) = real()) entonces
-$.tipo = bool() 
-si no
-	si ref!(E0.tipo) = bool() && ref!(E1.tipo) = bool() entonces
-$.tipo = bool()
-si no
-	si ref!(E0.tipo) = string() && ref!(E1.tipo) = string() entonces
-$.tipo = bool()
-	si no
-error
-$.tipo = error()*/
 	public void procesa(Menor_eq menor_eq) {
 		menor_eq.arg0().procesa(this);
 		menor_eq.arg1().procesa(this);
-		if ((refEx(menor_eq.arg0()) == Tipos.INT || refEx(menor_eq.arg0()) == Tipos.REAL) && 
-			(refEx(menor_eq.arg1()) == Tipos.INT || refEx(menor_eq.arg1()) == Tipos.REAL)) {
-			menor_eq.type(Tipos.BOOL);
-		} else if (refEx(menor_eq.arg0()) == Tipos.BOOL && refEx(menor_eq.arg1()) == Tipos.BOOL) {
-			menor_eq.type(Tipos.BOOL);
-		} else if (refEx(menor_eq.arg0()) == Tipos.STRING && refEx(menor_eq.arg1()) == Tipos.STRING) {
-			menor_eq.type(Tipos.BOOL);
+		Tipo t0 = menor_eq.arg0().type().refEx();
+		Tipo t1 = menor_eq.arg1().type().refEx();
+		if ((t0.es_entero() || t0.es_real()) && (t1.es_entero() || t1.es_real())) {
+			menor_eq.type(tipoBool);
+		} else if (t0.es_booleano() && t1.es_booleano()) {
+			menor_eq.type(tipoBool);
+		} else if (t0.es_cadena() && t1.es_cadena()) {
+			menor_eq.type(tipoBool);
 		} else {
-			//TODO mostrar error
-			menor_eq.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en menor o igual");
+			algun_error = true;
+			menor_eq.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(mayor_eq(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si (ref!(E0.tipo) = int() || ref!(E0.tipo) = real()) && 
-(ref!(E1.tipo) = int() || ref!(E1.tipo) = real()) entonces
-$.tipo = bool() 
-si no
-	si ref!(E0.tipo) = bool() && ref!(E1.tipo) = bool() entonces
-$.tipo = bool()
-si no
-	si ref!(E0.tipo) = string() && ref!(E1.tipo) = string() entonces
-$.tipo = bool()
-	si no
-error
-$.tipo = error()*/
 	public void procesa(Mayor_eq mayor_eq) {
 		mayor_eq.arg0().procesa(this);
 		mayor_eq.arg1().procesa(this);
-		if ((refEx(mayor_eq.arg0()) == Tipos.INT || refEx(mayor_eq.arg0()) == Tipos.REAL) && 
-			(refEx(mayor_eq.arg1()) == Tipos.INT || refEx(mayor_eq.arg1()) == Tipos.REAL)) {
-			mayor_eq.type(Tipos.BOOL);
-		} else if (refEx(mayor_eq.arg0()) == Tipos.BOOL && refEx(mayor_eq.arg1()) == Tipos.BOOL) {
-			mayor_eq.type(Tipos.BOOL);
-		} else if (refEx(mayor_eq.arg0()) == Tipos.STRING && refEx(mayor_eq.arg1()) == Tipos.STRING) {
-			mayor_eq.type(Tipos.BOOL);
+		Tipo t0 = mayor_eq.arg0().type().refEx();
+		Tipo t1 = mayor_eq.arg1().type().refEx();
+		if ((t0.es_entero() || t0.es_real()) && (t1.es_entero() || t1.es_real())) {
+			mayor_eq.type(tipoBool);
+		} else if (t0.es_booleano() && t1.es_booleano()) {
+			mayor_eq.type(tipoBool);
+		} else if (t0.es_cadena() && t1.es_cadena()) {
+			mayor_eq.type(tipoBool);
 		} else {
-			//TODO mostrar error
-			mayor_eq.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en mayor o igual");
+			algun_error = true;
+			mayor_eq.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(comp(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si (ref!(E0.tipo) = int() || ref!(E0.tipo) = real()) && 
-(ref!(E1.tipo) = int() || ref!(E1.tipo) = real()) entonces
-$.tipo = bool() 
-si no
-	si ref!(E0.tipo) = bool() && ref!(E1.tipo) = bool() entonces
-$.tipo = bool()
-si no
-	si ref!(E0.tipo) = string() && ref!(E1.tipo) = string() entonces
-$.tipo = bool()
-	si no
-		si (ref!(E0.tipo) = tipo_puntero() || ref!(E0.tipo) = null()) && 
-(ref!(E1.tipo) = tipo_puntero() || ref!(E1.tipo) = null()) entonces
-$.tipo = bool()
-si no
-error
-$.tipo = error()*/
 	public void procesa(Comp comp) {
 		comp.arg0().procesa(this);
 		comp.arg1().procesa(this);
-		if ((refEx(comp.arg0()) == Tipos.INT || refEx(comp.arg0()) == Tipos.REAL) && 
-			(refEx(comp.arg1()) == Tipos.INT || refEx(comp.arg1()) == Tipos.REAL)) {
-			comp.type(Tipos.BOOL);
-		} else if (refEx(comp.arg0()) == Tipos.BOOL && refEx(comp.arg1()) == Tipos.BOOL) {
-			comp.type(Tipos.BOOL);
-		} else if (refEx(comp.arg0()) == Tipos.STRING && refEx(comp.arg1()) == Tipos.STRING) {
-			comp.type(Tipos.BOOL);
-		} else if ((refEx(comp.arg0()) == Tipos.POINTER || refEx(comp.arg0()) == Tipos.NULL) && 
-			(refEx(comp.arg1()) == Tipos.POINTER || refEx(comp.arg1()) == Tipos.NULL)) {
-			comp.type(Tipos.BOOL);
+		Tipo t0 = comp.arg0().type().refEx();
+		Tipo t1 = comp.arg1().type().refEx();
+		if ((t0.es_entero() || t0.es_real()) && (t1.es_entero() || t1.es_real())) {
+			comp.type(tipoBool);
+		} else if (t0.es_booleano() && t1.es_booleano()) {
+			comp.type(tipoBool);
+		} else if (t0.es_cadena() && t1.es_cadena()) {
+			comp.type(tipoBool);
+		} else if ((t0.es_puntero() || t0.es_null()) && (t1.es_puntero() || t1.es_null())) {
+			comp.type(tipoBool);
 		} else {
-			//TODO mostrar error
-			comp.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en comparacion");
+			algun_error = true;
+			comp.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(dist(E0, E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si (ref!(E0.tipo) = int() || ref!(E0.tipo) = real()) && 
-(ref!(E1.tipo) = int() || ref!(E1.tipo) = real()) entonces
-$.tipo = bool() 
-si no
-	si ref!(E0.tipo) = bool() && ref!(E1.tipo) = bool() entonces
-$.tipo = bool()
-si no
-	si ref!(E0.tipo) = string() && ref!(E1.tipo) = string() entonces
-$.tipo = bool()
-	si no
-		si (ref!(E0.tipo) = tipo_puntero() || ref!(E0.tipo) = null()) && 
-(ref!(E1.tipo) = tipo_puntero() || ref!(E1.tipo) = null()) entonces
-$.tipo = bool()
-si no
-error
-$.tipo = error()*/
 	public void procesa(Dist dist) {
 		dist.arg0().procesa(this);
 		dist.arg1().procesa(this);
-		if ((refEx(dist.arg0()) == Tipos.INT || refEx(dist.arg0()) == Tipos.REAL) && 
-			(refEx(dist.arg1()) == Tipos.INT || refEx(dist.arg1()) == Tipos.REAL)) {
-			dist.type(Tipos.BOOL);
-		} else if (refEx(dist.arg0()) == Tipos.BOOL && refEx(dist.arg1()) == Tipos.BOOL) {
-			dist.type(Tipos.BOOL);
-		} else if (refEx(dist.arg0()) == Tipos.STRING && refEx(dist.arg1()) == Tipos.STRING) {
-			dist.type(Tipos.BOOL);
-		} else if ((refEx(dist.arg0()) == Tipos.POINTER || refEx(dist.arg0()) == Tipos.NULL) && 
-			(refEx(dist.arg1()) == Tipos.POINTER || refEx(dist.arg1()) == Tipos.NULL)) {
-			dist.type(Tipos.BOOL);
+		Tipo t0 = dist.arg0().type().refEx();
+		Tipo t1 = dist.arg1().type().refEx();
+		if ((t0.es_entero() || t0.es_real()) && (t1.es_entero() || t1.es_real())) {
+			dist.type(tipoBool);
+		} else if (t0.es_booleano() && t1.es_booleano()) {
+			dist.type(tipoBool);
+		} else if (t0.es_cadena() && t1.es_cadena()) {
+			dist.type(tipoBool);
+		} else if ((t0.es_puntero() || t0.es_null()) && (t1.es_puntero() || t1.es_null())) {
+			dist.type(tipoBool);
 		} else {
-			//TODO mostrar error
-			dist.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en distinto");
+			algun_error = true;
+			dist.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(menos(E)) =
-chequeo_tipo(E)
-si ref!(E.tipo) = int() entonces
-$.tipo = int() 
-si no
-	si ref!(E.tipo) = real() entonces
-$.tipo = real()
-si no
-error
-$.tipo = error()*/
 	public void procesa(Menos menos) {
 		menos.arg().procesa(this);
-		if (refEx(menos.arg()) == Tipos.INT) {
-			menos.type(Tipos.INT);
-		} else if (refEx(menos.arg()) == Tipos.REAL) {
-			menos.type(Tipos.REAL);
+		Tipo t = menos.arg().type().refEx();
+		if (t.es_entero()) {
+			menos.type(tipoInt);
+		} else if (t.es_real()) {
+			menos.type(tipoReal);
 		} else {
-			//TODO mostrar error
-			menos.type(Tipos.ERROR);
+			System.out.println("Error: tipo incompatible para menos");
+			algun_error = true;
+			menos.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(not(E)) =
-chequeo_tipo(E)
-si ref!(E.tipo) = bool() entonces
-$.tipo = bool() 
-si no
-error
-$.tipo = error()*/
 	public void procesa(Not not) {
 		not.arg().procesa(this);
-		if (refEx(not.arg()) == Tipos.BOOL) {
-			not.type(Tipos.BOOL);
+		if (not.arg().type().refEx().es_booleano()) {
+			not.type(tipoBool);
 		} else {
-			//TODO mostrar error
-			not.type(Tipos.ERROR);
+			System.out.println("Error: tipo incompatible para negacion");
+			algun_error = true;
+			not.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(asterix(E)) =
-chequeo_tipo(E)
-si ref!(E.tipo) = tipo_puntero(T) entonces
-$.tipo = T 
-si no
-error
-$.tipo = error()*/
 	public void procesa(Asterix asterix) {
 		asterix.arg().procesa(this);
-		if (refEx(asterix.arg()) == Tipos.POINTER) {
-			asterix.type(Tipos.POINTER); //TODO arreglar pointers
+		Tipo tipo = asterix.arg().type().refEx();
+		if (tipo.es_puntero()) {
+			asterix.type(tipo.type());
 		} else {
-			//TODO mostrar error
-			asterix.type(Tipos.ERROR);
+			System.out.println("Error: tipo puntero no valido");
+			algun_error = true;
+			asterix.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(corch(E0,E1)) =
-chequeo_tipo(E0)
-chequeo_tipo(E1)
-si ref!(E0.tipo) = tipo_array(_, T) && ref!(E1.tipo) = int() entonces
-$.tipo = T
-si no
-error
-$.tipo = error()*/
 	public void procesa(Corch corch) {
 		corch.arg0().procesa(this);
 		corch.arg1().procesa(this);
-		if (refEx(corch.arg0()) == Tipos.ARRAY && refEx(corch.arg1()) == Tipos.INT) {
-			corch.type(Tipos.ARRAY); //TODO arreglar arrays
+		Tipo tipo = corch.arg0().type().refEx();
+		if (tipo.es_array() && corch.arg1().type().refEx().es_entero()) {
+			corch.type(((Tipo_array) tipo).tipo());
 		} else {
-			//TODO mostrar error
-			corch.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en indexacion");
+			algun_error = true;
+			corch.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(punto(E, id)) =
-chequeo_tipo(E)
-si ref!(E.tipo) = tipo_registro(Campos) && existeCampo(Campos, id) entonces
-$.tipo = tipoDeCampo(Campos, id)
-si no
-error
-$.tipo = error()*/
 	public void procesa(Punto punto) {
 		punto.arg().procesa(this);
-		if (refEx(punto.arg()) == Tipos.RECORD && existeCampo(punto.arg().type().campos(), punto.id())) {
-			punto.type(tipoDeCampo(punto.arg().type().campos(), punto.id())); //TODO arreglar campos
+		Tipo tipo = punto.arg().type().refEx();
+		Tipo tipoCampo = tipo.tipoDeCampo(punto.id());
+		if (tipo.es_registro() && tipoCampo != null) {
+			punto.type(tipoCampo);
 		} else {
-			//TODO mostrar error
-			punto.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en acceso a registro (.)");
+			algun_error = true;
+			punto.type(tipoError);
 		}
 	}
 
-/*chequeo_tipo(flecha(E, id)) =
-chequeo_tipo(E)
-si ref!(E.tipo) = tipo_puntero(T) && ref!(T.tipo) = tipo_registro(Campos)
-&& existeCampo(Campos, id) entonces
-$.tipo = tipoDeCampo(Campos, id)
-si no
-error
-$.tipo = error()*/
 	public void procesa(Flecha flecha) {
 		flecha.arg().procesa(this);
-		if (refEx(flecha.arg()) == Tipos.POINTER && refEx(flecha.arg().type()) == Tipos.RECORD && 
-			existeCampo(flecha.arg().type().campos(), flecha.id())) {
-			flecha.type(tipoDeCampo(flecha.arg().type().campos(), flecha.id())); //TODO arreglar campos
+		Tipo tipop = flecha.arg().type().refEx();
+		if (tipop.es_puntero()){
+			Tipo tipopp = ((Tipo_puntero) tipop).tipo().refEx();
+			Tipo tipoCampo = tipopp.tipoDeCampo(flecha.id());
+			if (tipopp.es_registro() && tipoCampo != null)
+				flecha.type(tipoCampo);
 		} else {
-			//TODO mostrar error
-			flecha.type(Tipos.ERROR);
+			System.out.println("Error: tipos incompatibles en acceso a registro (->)");
+			flecha.type(tipoError);
 		}
 	}
 
 
-
-/*ambos_ok(t0, t1) =
-si t0 = ok() && t1 = ok()
-return ok()
-else
-return error()*/
-	private Tipos ambos_ok(Tipos t0, Tipos t1) {
-		if (t0 == Tipos.OK && t1 == Tipos.OK)
-			return Tipos.OK;
+	private Tipo ambos_ok(Tipo t0, Tipo t1) {
+		if (t0.equals(tipoOK) && t1.equals(tipoOK))
+			return tipoOK;
 		else
-			return Tipos.ERROR;
+			return tipoError;
 	}
 
-	private Tipos refEx(Exp e) { //TODO implementar y cambiar por tipo
-		return Tipos.NULL;
+	private boolean son_compatibles(Tipo t1, Tipo t2) {
+		Tipo t = t1.refEx();
+		Tipo tp = t2.refEx();
+		if (t.es_entero() && tp.es_entero())
+			return true;
+		else if (t.es_real() && (tp.es_entero() || tp.es_real()))
+			return true;
+		else if (t.es_booleano() && tp.es_booleano())
+			return true;
+		else if (t.es_cadena() && tp.es_cadena())
+			return true;
+		else if (t.es_array() && tp.es_array()) {
+			Tipo tpp = ((Tipo_array) t).tipo();
+			Tipo tppp = ((Tipo_array) tp).tipo();
+			int npp = Integer.parseInt(((Tipo_array) t).valor().toString());
+			int nppp = Integer.parseInt(((Tipo_array) tp).valor().toString());
+			return (npp == nppp) && son_compatibles(tpp, tppp, t);
+		} else if (t.es_registro() && tp.es_registro())
+			return registros_compatibles((Tipo_registro)t, (Tipo_registro)tp, t);
+		else if (t.es_puntero() && tp.es_null())
+			return true;
+		else if (t.es_puntero() && tp.es_puntero()) {
+			Tipo tpp = ((Tipo_puntero) t).tipo();
+			Tipo tppp = ((Tipo_puntero) tp).tipo();
+			return son_compatibles(tpp, tppp, t);
+		} else
+			return false;
 	}
 
-	private boolean son_compatibles(Tipos t1, Tipos t2) {
-		return true; //TODO implementar
+	private boolean son_compatibles(Tipo t1, Tipo t2, Tipo tOrig) {
+		Tipo t = t1.refEx();
+		Tipo tp = t2.refEx();
+		if (t.es_entero() && tp.es_entero())
+			return true;
+		else if (t.es_real() && (tp.es_entero() || tp.es_real()))
+			return true;
+		else if (t.es_booleano() && tp.es_booleano())
+			return true;
+		else if (t.es_cadena() && tp.es_cadena())
+			return true;
+		else if (t.es_array() && tp.es_array()) {
+			Tipo tpp = ((Tipo_array) t).tipo();
+			Tipo tppp = ((Tipo_array) tp).tipo();
+			int npp = Integer.parseInt(((Tipo_array) t).valor().toString());
+			int nppp = Integer.parseInt(((Tipo_array) tp).valor().toString());
+			return (t == tOrig) || ((npp == nppp) && son_compatibles(tpp, tppp, tOrig));
+		} else if (t.es_registro() && tp.es_registro())
+			return registros_compatibles((Tipo_registro)t, (Tipo_registro)tp, tOrig);
+		else if (t.es_puntero() && tp.es_null())
+			return true;
+		else if (t.es_puntero() && tp.es_puntero()) {
+			Tipo tpp = ((Tipo_puntero) t).tipo();
+			Tipo tppp = ((Tipo_puntero) tp).tipo();
+			return (t == tOrig) || son_compatibles(tpp, tppp, tOrig);
+		} else
+			return false;
 	}
 
-	private boolean es_designador(Exp e) {
-		return true; //TODO implementar
+	private boolean registros_compatibles(Tipo_registro t, Tipo_registro tp, Tipo tOrig) {
+		if (t.campos().size() == tp.campos().size()) {
+			Campos campos1 = t.campos();
+			Campos campos2 = tp.campos();
+			while(campos1.size() > 1) {
+				if (!son_compatibles(campos1.campo().tipo().refEx(), campos2.campo().tipo().refEx(), tOrig))
+					return false;
+				campos1 = campos1.campos();
+				campos2 = campos2.campos();
+			}
+			return son_compatibles(campos1.campo().tipo().refEx(), campos2.campo().tipo().refEx(), tOrig);
+		} else
+			return false;
 	}
 }

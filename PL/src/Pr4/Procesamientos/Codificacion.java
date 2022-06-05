@@ -3,23 +3,29 @@ package Pr4.Procesamientos;
 import java.util.Stack;
 
 import Pr4.AST.TinyASint.*;
+import Pr4.maquinaP.MaquinaP;
 
 public class Codificacion extends ProcesamientoPorDefecto {
-/*global procs = pila_vacia()*/
     private Stack<Dec_proc> procs;
+    private MaquinaP m;
+    private boolean primero;
 
     public Codificacion() {
         procs = new Stack<Dec_proc>();
+        m = new MaquinaP(55,100,100,4);
+        primero = true;
     }
 
-/*gen_cod(prog_con_decs(Decs, Insts)) =
-gen_cod(Insts)
-recolecta_procs(Decs)
-mientras(!es_vacia(procs)))
-proc = pop(procs)
-gen_cod(proc)*/
+    public MaquinaP getMaquina() {
+        return m;
+    }
+
     public void procesa(Prog_con_decs prog) {
         prog.insts().procesa(this);
+        if (primero) {
+            m.ponInstruccion(m.stop());
+            primero = false;
+        }
         prog.decs().recolecta_procs(this);
         while (!procs.empty()) {
             Dec_proc proc = procs.pop();
@@ -27,307 +33,450 @@ gen_cod(proc)*/
         }
     }
 
-/*gen_cod(prog_sin_decs(Insts)) =
-gen_cod(Insts)*/
     public void procesa(Prog_sin_decs prog) {
         prog.insts().procesa(this);
     }
 
-/*gen_cod(insts_ninguna()) =
-skip*/
-
-/*gen_cod(insts_una(Inst)) =
-gen_cod(Inst)*/
     public void procesa(Insts_una insts) {
         insts.inst().procesa(this);
     }
 
-/*gen_cod(insts_muchas(Insts, Inst)) =
-gen_cod(Is)
-gen_cod(I)*/
     public void procesa(Insts_muchas insts) {
         insts.insts().procesa(this);
         insts.inst().procesa(this);
     }
 
-/*gen_cod(inst_asig(E0,E1)) =
-gen_cod(E0)
-gen_cod(E1)
-gen_ins_asig(E1)*/
     public void procesa(Inst_asig inst) {
         inst.exp1().procesa(this);
         inst.exp2().procesa(this);
-        //TODO gen_ins_asig(inst.exp2());
+        if (inst.exp2().type().es_entero() && inst.exp1().type().es_real()) {
+            if (inst.exp2().es_designador()) 
+                m.ponInstruccion(m.apilaInd());
+            m.ponInstruccion(m.desapilaInd());
+        } else {
+            if (inst.exp2().es_designador())
+                m.ponInstruccion(m.mueve(inst.exp1().tam()));
+            else
+                m.ponInstruccion(m.desapilaInd());
+        }
     }
 
-/*gen_cod(inst_ifthen(E0, Insts)) =
-gen_cod(E0)
-gen_ins(irf($.sig))
-gen_cod(Insts)*/
+    public void procesa(Inst_ifthen inst) {
+        inst.exp1().procesa(this);
+        if (inst.exp1().es_designador())
+            m.ponInstruccion(m.apilaInd());
+        m.ponInstruccion(m.irF(inst.sig()));
+        inst.insts().procesa(this);
+    }
 
-/*gen_cod(inst_ifthenelse(E0, Insts0, Insts1)) =
-gen_cod(E0)
-gen_ins(irf(Insts1.inicio))
-gen_cod(Insts0)
-gen_ins(ira($.sig))
-gen_cod(Insts1)*/
+    public void procesa(Inst_ifthenelse inst) {
+        inst.exp1().procesa(this);
+        if (inst.exp1().es_designador())
+            m.ponInstruccion(m.apilaInd());
+        m.ponInstruccion(m.irF(inst.bloque2().inicio()));
+        inst.bloque1().procesa(this);
+        m.ponInstruccion(m.irA(inst.sig()));
+        inst.bloque2().procesa(this);
+    }
 
-/*gen_cod(inst_while(E0, Insts)) =
-gen_cod(E0)
-gen_ins(irf($.sig))
-gen_cod(Insts)
-gen_ins(ira(E0.inicio))*/
+    public void procesa(Inst_while inst) {
+        inst.exp1().procesa(this);
+        if (inst.exp1().es_designador())
+            m.ponInstruccion(m.apilaInd());
+        m.ponInstruccion(m.irF(inst.sig()));
+        inst.insts().procesa(this);
+        m.ponInstruccion(m.irA(inst.exp1().inicio()));
+    }
 
-/*gen_cod(inst_lectura(E0)) =
-gen_cod(E0)*/
+    public void procesa(Inst_lectura inst) {
+        inst.exp1().procesa(this);
+        m.ponInstruccion(m.lee(inst.exp1().type()));
+        m.ponInstruccion(m.desapilaInd());
+    }
 
-/*gen_cod(inst_escritura(E0)) =
-gen_cod(E0)*/
+    public void procesa(Inst_escritura inst) {
+        inst.exp1().procesa(this);
+        if (inst.exp1().es_designador())
+            m.ponInstruccion(m.apilaInd());
+        m.ponInstruccion(m.imprime());
+    }
 
-/*gen_cod(inst_new_line()) =
-skip*/
+    public void procesa(Inst_new_line inst) {
+        m.ponInstruccion(m.newline());
+    }
 
-/*gen_cod(inst_reserv_mem(E0)) =
-gen_cod(E0)
-gen_ins(alloc(E0.tipo.tam))*/
+    public void procesa(Inst_reserv_mem inst) {
+        inst.exp1().procesa(this);
+        m.ponInstruccion(m.alloc(((Tipo_puntero) inst.exp1().type().refEx()).tipo().refEx().tam()));
+        m.ponInstruccion(m.desapilaInd());
+    }
 
-/*gen_cod(inst_lib_mem(E0)) =
-gen_cod(E0)
-gen_ins(dealloc(E0.tipo.tam))*/
+    public void procesa(Inst_lib_mem inst) {
+        inst.exp1().procesa(this);
+        m.ponInstruccion(m.apilaInd());
+        m.ponInstruccion(m.dealloc(((Tipo_puntero) inst.exp1().type().refEx()).tipo().refEx().tam()));
+    }
 
-/*gen_cod(inst_invoc_proc(id, Exprs)) =
-gen_ins(activa($.vinculo.nivel,$.vinculo.tam_datos,$.dir_sig))
-sea $.vinculo = dec_proc(id, Params, Bloque) en
-gen_cod_params(Exprs, Params)
-fin sea
-gen_ins(desapilad($.vinculo.nivel))
-gen_ins(ir_a($.vinculo.dir_inic))*/
+    public void procesa(Inst_invoc_proc inst) {
+        m.ponInstruccion(m.activa(inst.vinculo().nivel(), inst.vinculo().tam_datos(), inst.dir_sig()));
+        gen_cod_params(inst.params(), ((Dec_proc) inst.vinculo()).params());
+        m.ponInstruccion(m.desapilad(inst.vinculo().nivel()));
+        m.ponInstruccion(m.irA(inst.vinculo().dir_inic()));
+    }
 
-/*gen_cod_params(exprs_ninguna(), params_ninguno()) =
-skip*/
+    public void procesa(Inst_comp inst) {
+        m.ponInstruccion(m.activa(inst.nivel(), inst.tam(), inst.sig()));
+        m.ponInstruccion(m.desapilad(inst.nivel()));
+        inst.b().procesa(this);
+        m.ponInstruccion(m.desactiva(inst.nivel(), inst.tam()));
+        m.ponInstruccion(m.irInd());
+        //m.ponInstruccion(m.irA(inst.inicio()));
+    }
 
-/*gen_cod_params(exprs_una(E), params_uno_f(Param)) = 
-gen_cod_paso(E, Param)*/
+    private void gen_cod_params(Expresiones exprs, ParamsF params) {
+        if (exprs.hay_muchas() && params.hay_muchas()) {
+            gen_cod_params(((Exprs_muchas) exprs).expresiones(), ((Params_muchos_f) params).params());
+            gen_cod_paso(((Exprs_muchas) exprs).exp(), ((Params_muchos_f) params).param());
+        } else if (exprs.hay_una() && params.hay_una()) {
+            gen_cod_paso(((Exprs_una) exprs).exp(), ((Params_uno_f) params).param());
+        }
+    }
 
-/*gen_cod_params(exprs_muchas(Exprs, E), params_muchos_f(Params, Param)) =
-gen_cod_params(Exprs, Params)
-gen_cod_paso(E, Param)*/
+    private void gen_cod_paso(Exp exp, ParamF param) {
+        m.ponInstruccion(m.dup());
+        m.ponInstruccion(m.apilaInt(param.dir()));
+        m.ponInstruccion(m.sumai());
+        exp.procesa(this);
+        if (exp.es_designador() && param.por_valor())
+            m.ponInstruccion(m.mueve(param.tam()));
+        else
+            m.ponInstruccion(m.desapilaInd());
+    }
 
-/*gen_cod_paso(E, Param) =
-gen_ins(dup())
-gen_ins(apilaint(Param.dir))
-gen_ins(suma())
-gen_cod(E)
-gen_ins_paso(E, Param)*/
+    public void procesa(Num_int num) {
+        m.ponInstruccion(m.apilaInt(Integer.valueOf(num.s().toString())));
+    }
 
-/*gen_cod(num_int(n)) =
-gen_ins(apilaint(n))*/
+    public void procesa(Num_real num) {
+        m.ponInstruccion(m.apilaReal(Double.valueOf(num.s().toString())));
+    }
 
-/*gen_cod(num_real(n)) =
-gen_ins(apilareal(n))*/
+    public void procesa(True t) {
+        m.ponInstruccion(m.apilaBool(true));
+    }
 
-/*gen_cod(true()) =
-gen_ins(apilabool(true))*/
+    public void procesa(False f) {
+        m.ponInstruccion(m.apilaBool(false));
+    }
 
-/*gen_cod(false()) =
-gen_ins(apilabool(false))*/
+    public void procesa(Sstring str) {
+        m.ponInstruccion(m.apilaString(str.string().toString()));
+    }
 
-/*gen_cod(cadena(str)) =
-gen_ins(apilastring(str))*/
+    public void procesa(None n) {
+        m.ponInstruccion(m.apilaPuntero(-1));
+    }
 
-/*gen_cod(id(id)) =
-si $.vinculo.nivel = 0
-gen_ins(apilaint($.vinculo.dir))
-si no
-gen_ins(apilad($.vinculo.nivel))
-gen_ins(apilaint($.vinculo.dir))
-gen_ins(suma())
-si $.vinculo = dec_var(T, id)
-gen_ins(apilaind())*/
+    public void procesa(Id id) {
+        Dec vinculo = id.vinculo();
+        if (vinculo.nivel() == 0)
+            m.ponInstruccion(m.apilaInt(vinculo.dir()));
+        else {
+            m.ponInstruccion(m.apilad(vinculo.nivel()));
+            m.ponInstruccion(m.apilaInt(vinculo.dir()));
+            m.ponInstruccion(m.sumai());
+            if (vinculo.es_param_ref())
+                m.ponInstruccion(m.apilaInd());
+        }
+    }
 
-/*gen_cod(suma(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(suma())*/
+    public void procesa(Suma suma) {
+        Exp E0 = suma.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = suma.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        
+        if (E0.type().refEx().es_entero() && E1.type().refEx().es_entero())
+            m.ponInstruccion(m.sumai());
+        else
+            m.ponInstruccion(m.sumar());
+    }
 
-/*gen_cod(resta(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(resta())*/
+    public void procesa(Resta resta) {
+        Exp E0 = resta.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = resta.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        
+        if (E0.type().refEx().es_entero() && E1.type().refEx().es_entero())
+            m.ponInstruccion(m.restai());
+        else
+            m.ponInstruccion(m.restar());
+    }
 
-/*gen_cod(mul(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(mul())*/
+    public void procesa(Mul mul) {
+        Exp E0 = mul.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = mul.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
 
-/*gen_cod(div(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(div())*/
+        if (E0.type().refEx().es_entero() && E1.type().refEx().es_entero())
+            m.ponInstruccion(m.muli());
+        else
+            m.ponInstruccion(m.mulr());
+    }
 
-/*gen_cod(menos(E)) =
-gen_cod(E)
-si es_designador(E) entonces
-gen_ins(apilaind())
-gen_ins(menos())*/
+    public void procesa(Div div) {
+        Exp E0 = div.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = div.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        
+        if (E0.type().refEx().es_entero() && E1.type().refEx().es_entero())
+            m.ponInstruccion(m.divi());
+        else
+            m.ponInstruccion(m.divr());
+    }
 
-/*gen_cod(and(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(and())*/
+    public void procesa(Menos menos) {
+        Exp E = menos.arg();
+        E.procesa(this);
+        if (E.es_designador())
+            m.ponInstruccion(m.apilaInd());
 
-/*gen_cod(or(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(or())*/
+        if (E.type().refEx().es_entero())
+            m.ponInstruccion(m.menosi());
+        else
+            m.ponInstruccion(m.menosr());
+    }
 
-/*gen_cod(not(E)) =
-gen_cod(E)
-si es_designador(E) entonces
-gen_ins(apilaind())
-gen_ins(not())*/
+    public void procesa(And and) {
+        Exp E0 = and.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = and.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
 
-/*gen_cod(mayor(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(mayor())*/
+        m.ponInstruccion(m.and());
+    }
 
-/*gen_cod(mayor_eq(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(mayor_eq())*/
+    public void procesa(Or or) {
+        Exp E0 = or.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = or.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
 
-/*gen_cod(menor(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(menor())*/
+        m.ponInstruccion(m.or());
+    }
 
-/*gen_cod(menor_eq(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(menor_eq())*/
+    public void procesa(Not not) {
+        Exp E = not.arg();
+        E.procesa(this);
+        if (E.es_designador())
+            m.ponInstruccion(m.apilaInd());
 
-/*gen_cod(comp(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(comp())*/
+        m.ponInstruccion(m.not());
+    }
 
-/*gen_cod(dist(E0, E1)) =
-gen_cod(E0)
-si es_designador(E0) entonces
-gen_ins(apilaind())
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(dist())*/
+    public void procesa(Mayor mayor) {
+        Exp E0 = mayor.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = mayor.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
 
-/*gen_cod(corch(E0, E1)) =
-gen_cod(E0)
-gen_cod(E1)
-si es_designador(E1) entonces
-gen_ins(apilaind())
-gen_ins(mul())
-gen_ins(suma())*/
+        Tipo t = E0.type().refEx();
+        if (t.es_entero() || t.es_real())
+            m.ponInstruccion(m.mayorr());
+        else if (t.es_booleano())
+            m.ponInstruccion(m.mayorb());
+        else
+            m.ponInstruccion(m.mayors());
+    }
 
-/*gen_cod(punto(E0, id)) =
-gen_cod(E0)
-gen_ins(apilaint(id.desp))
-gen_ins(suma())*/
+    public void procesa(Mayor_eq mayor_igual) {
+        Exp E0 = mayor_igual.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = mayor_igual.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        
+        Tipo t = E0.type().refEx();
+        if (t.es_entero() || t.es_real())
+            m.ponInstruccion(m.mayorigr());
+        else if (t.es_booleano())
+            m.ponInstruccion(m.mayorigb());
+        else
+            m.ponInstruccion(m.mayorigs());
+    }
 
-/*gen_cod(flecha(E0, id)) =
-gen_cod(E0)
-gen_ins(apilaind())
-gen_ins(apilaint(id.desp))
-gen_ins(suma())*/
+    public void procesa(Menor menor) {
+        Exp E0 = menor.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = menor.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        
+        Tipo t = E0.type().refEx();
+        if (t.es_entero() || t.es_real())
+            m.ponInstruccion(m.menorr());
+        else if (t.es_booleano())
+            m.ponInstruccion(m.menorb());
+        else
+            m.ponInstruccion(m.menors());
+    }
 
-/*gen_cod(asterix(E0)) =
-gen_cod(E0)
-gen_ins(apilaind())*/
+    public void procesa(Menor_eq menor_igual) {
+        Exp E0 = menor_igual.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = menor_igual.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        
+        Tipo t = E0.type().refEx();
+        if (t.es_entero() || t.es_real())
+            m.ponInstruccion(m.menorigr());
+        else if (t.es_booleano())
+            m.ponInstruccion(m.menorigb());
+        else
+            m.ponInstruccion(m.menorigs());
+    }
 
-/*gen_cod(proc(id, Params, Bloque)) =
-gen_cod(Bloque) 
-gen_ins(desactiva($.nivel,$.tam)) 
-gen_ins(irind())
-recolecta_procs(Bloque)*/
+    public void procesa(Comp comp) {
+        Exp E0 = comp.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = comp.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        
+        Tipo t = E0.type().refEx();
+        if (t.es_entero() || t.es_real())
+            m.ponInstruccion(m.compr());
+        else if (t.es_booleano())
+            m.ponInstruccion(m.compb());
+        else if (t.es_cadena())
+            m.ponInstruccion(m.comps());
+        else
+            m.ponInstruccion(m.compp());
+    }
 
-/*gen_cod(bloque_lleno(prog_con_decs(Decs, Insts))) =
-gen_cod(Insts)*/
+    public void procesa(Dist dist) {
+        Exp E0 = dist.arg0();
+        E0.procesa(this);
+        if (E0.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        Exp E1 = dist.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        
+        Tipo t = E0.type().refEx();
+        if (t.es_entero() || t.es_real())
+            m.ponInstruccion(m.distr());
+        else if (t.es_booleano())
+            m.ponInstruccion(m.distb());
+        else if (t.es_cadena())
+            m.ponInstruccion(m.dists());
+        else
+            m.ponInstruccion(m.distp());
+    }
 
-/*gen_cod(bloque_lleno(prog_sin_decs(Insts))) =
-gen_cod(Insts)*/
+    public void procesa(Corch corch) {
+        corch.arg0().procesa(this);
+        Exp E1 = corch.arg1();
+        E1.procesa(this);
+        if (E1.es_designador())
+            m.ponInstruccion(m.apilaInd());
+        m.ponInstruccion(m.apilaInt(corch.type().tam()));
+        m.ponInstruccion(m.muli());
+        m.ponInstruccion(m.sumai());
+    }
 
-/*gen_cod(bloque_vacio()) =
-skip*/
+    public void procesa(Punto punto) {
+        punto.arg().procesa(this);
+        m.ponInstruccion(m.apilaInt(punto.arg().type().refEx().despDeCampo(punto.id())));
+        m.ponInstruccion(m.sumai());
+    }
 
-/*recolecta_procs(bloque_lleno(Prog)) =
-	recolecta_procs(Prog)*/
+    public void procesa(Flecha flecha) {
+        flecha.arg().procesa(this);
+        m.ponInstruccion(m.apilaInd());
+        m.ponInstruccion(m.apilaInt(((Tipo_puntero) flecha.arg().type().refEx()).tipo().refEx().despDeCampo(flecha.id())));
+        m.ponInstruccion(m.sumai());
+    }
 
-/*recolecta_procs(bloque_vacio()) =
-	skip*/
+    public void procesa(Asterix asterix) {
+        asterix.arg().procesa(this);
+        m.ponInstruccion(m.apilaInd());
+    }
 
-/*recolecta_procs(prog_con_decs(Decs, Insts)) =
-	recolecta_procs(Decs)*/
+    public void procesa(Dec_proc proc) {
+        proc.bloque().procesa(this);
+        m.ponInstruccion(m.desactiva(proc.nivel(), proc.tam_datos()));
+        m.ponInstruccion(m.irInd());
+        proc.bloque().recolecta_procs(this);
+    }
 
-/*recolecta_procs(prog_sin_decs(Insts)) =
-	skip*/
+    public void procesa(Bloque_lleno b) {
+        b.prog().procesa(this);
+    }
 
-/*recolecta_procs(decs_una(Dec)) = 
-recolecta_procs(Dec)*/
+    public void recolecta_procs(Bloque_lleno b) {
+        b.prog().recolecta_procs(this);
+    }
 
-/*recolecta_procs(decs_muchas(Decs,Dec)) =
-recolecta_procs(Decs)
-recolecta_procs(Dec)*/
+    public void recolecta_procs(Prog_con_decs p) {
+        p.decs().recolecta_procs(this);
+    }
 
-/*recolecta_procs(dec_var(T, id)) = 
-skip*/
+    public void recolecta_procs(Decs_una d) {
+        d.dec().recolecta_procs(this);
+    }
 
-/*recolecta_procs(dec_tipo(T, id)) = 
-skip*/
+    public void recolecta_procs(Decs_muchas d) {
+        d.decs().recolecta_procs(this);
+        d.dec().recolecta_procs(this);
+    }
 
-/*recolecta_procs(dec_proc(id, Params, Bloque)) =
-push($, procs)*/
+    public void recolecta_procs(Dec_proc proc) {
+        procs.push(proc);
+    }
 }

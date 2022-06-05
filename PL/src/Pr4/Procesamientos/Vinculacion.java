@@ -8,15 +8,23 @@ import Pr4.AST.TinyASint.*;
 
 public class Vinculacion extends ProcesamientoPorDefecto {
 	List<HashMap<StringLocalizado, Dec>> ts;
+	boolean algun_error;
 	
 	public Vinculacion() {
 		ts = new ArrayList<HashMap<StringLocalizado, Dec>>();
 		ts.add(new HashMap<StringLocalizado, Dec>());
+		algun_error = false;
+	}
+
+	public boolean algun_error() {
+		return algun_error;
 	}
 	
 	private void recolecta(StringLocalizado id, Dec dec) {
-		if (id_duplicado(id))
+		if (id_duplicado(id)){
 			System.out.println("Error: id duplicado");
+			algun_error = true;
+		}
 		else
 			ts.get(ts.size()-1).put(id, dec);
 	}
@@ -45,6 +53,7 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	public void procesa(Prog_con_decs prog) {
 		prog.decs().procesa(this);
 		prog.decs().vincula_decs_fase2(this);
+		prog.decs().vincula_procs(this);
 		prog.insts().procesa(this);
 	}
 	public void vincula_decs_fase2(Prog_con_decs prog) {
@@ -53,15 +62,21 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	public void vincula_procs(Prog_con_decs prog) {
 		prog.decs().vincula_procs(this);
 	}
+
 	public void procesa(Prog_sin_decs prog) {
 		prog.insts().procesa(this);
 	}
+
 	public void procesa(Decs_una decs) {
 		decs.dec().procesa(this);
 	}
 	public void vincula_decs_fase2(Decs_una decs) {
 		decs.dec().vincula_decs_fase2(this);
 	}
+	public void vincula_procs(Decs_una decs) {
+		decs.dec().vincula_procs(this);
+	}
+
 	public void procesa(Decs_muchas decs) {
 		decs.decs().procesa(this);
 		decs.dec().procesa(this);
@@ -70,6 +85,11 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 		decs.decs().vincula_decs_fase2(this);
 		decs.dec().vincula_decs_fase2(this);
 	}
+	public void vincula_procs(Decs_muchas decs) {
+		decs.decs().vincula_procs(this);
+		decs.dec().vincula_procs(this);
+	}
+
 	public void procesa(Dec_var dec) {
 		dec.tipo().procesa(this);
 		recolecta(dec.id(), dec);
@@ -77,6 +97,7 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	public void vincula_decs_fase2(Dec_var dec) {
 		dec.tipo().vincula_decs_fase2(this);
 	}
+
 	public void procesa(Dec_tipo dec) {
 		dec.tipo().procesa(this);
 		recolecta(dec.id(), dec);
@@ -84,23 +105,35 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	public void vincula_decs_fase2(Dec_tipo dec) {
 		dec.tipo().vincula_decs_fase2(this);
 	}
+
 	public void procesa(Dec_proc dec) {
 		recolecta(dec.id(), dec);
+	}
+	public void vincula_procs(Dec_proc dec) {
 		ts.add(new HashMap<StringLocalizado, Dec>());
-		ParamsF params = dec.params();
-		if (params != null)
-			params.procesa(this);
-		dec.bloque().procesa(this);
+		dec.params().procesa(this);
+		Bloque b = dec.bloque();
+		if (b.esta_lleno()) {
+			Prog p = ((Bloque_lleno) b).prog();
+			if (p.tiene_decs()) {
+				Prog_con_decs prog = (Prog_con_decs) p;
+				prog.decs().procesa(this);
+				dec.params().vincula_decs_fase2(this);
+				prog.decs().vincula_decs_fase2(this);
+				prog.decs().vincula_procs(this);
+				prog.insts().procesa(this);
+			}
+			else {
+				Prog_sin_decs prog = (Prog_sin_decs) p;
+				dec.params().vincula_decs_fase2(this);
+				prog.insts().procesa(this);
+			}
+		}
+		else
+			dec.params().vincula_decs_fase2(this);
 		ts.remove(ts.size() - 1);
 	}
-	public void vincula_decs_fase2(Dec_proc dec) {
-		ts.add(new HashMap<StringLocalizado, Dec>()); //TODO Duda crear ambito
-		ParamsF params = dec.params();
-		if (params != null)
-			params.procesa(this);
-		dec.bloque().vincula_decs_fase2(this);
-		ts.remove(ts.size() - 1);
-	}
+
 	public void procesa(Params_uno_f p) {
 		p.param().procesa(this);
 	}
@@ -167,14 +200,21 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 		inst.exp1().procesa(this);
 	}
 	public void procesa(Inst_invoc_proc inst) {
-		//Comprobar que el proceso existe
+		if (existe_id(inst.id()))
+			inst.vinculo(valorDe(inst.id()));
+		else{
+			System.out.println("Error: procedimiento no declarado");
+			algun_error = true;
+		}
 		inst.params().procesa(this);
 	}
 	public void procesa(Inst_comp inst) {
+		ts.add(new HashMap<StringLocalizado, Dec>());
 		inst.b().procesa(this);
+		ts.remove(ts.size() - 1);
 	}
 	public void procesa(Exprs_una e) {
-		e.e().procesa(this);
+		e.exp().procesa(this);
 	}
 	public void procesa(Exprs_muchas e) {
 		e.expresiones().procesa(this);
@@ -184,8 +224,10 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	public void procesa(Tipo_id tipo) {
 		if (existe_id(tipo.id()))
 			tipo.vinculo(valorDe(tipo.id()));
-		else
+		else {
 			System.out.println("Error: id no declarado");
+			algun_error = true;
+		}
 	}
 	public void procesa(Tipo_array tipo) {
 		tipo.tipo().procesa(this);
@@ -200,12 +242,14 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 		tipo.campos().vincula_decs_fase2(this);
 	}
 	public void procesa(Tipo_puntero tipo) {
-		if (tipo.tipo().getClass() != Tipo_id.class) //TODO guarro
+		if (!tipo.tipo().es_id())
 			tipo.tipo().procesa(this);
 	}
 	public void vincula_decs_fase2(Tipo_puntero tipo) {
-		if (tipo.tipo().getClass() == Tipo_id.class) //TODO guarro
+		if (tipo.tipo().es_id())
 			tipo.tipo().procesa(this);
+		else
+			tipo.tipo().vincula_decs_fase2(this);
 	}
 	public void procesa(Campos_uno c) {
 		c.campo().procesa(this);
@@ -228,18 +272,18 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 		c.tipo().vincula_decs_fase2(this);
 	}
 	public void procesa(Bloque_lleno b) {
-		//ts.add(new HashMap<StringLocalizado, Dec>());
-		b.prog().procesa(this); //TODO mirar
-		//ts.remove(ts.size()-1);
+		b.prog().procesa(this);
 	}
 	public void vincula_decs_fase2(Bloque_lleno b) {
-		b.prog().vincula_decs_fase2(this); //TODO mirar
+		b.prog().vincula_decs_fase2(this);
 	}
 	public void procesa(Id exp) {
 		if (existe_id(exp.id()))
 			exp.vinculo(valorDe(exp.id()));
-		else
+		else {
 			System.out.println("Error: id no declarado");
+			algun_error = true;
+		}
 	}
 	public void procesa(Suma exp) {
 		exp.arg0().procesa(this);
@@ -311,11 +355,5 @@ public class Vinculacion extends ProcesamientoPorDefecto {
 	}
 	public void procesa(Asterix exp) {
 		exp.arg().procesa(this);
-	}
-	public void procesa(ProgramaAux aux) {
-		aux.prog().procesa(this); //TODO Quizas nuevo nivel
-	}
-	public void vincula_decs_fase2(ProgramaAux aux) {
-		aux.prog().vincula_decs_fase2(this); //TODO Quizas nuevo nivel
 	}
 }

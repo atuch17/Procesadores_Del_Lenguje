@@ -153,7 +153,7 @@ public class Impresion extends ProcesamientoPorDefecto {
     }
 
 	public void procesa(Exprs_una e) {
-        e.e().procesa(this);
+        e.exp().procesa(this);
     }
 
 	public void procesa(Exprs_muchas e) {
@@ -161,10 +161,6 @@ public class Impresion extends ProcesamientoPorDefecto {
         System.out.print(", ");
         e.exp().procesa(this);
     }
-
-	public void procesa(ProgramaAux p) {
-		p.prog().procesa(this);
-	}
 
 	public void procesa(Tipo_id tipo) {
 		System.out.print(tipo.id() + " ");
